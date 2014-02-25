@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Empty template</title>
+        <script src="quink.js"></script>
+        <style>
+            * {
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
+            }
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0px;
+                padding: 0px;
+            }
+            #editable-content {
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="qk_scroll" contenteditable="true" id="editable-content"></div>
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                var waitForRequire = function waitForRequire() {
+                        if (window.require === undefined || !require.defined('util/PubSub')) {
+                            console.log('waiting...');
+                            setTimeout(function () {
+                                waitForRequire();
+                            }, 500);
+                        } else {
+                            require(['util/PubSub'], function (PubSub) {
+                                console.log('attempting to invoke save...');
+                                PubSub.publish('command.exec', 'persist.save');
+                            });
+                        }
+                    };
+                waitForRequire();
+            });
+        </script>
+    </body>
+</html>

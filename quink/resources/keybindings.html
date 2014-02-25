@@ -1,0 +1,68 @@
+<div class="qk_info_keybindings">
+<h1>
+    Quink default key bindings
+</h1>
+<p>
+    Commands can be initiated from both the toolbar and from the keyboard. To allow this to happen Quink now works in one of two modes:
+</p>
+<ul>
+    <li>insert mode. This is the mode that Quink starts in and allows the user to enter text into the editable region.
+    </li>
+    <li>command mode. In this mode Quink interprets keyboard input as commands.
+    </li>
+</ul>
+<p>
+    Command mode tries to provide all available commands to the user on the default page of the virtual keyboard. This restricts the possible keys that can be used to indicate commands to essentially the alphabetic keys plus a couple of punctuation keys. Quink tries to emulate vim where possible for navigation commands.
+</p>
+<p>
+    Since the number of keys available is very small Quink uses the concept of command maps to allow the same keys to be re-used for different commands. The default command map provides navigation and basic editing commands while the secondary command maps provide access to the other editing facilities. Access to a secondary command map is via a prefix key, so commands on the secondary maps are all accessed using two keystrokes. The secondary maps only remain in place for the duration of one command, after which time the default map is back in place. To abort a secondary map after having entered the prefix key, enter the prefix key a second time.
+</p>
+<p>
+    Here are the mappings for the default command map:
+</p>
+<h4>
+    Default command map
+</h4>
+<pre>
+f switch to format map<br>t switch to list map<br>s switch to section map<br>z exit command mode and return to insert mode
+</pre>
+<h5>
+    Navigation commands
+</h5>
+<pre>
+i exit command mode<br>h navigate left one character<br>l navigate right one character<br>j navigate down one line<br>k navigate up one line<br>b navigate back one word<br>e navigate forward one word<br>, move to start of line<br>. move to end of line<br>v toggle navigate and select
+</pre>
+<h5>
+    Editing commands
+</h5>
+<pre>
+backspace delete character left<br>d delete character right<br>u undo<br>r redo<br>a select all<br>m remove formating (removes any formatting that a previous edit has put in place)
+</pre>
+<h4>
+    Format map
+</h4>
+<p>
+    The map switch key is 'f'.
+</p>
+<pre>
+b bold<br>i italic<br>u underline<br>s strike through<br>a super script (upper case A is roughly an up arrow in shape)<br>v sub script (V is roughly a down arrow in shape)<br>h insert horizontal rule
+</pre>
+<h4>
+    List map
+</h4>
+<p>
+    The map switch key is 't' ('l' is used by vim for navigation).
+</p>
+<pre>
+n insert ordered (numbered) list<br>u insert unordered list<br>l justify left<br>r justify right<br>c justify centre<br>f justify full<br>i indent<br>o outdent
+</pre>
+<h4>
+    Section map
+</h4>
+<p>
+    The map switch key is 's'. Most of the commands in this map use the relative placement of the key on the keyboard to indicate the function that is to be carried out. The heading commands (H1 - H6) use the first 6 keys on the top row of the virtual keyboard. It would have been more obvious to use the number keys, but that would mean a keyboard switch in the virtual keyboard.
+</p>
+<pre>
+q format as H1<br>w format as H2<br>e format as H3<br>r format as H4<br>t format as H5<br>y format as H6<br>p format as paragraph<br>f format as preformatted
+</pre>
+</div>

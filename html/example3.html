@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Quink, quink...</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
+            }
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+            }
+            body {
+                margin: 0px;
+                padding: 7px;
+            }
+            div {
+                padding-top: 5px;
+                padding-bottom: 5px;
+            }
+            [contenteditable="true"] {
+                max-height: 70%;
+                border-style: solid;
+                border-width: 1px;
+                padding-top: 0;
+                padding-bottom: 0;
+            }
+            #qk_container {
+                height: 100%;
+            }
+            #markup {
+                max-height: 25%;
+                overflow-y: scroll;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            .scroll {
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+        </style>
+        <script data-main="quink/js/main" src="quink/js/lib/require.js"></script>
+        <link rel="stylesheet" href="quink/resources/css/quink.css">
+    </head>
+    <body>
+        <div id="qk_container" class="qk_container">
+            <div class="scroll" contenteditable="true">
+                <h1>Quink Release Notes</h1><p>These are the release notes for the Quink release of 29.08.13.</p><h3>New features</h3><p></p><ul><li>the keyboard can now be used to initiate navigation and editing commands<br></li><li>the text insertion point should be visible on navigation and when adding text</li><li>the keymap is now held as a separate resource (build 13-08-28.2)</li><li>the toolbar markup is now held as a separate resource (build 13-08-29)</li></ul><h3>Known bugs</h3><p></p><ul><li>start/end of line issue when navigating vertically (the Google Tasks issue described previously)</li><li>navigating vertically across super/sub script (described previously)</li></ul><h3>Detail<br></h3><p>The command sub system has been separated out from the toolbar so that commands can now be initiated from both the toolbar and from the keyboard. To allow this to happen Quink now works in one of two modes:</p><p></p><ul><li>insert mode. This is the mode that Quink starts in and allows the user to enter text into the editable region.</li><li>command mode. This is a new mode in which Quink interprets keyboard input as commands.</li></ul>Command mode tries to provide all available commands to the user on the default page of the virtual keyboard. This restricts the possible keys that can be used to indicate commands to essentially the alphabetic keys plus a couple of punctuation keys. Quink tries to emulate vim where possible for navigation commands.<p></p><p>Since the number of keys available is very small Quink uses the concept of command maps to allow the same keys to be re-used for different commands. The default command map provides navigation and basic editing commands while the secondary command maps provide access to the other editing facilities. Access to a secondary command map is via a prefix key, so commands on the secondary maps are all accessed using two keystrokes. The secondary maps only remain in place for the duration of one command, after which time the default map is back in place. To abort a secondary map after having entered the prefix key, enter the prefix key a second time.</p><p>Currently the keyboard mappings can't be changed.</p><p>Here are the mappings for the default command map:</p><h4>Default command map</h4><pre>f switch to format map<br>t switch to list map<br>s switch to section map<br>i exit command mode and return to insert mode</pre><h5>Navigation commands</h5><pre>i exit command mode<br>h navigate left one character<br>l navigate right one character<br>j navigate down one line<br>k navigate up one line<br>b navigate back one word<br>e navigate forward one word<br>, move to start of line<br>. move to end of line<br>v toggle navigate and select</pre><h5>Editing commands</h5><pre>backspace delete character left<br>d delete character right<br>u undo<br>r redo<br>a select all<br>m remove formating (seems to remove any formatting that a previous edit has put in place)</pre><h4>Format map</h4><p>The map switch key is 'f'.</p><pre>b bold<br>i italic<br>u underline<br>s strike through<br>a super script (upper case A is roughly an up arrow in shape)<br>v sub script (V is roughly a down arrow in shape)<br>h insert horizontal rule</pre><h4>List map</h4><p>The map switch key is 't' ('l' is used by vim for navigation).</p><pre>n insert ordered (numbered) list<br>u insert unordered list<br>l justify left<br>r justify right<br>c justify centre<br>f justify full<br>i indent<br>o outdent</pre><h4>Section map</h4><p>The map switch key is 's'. Most of the commands in this map use the relative placement of the key on the keyboard to indicate the function that is to be carried out. The heading commands (H1 - H6) use the first 6 keys on the top row of the virtual keyboard. It would have been more obvious to use the number keys, but that would mean a keyboard switch in the virtual keyboard.</p><pre>q format as H1<br>w format as H2<br>e format as H3<br>r format as H4<br>t format as H5<br>y format as H6<br>p format as paragraph<br>f format as preformatted</pre><h3>Builds 13-08-28.2 and 13-08-29</h3><div>These releases separate out the keymap and toolbar markup into external resources. Release 13-08-29 also updates the versions of jQuery and Underscore that are used. This was done as a side effect when trying to reduce the size of the download needed when using Quink as part of something else. It turns out that the requirejs optimiser does as good a job as using the minified library files, so the fat libs are used in Quink and size reduction is left to r.js as it was previously.</div><h3>Issues</h3><p>There has been a lot of change in the Quink code base during the past few days in order to move from the initial toolbar centric application to one that separates out the concepts of command initiation and command execution. This much change is bound to introduce bugs.</p><p>Known issues at the moment are:</p><p></p><ul><li>navigating to the start of the line within a preformatted text block doesn't move the caret to the start of the line. Repeat the command and the text insertion point will move to the start of the line.</li><li>it appears that you can no longer leave a list by hitting return on the last empty list item.</li></ul><div>This document was produced using Quink. Some of the effects were slightly awkward to produce, such as the preformatted blocks that describe the key bindings. The best way to get these seems to be to enter the text as a normal paragraph, then select it all and invoke the command to create a preformatted block (sf - from within command mode).</div><div><br></div><p></p>     
+            </div>
+            <button id="b1">Show markup</button>
+            <button id="b2">Clear markup</button>
+            <div id="markup"><pre></pre></div>
+        </div>
+        <script>
+            (function (window) {
+                var escapeHtml = function (unsafe) {
+                    return unsafe
+                         .replace(/&/g, "&amp;")
+                         .replace(/</g, "&lt;")
+                         .replace(/>/g, "&gt;")
+                         .replace(/"/g, "&quot;")
+                         .replace(/'/g, "&#039;");
+                };
+
+                var doc = window.document,
+                    editable = window.document.querySelector('[contenteditable="true"]'),
+                    markup = window.document.querySelector('#markup');
+                doc.querySelector('#b1').addEventListener('click', function (event) {
+                    markup.innerHTML = escapeHtml(editable.innerHTML);
+                }, false);
+                doc.querySelector('#b2').addEventListener('click', function () {
+                    markup.innerHTML = '';
+                }, false);
+
+                var cmds = [
+                    'backcolor',
+                    'bold',
+                    'createlink',
+                    'fontname',
+                    'fontsize',
+                    'forecolor',
+                    'hilitecolor',
+                    'italic',
+                    'removeformat',
+                    'strikethrough',
+                    'subscript',
+                    'superscript',
+                    'underline',
+                    'unlink',
+                    'delete',
+                    'formatblock',
+                    'forwarddelete',
+                    'indent',
+                    'inserthorizontalrule',
+                    'inserthtml',
+                    'insertimage',
+                    'insertlinebreak',
+                    'insertorderedparagraph',
+                    'insertparagraph',
+                    'inserttext',
+                    'insertunorderedlist',
+                    'justifycenter',
+                    'justifyfull',
+                    'justifyleft',
+                    'justifyright',
+                    'outdent',
+                    'copy',
+                    'cut',
+                    'defaultparagraphseparator',
+                    'paste',
+                    'redo',
+                    'selectall',
+                    'stylewithcss',
+                    'undo',
+                    'usecss'
+                ], result;
+
+                cmds.forEach(function (cmd) {
+                    result = document.queryCommandSupported(cmd);
+                    console.log(cmd, result ? "supported" : "not supported");
+                });
+            }(this));
+        </script>
+    </body>
+</html>

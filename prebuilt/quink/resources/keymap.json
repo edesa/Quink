@@ -1,0 +1,72 @@
+{
+    "mode-switch-key": "90",
+
+    "COMMAND_MAP": {
+        "72": "nav.char.prev",
+        "74": "nav.line.down",
+        "75": "nav.line.up",
+        "76": "nav.char.next",
+
+        "66": "nav.word.prev",
+        "69": "nav.word.next",
+
+        "188": "nav.line.start",
+        "190": "nav.line.end",
+
+        "86": "nav.toggle.select",
+        "83": "ui.toggle.status",
+
+        "8": "edit.delete",
+        "68": "edit.forwarddelete",
+
+        "85": "edit.undo",
+        "82": "edit.redo",
+        "65": "edit.selectall",
+        "77": "edit.removeformat",
+
+        "78": "info.help",
+
+        "70": "map.font",
+        "80": "map.para",
+        "89": "map.style",
+        "73": "map.insert"
+    },
+
+    "FONT_MAP": {
+        "66": "font.bold",
+        "73": "font.italic",
+        "85": "font.underline",
+        "83": "font.strikethrough",
+
+        "65": "font.superscript",
+        "86": "font.subscript"
+    },
+
+    "PARA_MAP": {
+        "78": "para.insertorderedlist",
+        "85": "para.insertunorderedlist",
+
+        "76": "para.justifyleft",
+        "82": "para.justifyright",
+        "67": "para.justifycenter",
+        "70": "para.justifyfull",
+
+        "73": "para.indent",
+        "79": "para.outdent"
+    },
+
+    "STYLE_MAP": {
+        "81": "style.formatblock.h1",
+        "87": "style.formatblock.h2",
+        "69": "style.formatblock.h3",
+        "82": "style.formatblock.h4",
+        "84": "style.formatblock.h5",
+        "89": "style.formatblock.h6",
+
+        "65": "style.formatblock.p",
+        "70": "style.formatblock.pre"
+    },
+
+    "INSERT_MAP": {
+    }
+}
