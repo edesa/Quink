@@ -10,10 +10,22 @@
             if (newConfig.extensions)curConfig.extensions = newConfig.extensions
         };
         retFunc.getImageElementAsString = function () {
-            var $imageElement;
+            var $imageElement, keyedHeight, selectedHeightUnit, keyedWidth, selectedWidthUnit;
             $imageElement = $('#image-uploader .fileinput .fileinput-preview');
-            //remove temporary code so can get a testable build
-            //$imageElement.find("img").width(25).height(25);
+            keyedHeight = $('#height-input').val();
+            selectedHeightUnit = $('#height-unit-select').val();
+            keyedWidth = $('#width-input').val();
+            selectedWidthUnit = $('#width-unit-select').val();
+            if (keyedHeight.trim().length > 0) {
+                $imageElement.find("img").css('height', function() {
+                    return keyedHeight+selectedHeightUnit;
+                });
+            }
+            if (keyedWidth.trim().length > 0) {
+                $imageElement.find("img").css('width', function() {
+                    return keyedWidth+selectedWidthUnit;
+                });
+            }
             return $imageElement.html();
         };
         retFunc.init = function () {
