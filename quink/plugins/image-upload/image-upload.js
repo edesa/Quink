@@ -14,24 +14,31 @@
                     //a.extend(true, curConfig, newConfig);
                     //if (newConfig.extensions)curConfig.extensions = newConfig.extensions
                 };
+                function isValueKeyed(jQueryItem) {
+                    return jQueryItem.val().trim().length > 0;
+                }
+
                 self.getImageElementAsString = function () {
-                    var $imageElement, keyedHeight, selectedHeightUnit, keyedWidth, selectedWidthUnit;
+                    var $imageElement, $widthInput, $widthUnitSelect, $heightInput, $heightInputSelect, returnValue;
+
                     $imageElement = $('#image-uploader .fileinput .fileinput-preview');
-                    keyedHeight = $('#height-input').val();
-                    selectedHeightUnit = $('#height-unit-select').val();
-                    keyedWidth = $('#width-input').val();
-                    selectedWidthUnit = $('#width-unit-select').val();
-                    if (keyedHeight.trim().length > 0) {
+                    $widthInput = $('#height-input');
+                    $widthUnitSelect = $('#height-unit-select');
+                    $heightInput = $('#width-input');
+                    $heightInputSelect = $('#width-unit-select');
+
+                    if (isValueKeyed($heightInput)) {
                         $imageElement.find("img").css('height', function () {
-                            return keyedHeight + selectedHeightUnit;
+                            return $heightInput.val() + $heightInputSelect.val();
                         });
                     }
-                    if (keyedWidth.trim().length > 0) {
+                    if (isValueKeyed($widthInput)) {
                         $imageElement.find("img").css('width', function () {
-                            return keyedWidth + selectedWidthUnit;
+                            return $widthInput.val() + $widthUnitSelect.val();
                         });
                     }
-                    return $imageElement.html();
+                    returnValue = $imageElement.html();
+                    return returnValue;
                 };
                 self.init = function () {
                     try {
