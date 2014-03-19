@@ -12,35 +12,35 @@
     for (var i = 0; i < functions.length; i++) {
         this[functions[i]] = (function (d) {
             return function () {
-                var t = this //new callback
+                var t = this; //new callback
                 for (var g = 0, args = []; g < arguments.length; g++) {
                     args.push(arguments[g]);
                 }
                 var cbid = t.send(d, args, function () {
-                })  //the callback (currently it's nothing, but will be set later
+                });  //the callback (currently it's nothing, but will be set later
 
                 return function (newcallback) {
                     t.callbacks[cbid] = newcallback; //set callback
-                }
-            }
-        })(functions[i])
+                };
+            };
+        })(functions[i]);
     }
     //TODO: use AddEvent for Trident browsers, currently they dont support SVG, but they do support onmessage
     var t = this;
     window.addEventListener("message", function (e) {
-        if (e.data.substr(0, 4) == "ImgU") { //match the 4 character style used by method draw
+        if (e.data.substr(0, 4) === "ImgU") { //match the 4 character style used by method draw
             var data = e.data.substr(4);
             var cbid = data.substr(0, data.indexOf(";"));
             if (t.callbacks[cbid]) {
-                if (data.substr(0, 6) != "error:") {
-                    t.callbacks[cbid](eval("(" + data.substr(cbid.length + 1) + ")"))
+                if (data.substr(0, 6) !== "error:") {
+                    t.callbacks[cbid](eval("(" + data.substr(cbid.length + 1) + ")"));
                 } else {
                     t.callbacks[cbid](data, "error");
                 }
             }
         }
         //this.stack.shift()[0](e.data,e.data.substr(0,5) == "ERROR"?'error':null) //replace with shift
-    }, false)
+    }, false);
 }
 
 embedded_image_upload.prototype.setImage = function (newImageHTML) {
@@ -71,20 +71,20 @@ embedded_image_upload.prototype.setImage = function (newImageHTML) {
         returnValue = true;
     }
     return returnValue;
-}
+};
 embedded_image_upload.prototype.send = function (name, args, callback) {
     var cbid = Math.floor(Math.random() * 31776352877 + 993577).toString();
     //this.stack.push(callback);
     this.callbacks[cbid] = callback;
     for (var argstr = [], i = 0; i < args.length; i++) {
-        argstr.push(this.encode(args[i]))
+        argstr.push(this.encode(args[i]));
     }
     var t = this;
     setTimeout(function () {//delay for the callback to be set in case its synchronous
         t.frame.contentWindow.postMessage(cbid + ";imageUploader['" + name + "'](" + argstr.join(",") + ")", "*");
     }, 0);
     return cbid;
-}
+};
 
 
 

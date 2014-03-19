@@ -17,7 +17,7 @@
  * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global embedded_svg_edit */
+/*global embedded_image_upload */
 require([
     'Underscore',
     'jquery',
@@ -135,7 +135,7 @@ require([
         var url = Context.adapterUrl('image-upload/ImageUploadEmbed.html');
         $.get(url).done(function (data) {
             frame = $(data);
-                imageUploader = new embedded_image_upload(frame[0]);
+            imageUploader = new embedded_image_upload(frame[0]);
             //associate methods in this object with the lifecycle callbacks for plugins
             Context.publish('loaded', {
                 open: open,
