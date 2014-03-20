@@ -32,7 +32,10 @@
             var data = e.data.substr(4);
             var cbid = data.substr(0, data.indexOf(";"));
             if (t.callbacks[cbid]) {
-                if (data.substr(0, 6) !== "error:" && data.substr(cbid.length + 1) !== "error:") {
+                //check for error at start, after callbackid+colon and after callbackid+colon+quote
+                if (data.substr(0, 6) !== "error:" &&
+                    data.substr(cbid.length + 1, 6) !== "error:" &&
+                    data.substr(cbid.length + 2, 6) !== "error:") {
                     var nextParm = eval("(" + data.substr(cbid.length + 1) + ")");
                     t.callbacks[cbid](nextParm);
                 } else {

@@ -1,4 +1,5 @@
-/*global imageUploader*/
+
+/*global define, imageUploader*/
 (function ($) {
     'use strict';
     if (!window.imageUploader) {
@@ -20,6 +21,7 @@
 
                 self.getImageElementAsString = function () {
                     var $imageElement, $widthInput, $widthUnitSelect, $heightInput, $heightInputSelect, returnValue;
+                    //test code: return "error:it's an error";
 
                     $imageElement = $('#image-uploader .fileinput .fileinput-preview');
                     $widthInput = $('#height-input');
@@ -41,6 +43,13 @@
                     return returnValue;
                 };
                 self.init = function () {
+//                        highlight: function (element) {
+//                            $(element).closest('.form-group').removeClass('success').addClass('error');
+//                        },
+//                        success: function (element) {
+//                            element
+//                                .text('OK!').addClass('valid')
+//                                .closest('.form-group').removeClass('error').addClass('success');
                     try {
                         var I = function (d) {
                             if (window.JSON && JSON.stringify) {
