@@ -45,6 +45,9 @@ define([
         return this.isEdit() ? cont.html() : null;
     };
 
+    /**
+     * The plugin data replaces anything in the existing range.
+     */
     PluginContext.prototype.commit = function (data, range) {
         var cfg, el;
         if (this.isEdit()) {
@@ -54,7 +57,12 @@ define([
             el = document.createElement(cfg.element);
             el.setAttribute('class', cfg['class']);
             el.innerHTML = data;
+            if (!range.collapsed) {
+                range.deleteContents();
+            }
             range.insertNode(el);
+            range.setStartAfter(el);
+            range.collapse(false);
         }
     };
 

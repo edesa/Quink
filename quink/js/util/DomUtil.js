@@ -54,8 +54,11 @@ define([
         }
     }
 
+    /**
+     * SVG nodes don't appear to follow many (any?) of the usual element conventions.
+     */
     function nodeHasQuinkClass(node) {
-        var className = node.className,
+        var className = node.tagName.toLowerCase() !== 'svg' && node.className,
             result = false,
             i, length;
         if (className) {

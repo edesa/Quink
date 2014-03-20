@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Example text insert</title>
+        <script src="../quink.js"></script>
+        <style>
+            * {
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
+            }
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0px;
+                padding: 0px;
+            }
+            #editable-content {
+                width: 100%;
+                height: 50%;
+                border-color: green;
+                border-width: 1px;
+                border-style: solid;
+            }
+            #editable-source {
+                width: 80%;
+                height: 25%;
+                border-color: red;
+                border-width: 1px;
+                border-style: solid;
+            }
+            #add-btn {
+                padding: 10px;
+                margin: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <H3>Add text into the upper editable (red border) then hit the button to see it transferred into the lower editable (green border)</H3>
+        <div contenteditable="true" id="editable-source" class="qk_scroll"></div>
+<!--        <input type="text" id=editable-source> -->
+        <button id="add-btn">Add to document</button>
+        <div class="qk_scroll" contenteditable="true" id="editable-content"></div>
+
+        <script type="text/javascript">
+
+            /**
+             * Uses Quink's PubSub to request that the content of one editable is copied into
+             * the other editable. Makes a very simplistic attempt to decide whether the content
+             * is plain text or html so that it can publishes on the right topic.
+             * Note that the destination editable must have focus before the copy is made so that
+             * Quink knows which editable to copy into.
+             */
+            function onCopyContent() {
+                require(['util/PubSub'], function (PubSub) {
+                    // var text = document.querySelector('#editable-source').value;
+                    // document.querySelector('#editable-content').focus();
+                    // PubSub.publish('insert.text', text);
+                    var html = document.querySelector('#editable-source').innerHTML,
+                        editable = document.querySelector('#editable-content'),
+                        contentType = /^</.test(html) ? 'html' : 'text';
+                    console.log('html: ' + html);
+                    editable.focus();
+                    PubSub.publish('insert.' + contentType, html);
+                });
+            }
+
+            /**
+             * Adds a listener to the button using the appropriate event based on the type of
+             * device. The device type check isn't competely correct but should work in most
+             * cases.
+             */
+            function addBtnListener() {
+                var btn = document.querySelector('#add-btn'),
+                    eventName = window.ontouchstart ? 'touchend' : 'click';
+                btn.addEventListener(eventName, onCopyContent, false);
+            }
+
+            /**
+             * Waits for both the DOM to load and for requirejs to load then invokes the
+             * given function. Presumably there's a cleaner way to detect that requirejs is
+             * loaded.
+             */
+            document.addEventListener('DOMContentLoaded', function () {
+                var count = 0;
+                var waitForRequire = function waitForRequire(func) {
+                        if (window.require === undefined || !require.defined('util/PubSub')) {
+                            console.log('waiting...');
+                            if (++count < 5) {
+                                setTimeout(function () {
+                                    waitForRequire(func);
+                                }, 500);
+                            } else {
+                                alert('Failed to load require.js');
+                            }
+                        } else {
+                            func();
+                        }
+                    };
+
+                waitForRequire(addBtnListener);
+            });
+        </script>
+        </script
+    </body>
+</html>

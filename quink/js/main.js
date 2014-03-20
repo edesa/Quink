@@ -18,7 +18,6 @@
  */
 
 require.config({
-    baseUrl: 'quink/js',
     // Dev only for Mobile Safari to stop it caching the JS.
     // urlArgs: "bust=" + (new Date()).getTime(),
 

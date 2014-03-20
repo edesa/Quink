@@ -1,5 +1,5 @@
 {
-    "mode-switch-key": "90",
+    "mode-switch-key": "81",
 
     "COMMAND_MAP": {
         "72": "nav.char.prev",

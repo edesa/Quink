@@ -27,17 +27,15 @@ define([
     'command/InsertCommandMsgAdapter',
     'command/InfoCommandMsgAdapter',
     'command/CommandStateAdapter',
-    'command/CommandStateBar',
     'command/PersistenceMsgAdapter'
-], function (CommandSubscriber, EditCommandMsgAdapter, NavCommandMsgAdapter, InsertCommandMsgAdapter, InfoCommandMsgAdapter, CommandStateAdapter, CommandStateBar, PersistenceMsgAdapter) {
+], function (CommandSubscriber, EditCommandMsgAdapter, NavCommandMsgAdapter, InsertCommandMsgAdapter, InfoCommandMsgAdapter, CommandStateAdapter, PersistenceMsgAdapter) {
     'use strict';
 
-    function init(stateBarMarkupUrl) {
+    function init() {
         CommandSubscriber.register(EditCommandMsgAdapter.create());
         CommandSubscriber.register(NavCommandMsgAdapter.getInstance());
         CommandSubscriber.register(InsertCommandMsgAdapter.create());
         CommandSubscriber.register(InfoCommandMsgAdapter.create());
-        CommandSubscriber.register(CommandStateBar.create(stateBarMarkupUrl));
         CommandSubscriber.register(PersistenceMsgAdapter.create());
         CommandStateAdapter.create();
     }

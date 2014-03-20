@@ -20,25 +20,17 @@
 define([
     'Underscore',
     'jquery',
+    'command/CommandSubscriber',
     'util/PubSub',
-    'util/Env'
-], function (_, $, PubSub, Env) {
+    'util/Env',
+    'util/ViewportRelative'
+], function (_, $, CommandSubscriber, PubSub, Env, ViewportRelative) {
     'use strict';
 
     var CommandStateBar = function (markupUrl) {
+        CommandSubscriber.register(this);
         this.fetchMarkup(markupUrl);
         PubSub.subscribe('command.state', this.onStateChange.bind(this));
-        PubSub.subscribe('event.orientationchange', this.checkBarPosition.bind(this));
-    };
-
-    /**
-     * Css position:fixed doesn't work on iOS if an element has focus. To get round this
-     * manually alter the vertical position of the state bar after any events that may have
-     * caused it to have scrolled away from the desired position.
-     */
-    CommandStateBar.prototype.checkBarPosition = function () {
-        var bst = $('body').scrollTop();
-        this.bar.css('top', bst + this.barTop);
     };
 
     /**
@@ -46,7 +38,6 @@ define([
      * active at the insertion point.
      */
     CommandStateBar.prototype.onStateChange = function (state) {
-        this.checkBarPosition();
         _.each(state, function (val, cmd) {
             var selector = '[data-cmd="' + cmd + '"]',
                 item, func;
@@ -64,12 +55,13 @@ define([
         }, this);
     };
 
-    CommandStateBar.prototype.accept = function (msg) {
-        return msg === 'ui.toggle.status';
-    };
-
-    CommandStateBar.prototype.handle = function () {
-        this.toggleVisibleState();
+    CommandStateBar.prototype.handle = function (msg) {
+        var handled;
+        if (msg === 'ui.toggle.status') {
+            this.toggleVisibleState();
+            handled = true;
+        }
+        return handled;
     };
 
     CommandStateBar.prototype.toggleVisibleState = function () {
@@ -81,8 +73,9 @@ define([
         var me = this;
         $.get(url).done(function (data) {
             me.bar = $(data).appendTo('body');
-            // Save the ideal vertical position of the status bar as set in the css
-            me.barTop = parseInt(me.bar.css('top'), 10);
+            me.vpBar = ViewportRelative.create(me.bar, {
+                top: 5
+            });
             console.log('command state bar markup downloaded');
             if (Env.getParam('statusbar', 'on') === 'on') {
                 me.toggleVisibleState();

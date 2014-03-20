@@ -140,6 +140,10 @@ define([
         return url;
     }
 
+    function isIos() {
+        return /iPhone|iPad|iPod/i.test(navigator.platform);
+    }
+
     function init() {
         var origin = location.href.split('?')[0];
         setRoot(window.QUINK_ROOT);
@@ -159,6 +163,7 @@ define([
         getAutoSaveUrl: getAutoSaveUrl,
         getSaveUrl: getSaveUrl,
         getSubmitUrl: getSubmitUrl,
-        makeQuinkRelative: makeQuinkRelative
+        makeQuinkRelative: makeQuinkRelative,
+        isIos: isIos
     };
 });

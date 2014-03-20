@@ -31,19 +31,20 @@ define([
         return this.handler;
     };
 
-    NavCommandMsgAdapter.prototype.accept = function (msg) {
-        return msg.split('.')[0] === 'nav';
-    };
-
     NavCommandMsgAdapter.prototype.handle = function (msg) {
         var ar = msg.split('.'),
             funcName = this.getFuncName(ar),
-            handler = this.getHandler();
-        if (funcName && _.isFunction(handler[funcName])) {
-            handler[funcName]();
-        } else {
-            throw new Error('Can\'t handle msg: ' + msg);
+            handler = this.getHandler(),
+            handled;
+        if (ar[0] === 'nav') {
+            if (funcName && _.isFunction(handler[funcName])) {
+                handler[funcName]();
+            } else {
+                throw new Error('Can\'t handle msg: ' + msg);
+            }
+            handled = true;
         }
+        return handled;
     };
 
     NavCommandMsgAdapter.prototype.getFuncName = function (ar) {

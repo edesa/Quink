@@ -46,15 +46,10 @@
 embedded_image_upload.prototype.setImage = function (newImageHTML) {
     var $imageUploadFrameContents,
         returnValue = false,
-        $newImageHTML,
-        existingWidth,
-        existingHeight;
+        $newImageHTML;
 
+    $newImageHTML = $(newImageHTML).removeAttr('width').removeAttr('height').css({ width: "", height: "" });
 
-
-    $newImageHTML = $(newImageHTML);
-    existingWidth = $newImageHTML.css('width');
-    existingHeight = $newImageHTML.css('height');
 
     $imageUploadFrameContents = $('.qk_image_upload_frame').contents();
     if ($imageUploadFrameContents.find('.fileinput').length > 0) {
@@ -62,12 +57,6 @@ embedded_image_upload.prototype.setImage = function (newImageHTML) {
         //see jasny-bootstrap.css - if the container class (new/exists) doesn't match the button's class (new/exists) then display:none
         $imageUploadFrameContents.find('.fileinput').addClass('fileinput-exists').removeClass('fileinput-new');
         $imageUploadFrameContents.find('.fileinput-preview').append($newImageHTML);
-        $imageUploadFrameContents.find('#width-input').val(existingWidth.match(/\d+/g)[0]);
-        $imageUploadFrameContents.find('#width-unit-select').val(existingWidth.match(/[^\d]+/g)[0]);
-        $imageUploadFrameContents.find('#height-input').val(existingHeight.match(/\d+/g)[0]);
-        $imageUploadFrameContents.find('#height-unit-select').val(existingHeight.match(/[^\d]+/g)[0]);
-
-        $newImageHTML.css({ width: "", height: "" });
         returnValue = true;
     }
     return returnValue;

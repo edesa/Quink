@@ -32,10 +32,9 @@ define([
      * handler is a function that processes accepted messages.
      */
     ListenerMgr.prototype.register = function (listener) {
-        var id = (this.id++).toString(),
-            listeners = this.getListeners();
-        if (_.isFunction(listener.accept) && _.isFunction(listener.handle)) {
-            listeners[id] = listener;
+        var id = (this.id++).toString();
+        if (_.isFunction(listener.handle)) {
+            this.listeners[id] = listener;
         } else {
             throw new Error('Attempt to register an unusable command adapter.');
         }
@@ -46,27 +45,14 @@ define([
      * To unregister, pass in the identifier returned from the register call.
      */
     ListenerMgr.prototype.deregister = function (id) {
-        _.some(this.getListeners(), function (val, key, listeners) {
-            var result;
-            if (key === id) {
-                delete listeners[key];
-                result = true;
-            }
-            return result;
-        });
-    };
-
-    ListenerMgr.prototype.getListeners = function () {
-        return this.listeners;
+        delete this.listeners[id];
     };
 
     ListenerMgr.prototype.dispatch = function (obj) {
         var dispatched;
-        _.some(this.getListeners(), function (listener) {
-            if (listener.accept(obj)) {
-                dispatched = true;
-                listener.handle(obj);
-            }
+        _.each(this.listeners, function (listener) {
+            var handled = listener.handle(obj);
+            dispatched = dispatched || handled;
         });
         return dispatched;
     };

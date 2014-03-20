@@ -59,7 +59,7 @@
 
             "ui": {
                 "menu": {
-                    "lateral": "left",
+                    "lateral": "right",
                     "vertical": "top"
                 }
             }

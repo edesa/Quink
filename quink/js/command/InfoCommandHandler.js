@@ -95,8 +95,8 @@ define([
 
     InfoCommandHandler.prototype.addToDom = function (id) {
         var infoContainer;
-        FocusTracker.saveState();
-        FocusTracker.getEditable().blur();
+        PubSub.publish('info.open', id);
+        FocusTracker.removeFocus();
         this.mask.appendTo('body');
         infoContainer = this.infoContainer.find('.qk_info_content');
         infoContainer.html(this.getContent(id));
