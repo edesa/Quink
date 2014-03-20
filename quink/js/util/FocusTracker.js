@@ -22,8 +22,9 @@ define([
     'jquery',
     'rangy',
     'hithandler/HitHandler',
+    'locrange/LocRangeUtil',
     'util/PubSub'
-], function (_, $, rangy, HitHandler, PubSub) {
+], function (_, $, rangy, HitHandler, LocRangeUtil, PubSub) {
     'use strict';
 
     var FocusTracker = function () {
@@ -92,7 +93,6 @@ define([
      */
     FocusTracker.prototype.onBlur = function (event) {
         var editable = event.delegateTarget;
-        console.log('blur: ' + editable.id);
         $(document).off('selectionchange.focustracker');
         this.lastEditable = editable;
         PubSub.publish('editable.blur', editable);
@@ -101,7 +101,6 @@ define([
     FocusTracker.prototype.onFocus = function (event) {
         var editable = event.delegateTarget,
             state = this.findState(editable);
-        console.log('focus: ' + editable.id);
         $(document).on('selectionchange.focustracker', this.onSelectionChangeBound);
         this.editable = editable;
         this.lastEditable = editable;
@@ -137,15 +136,14 @@ define([
      * to be reflected in the saved selection state for the editable.
      */
     FocusTracker.prototype.removeFocus = function () {
-        console.log('remove focus');
         this.storeState(this.editable);
         $(document).off('selectionchange.focustracker');
         this.editable.blur();
     };
 
     FocusTracker.prototype.onSelectionChange = function () {
-        console.log('selection change...');
         this.storeState(this.editable);
+        PubSub.publish('selection.change', LocRangeUtil.getSelectionLoc);
     };
 
     /**
@@ -171,27 +169,22 @@ define([
     };
 
     FocusTracker.prototype.storeState = function (editable) {
-        console.log('storeState');
         var state = this.findState(editable);
         state.range = this.getRange(editable);
         state.bodyScrollTop = this.bodyScrollTop;
         state.scrollTop = this.scrollTop;
-        console.log('stored...' + editable.id);
+        return state;
     };
 
+    /**
+     * Returns the current range if it's in the editable.
+    */
     FocusTracker.prototype.getRange = function (editable) {
-        console.log('getRange');
-        return this.isRangeIn(editable);
-    };
-
-    FocusTracker.prototype.isRangeIn = function (editable) {
         var sel = rangy.getSelection(),
             range = sel.rangeCount && sel.getRangeAt(0),
             result;
         if (range && $(range.startContainer).closest(editable).length) {
             result = range;
-        } else {
-            console.log('@@@ no range... @@@');
         }
         return result;
     };
@@ -213,7 +206,7 @@ define([
         var storeState = function () {
                 var editable = event.event.delegateTarget,
                     executed;
-                if (this.isRangeIn(editable)) {
+                if (this.getRange(editable)) {
                     executed = true;
                     this.storeState(editable);
                 }

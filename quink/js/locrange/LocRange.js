@@ -44,12 +44,15 @@ define([
         this.isDown = isDown;
         this.map = isDown ? this.downMap : this.upMap;
         this.isRectFromRange = true;
+    };
 
+    LocRange.prototype.locate = function () {
         this.ensureLeaf();
-        this.rect = range.nativeRange.getBoundingClientRect();
+        this.rect = this.range.nativeRange.getBoundingClientRect();
         if (this.isNull(this.rect)) {
             this.ensureLocatable();
         }
+        return this;
     };
 
     LocRange.prototype.detach = function () {
