@@ -27,8 +27,9 @@ define([
     'hithandler/HitHandler',
     'util/Env',
     'ext/PluginMgr',
-    'service/Persist'
-], function (rangy, Toolbar, CommandStateBar, FocusTracker, Command, KeyHandlerMgr, HitHandler, Env, PluginMgr, Persist) {
+    'service/Persist',
+    'ui/Caret'
+], function (rangy, Toolbar, CommandStateBar, FocusTracker, Command, KeyHandlerMgr, HitHandler, Env, PluginMgr, Persist, Caret) {
     'use strict';
 
     function init() {
@@ -43,6 +44,7 @@ define([
         PluginMgr.init(Env.resource('plugins.json'), Env.resource('pluginmenu.html'));
         Persist.create();
         Toolbar.init(Env.resource('toolbar.html'), Env.resource('insertmenu.html'));
+        Caret.init();
     }
 
     return {

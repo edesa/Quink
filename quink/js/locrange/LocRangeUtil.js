@@ -29,9 +29,13 @@ define([
      * selection. Returns a falsey value if there's no current selection.
      */
     function getSelectionLoc() {
-        var sel = rangy.getSelection();
-        return sel.rangeCount &&
-            new LocatableRange(new SafeLocRange(sel.getRangeAt(0).cloneRange()).locate());
+        var sel = rangy.getSelection(),
+            range, locRange;
+        if (sel.rangeCount) {
+            range = sel.getRangeAt(0);
+            locRange = new LocatableRange(new SafeLocRange(range.cloneRange()).locate(), range.collapsed);
+        }
+        return locRange;
     }
 
     return {

@@ -23,9 +23,12 @@ define([
 
     /**
      * This is what's returned to clients as part of the selection change publication.
+     * isCollapsed refers to the original unlocated range. The locatable range will not be
+     * collapsed as collapsed ranges have no location on the page.
      */
-    var LocatableRange = function (safeRange) {
+    var LocatableRange = function (safeRange, isCollapsed) {
         this.safeRange = safeRange;
+        this.collapsed = isCollapsed;
     };
 
     LocatableRange.prototype.getX = function () {
@@ -42,6 +45,10 @@ define([
 
     LocatableRange.prototype.isLocatable = function () {
         return this.safeRange.isLocatable;
+    };
+
+    LocatableRange.prototype.isCollapsed = function () {
+        return this.collapsed;
     };
 
     return LocatableRange;
