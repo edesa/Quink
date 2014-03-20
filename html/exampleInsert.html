@@ -39,7 +39,6 @@
     <body>
         <H3>Add text into the upper editable (red border) then hit the button to see it transferred into the lower editable (green border)</H3>
         <div contenteditable="true" id="editable-source" class="qk_scroll"></div>
-<!--        <input type="text" id=editable-source> -->
         <button id="add-btn">Add to document</button>
         <div class="qk_scroll" contenteditable="true" id="editable-content"></div>
 
@@ -54,9 +53,6 @@
              */
             function onCopyContent() {
                 require(['util/PubSub'], function (PubSub) {
-                    // var text = document.querySelector('#editable-source').value;
-                    // document.querySelector('#editable-content').focus();
-                    // PubSub.publish('insert.text', text);
                     var html = document.querySelector('#editable-source').innerHTML,
                         editable = document.querySelector('#editable-content'),
                         contentType = /^</.test(html) ? 'html' : 'text';
@@ -102,6 +98,5 @@
                 waitForRequire(addBtnListener);
             });
         </script>
-        </script
     </body>
 </html>
