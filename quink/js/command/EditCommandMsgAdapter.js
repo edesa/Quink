@@ -33,16 +33,17 @@ define([
         'style'
     ];
 
-    EditCommandMsgAdapter.prototype.accept = function (msg) {
-        var id = msg.split('.')[0];
-        return this.ACCEPTED_IDS.indexOf(id.toLowerCase()) >= 0;
-    };
-
     EditCommandMsgAdapter.prototype.handle = function (msg) {
         var ar = msg.split('.'),
+            id = ar[0],
             cmd = ar[1],
-            args = ar[2] || null;
-        this.handler.execCmd(cmd, args);
+            args = ar[2] || null,
+            handled;
+        if (this.ACCEPTED_IDS.indexOf(id.toLowerCase()) >= 0) {
+            this.handler.execCmd(cmd, args);
+            handled = true;
+        }
+        return handled;
     };
 
     var instance;

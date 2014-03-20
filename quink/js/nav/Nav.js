@@ -32,9 +32,12 @@ define([
     'use strict';
 
     var Nav = function () {
+        var onInsert = this.onInsert.bind(this);
         PubSub.subscribe('event.orientationchange', _.bind(this.onOrientationChange, this));
         PubSub.subscribe('nav.afternormalise', _.bind(this.onAfterNormalise, this));
-        PubSub.subscribe('char.insert', _.bind(this.onInsertChar, this));
+        PubSub.subscribe('insert.char', onInsert);
+        PubSub.subscribe('insert.text', onInsert);
+        PubSub.subscribe('insert.html', onInsert);
         HitHandler.register(this);
         this.charMonitorInterval = Env.getParam('cmi', this.CHAR_MONITOR_INTERVAL);
         this.charMonitorTimer = null;
@@ -602,15 +605,20 @@ define([
         this.ensureVisible();
     };
 
-    Nav.prototype.accept = function (event) {
-        return event.hitType === 'single';
+    Nav.prototype.handle = function (event) {
+        var handled;
+        if (event.hitType === 'single') {
+            this.doHandle(event);
+            handled = true;
+        }
+        return handled;
     };
 
     /**
      * On mobile Safari the focus event happens after the hit event. In that scenario we have to
      * wait until after the focus event has been handled to handle the hit event.
      */
-    Nav.prototype.handle = function (event) {
+    Nav.prototype.doHandle = function (event) {
         var isStateStale = function (state, editable) {
                 return !state || state.editable !== editable;
             },
@@ -631,7 +639,7 @@ define([
     /**
      * Allow time for the DOM to update.
      */
-    Nav.prototype.onInsertChar = function () {
+    Nav.prototype.onInsert = function () {
         setTimeout(function () {
             this.resetAnchors();
         }.bind(this), 10);

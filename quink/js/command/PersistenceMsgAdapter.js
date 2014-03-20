@@ -41,27 +41,29 @@ define([
         this.handler.setPageSrc(msg);
     };
 
-    PersistenceMsgAdapter.prototype.accept = function (msg) {
-        return msg.split('.')[0] === 'persist';
-    };
-
     PersistenceMsgAdapter.prototype.handle = function (opId) {
-        var opName = opId.split('.')[1],
-            op = this.cmdMap[opName],
+        var ar = opId.split('.'),
+            opName, op, func, handled;
+        if (ar[0] === 'persist') {
+            opName = ar[1];
+            op = this.cmdMap[opName];
             func = (typeof this.handler[op] === 'function') && this.handler[op];
-        if (func) {
-            func.call(this.handler).done(function () {
-                PubSub.publish('command.executed', opId);
-            }).fail(function (jqXhr) {
-                PubSub.publish('error.persist', {
-                    operation: opName,
-                    status: jqXhr.status,
-                    text: jqXhr.statusText
+            if (func) {
+                func.call(this.handler).done(function () {
+                    PubSub.publish('command.executed', opId);
+                }).fail(function (jqXhr) {
+                    PubSub.publish('error.persist', {
+                        operation: opName,
+                        status: jqXhr.status,
+                        text: jqXhr.statusText
+                    });
                 });
-            });
-        } else {
-            console.log('No persistence function: ' + op);
+            } else {
+                console.log('No persistence function: ' + op);
+            }
+            handled = true;
         }
+        return handled;
     };
 
     var theInstance;

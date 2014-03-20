@@ -26,13 +26,14 @@ define([
         this.handler = new InfoCommandHandler();
     };
 
-    InfoCommandMsgAdapter.prototype.accept = function (msg) {
-        return msg.split('.')[0] === 'info';
-    };
-
     InfoCommandMsgAdapter.prototype.handle = function (msg) {
-        var content = msg.split('.')[1];
-        this.handler.show(content);
+        var ar = msg.split('.'),
+            handled;
+        if (ar[0] === 'info') {
+            this.handler.show(ar[1]);
+            handled = true;
+        }
+        return handled;
     };
 
     var instance;

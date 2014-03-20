@@ -26,7 +26,6 @@ define([
 
     var InsertKeyHandler = function (selector, mgr) {
         Type.callSuper(this, 'constructor', selector, mgr);
-        this.events = [];
     };
 
     Type.inheritFrom(InsertKeyHandler, KeyHandler);
@@ -34,7 +33,7 @@ define([
     InsertKeyHandler.prototype.MODE_SWITCH_DELAY = 300;
 
     InsertKeyHandler.prototype.handleInsert = function (event) {
-        PubSub.publish('char.insert', event);
+        PubSub.publish('insert.char', event);
     };
 
     /**
@@ -45,18 +44,19 @@ define([
         if (event.keyCode === this.MODE_SWITCH_KEY_CODE) {
             if (this.timeout) {
                 // Had a mode switch key, now followed by another mode switch key before the timeout.
+                event.preventDefault();
+                this.switchMode();
                 this.reset();
-                this.handleInsert(event);
             } else {
                 // The initial mode switch key - wait to see what's next
                 event.preventDefault();
+                this.saveEventKey(event);
                 this.timeout = setTimeout(this.afterSwitchDelay.bind(this), this.MODE_SWITCH_DELAY);
             }
         } else {
             if (this.timeout) {
-                event.preventDefault();
-                this.events.push(event);
                 this.afterSwitchDelay();
+                this.handleInsert(event);
             } else {
                 this.handleInsert(event);
             }
@@ -64,15 +64,27 @@ define([
     };
 
     /**
-     * Invoked after the mode switch timeout has taken place with nothing happening to
-     * prevent the mode switch. Switch the mode and re-fire any event that has happened during
-     * the timeout.
+     * This is completely wrong but as far as I can see it's the best that can be done right now.
+     * keydown events don't provide the character pressed, just the key. keypress events do provide
+     * the character but they happen too late. This tries to work out the character that the user
+     * wanted to enter using the keydown event however it's unlikely to work in all cases.
+     * This does not do the right thing if caps lock is pressed.
+     */
+    InsertKeyHandler.prototype.saveEventKey = function (event) {
+        var kc = event.keyCode;
+        if (kc >= 65 && kc <= 90 && !event.shiftKey) {
+            kc += 32;
+        }
+        this.saveKey = String.fromCharCode(kc);
+    };
+
+    /**
+     * Invoked after the mode switch timeout has taken place which means that there wasn't a second
+     * mode switch key within the interval, so don't do the mode switch. Insert the initial
+     * mode switch key into the document.
      */
     InsertKeyHandler.prototype.afterSwitchDelay = function () {
-        this.switchMode();
-        this.events.forEach(function (event) {
-            this.getContainer().trigger(event);
-        }.bind(this));
+        PubSub.publish('insert.text', this.saveKey);
         this.reset();
     };
 
@@ -81,7 +93,7 @@ define([
             clearTimeout(this.timeout);
             this.timeout = null;
         }
-        this.events.length = 0;
+        this.saveKey = null;
     };
 
     return InsertKeyHandler;

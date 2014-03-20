@@ -95,11 +95,9 @@ define([
         switch (id) {
         case 'qk_plugin_save':
             Context.getDefinition().callbacks.save();
-            $('.qk_plugin_close_button').addClass('qk_hidden');
             break;
         case 'qk_plugin_exit':
             Context.getDefinition().callbacks.exit();
-            $('.qk_plugin_close_button').addClass('qk_hidden');
             break;
         }
         $(this).addClass('qk_hidden');
@@ -179,9 +177,11 @@ define([
             this.showPluginMenuButton(def);
             break;
         case 'exited':
+            $('.qk_plugin_close_button').addClass('qk_hidden');
             PubSub.publish('plugin.exited');
             break;
         case 'saved':
+            $('.qk_plugin_close_button').addClass('qk_hidden');
             PubSub.publish('plugin.saved', msg);
             break;
         }

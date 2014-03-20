@@ -26,7 +26,7 @@ define([
     var NavStateMgr = function (nav) {
         this.nav = nav;
         this.states = [];
-        PubSub.subscribe('editable.change', this.onEditableChange.bind(this));
+        PubSub.subscribe('editable.focus', this.onEditableChange.bind(this));
     };
 
     NavStateMgr.prototype.getStateFor = function (editable) {
@@ -45,8 +45,8 @@ define([
         return state;
     };
 
-    NavStateMgr.prototype.onEditableChange = function (data) {
-        var state = this.getStateFor(data.newEditable);
+    NavStateMgr.prototype.onEditableChange = function (editable) {
+        var state = this.getStateFor(editable);
         this.nav.setState(state);
     };
 

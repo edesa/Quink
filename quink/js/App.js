@@ -20,6 +20,7 @@
 define([
     'rangy',
     'ui/Toolbar',
+    'ui/CommandStateBar',
     'util/FocusTracker',
     'command/Command',
     'keyhandler/KeyHandlerMgr',
@@ -27,7 +28,7 @@ define([
     'util/Env',
     'ext/PluginMgr',
     'service/Persist'
-], function (rangy, Toolbar, FocusTracker, Command, KeyHandlerMgr, HitHandler, Env, PluginMgr, Persist) {
+], function (rangy, Toolbar, CommandStateBar, FocusTracker, Command, KeyHandlerMgr, HitHandler, Env, PluginMgr, Persist) {
     'use strict';
 
     function init() {
@@ -36,7 +37,8 @@ define([
         Env.init();
         KeyHandlerMgr.init(selector, Env.resource('keymap.json'));
         FocusTracker.init(selector);
-        Command.init(Env.resource('commandstatebar.html'));
+        Command.init();
+        CommandStateBar.create(Env.resource('commandstatebar.html'));
         HitHandler.init(selector);
         PluginMgr.init(Env.resource('plugins.json'), Env.resource('pluginmenu.html'));
         Persist.create();

@@ -25,11 +25,12 @@ define([
     'use strict';
 
     var CommandStateAdapter = function () {
-        var onStateChange = this.onStateChange.bind(this);
+        var onStateChange = this.onStateChange.bind(this),
+            onDelayStateChange = _.bind(this.onDelayStateChange, this, 10);
         HitHandler.register(this);
         PubSub.subscribe('command.executed', this.onCmdExec.bind(this));
         PubSub.subscribe('nav.executed', this.onNavExec.bind(this));
-        PubSub.subscribe('char.insert', _.bind(this.onDelayStateChange, this, 10));
+        PubSub.subscribe('insert.char', onDelayStateChange);
         PubSub.subscribe('editable.blur', onStateChange);
         PubSub.subscribe('plugin.saved', onStateChange);
         PubSub.subscribe('plugin.exited', onStateChange);
@@ -38,6 +39,8 @@ define([
         PubSub.subscribe('error.persist', this.onPersistError.bind(this));
         PubSub.subscribe('document.state', this.onDocStateChange.bind(this));
         PubSub.subscribe('persist.autosave', this.onAutoSaveStateChange.bind(this));
+        PubSub.subscribe('insert.text', onDelayStateChange);
+        PubSub.subscribe('insert.html', onDelayStateChange);
     };
 
     CommandStateAdapter.prototype.STATE_CMDS = [
@@ -133,16 +136,17 @@ define([
         PubSub.publish('command.state', state);
     };
 
-    CommandStateAdapter.prototype.accept = function (event) {
-        return event.hitType === 'single';
-    };
-
     /**
      * Long delay is needed if the hit happens when no editable has focus. Shorter delays
      * result in no command state being found.
      */
-    CommandStateAdapter.prototype.handle = function () {
-        this.onDelayStateChange(200);
+    CommandStateAdapter.prototype.handle = function (hit) {
+        var handled = false;
+        if (hit.hitType === 'single') {
+            this.onDelayStateChange(200);
+            handled = true;
+        }
+        return handled;
     };
 
     function create() {
