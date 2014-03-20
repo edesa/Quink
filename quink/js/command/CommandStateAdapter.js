@@ -136,16 +136,17 @@ define([
         PubSub.publish('command.state', state);
     };
 
-    CommandStateAdapter.prototype.accept = function (event) {
-        return event.hitType === 'single';
-    };
-
     /**
      * Long delay is needed if the hit happens when no editable has focus. Shorter delays
      * result in no command state being found.
      */
-    CommandStateAdapter.prototype.handle = function () {
-        this.onDelayStateChange(200);
+    CommandStateAdapter.prototype.handle = function (hit) {
+        var handled = false;
+        if (hit.hitType === 'single') {
+            this.onDelayStateChange(200);
+            handled = true;
+        }
+        return handled;
     };
 
     function create() {
