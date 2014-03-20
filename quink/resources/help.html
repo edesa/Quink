@@ -19,18 +19,22 @@
 </p>
 <H2>Key Bindings</H2>
 <p>
-    The default key binding to enter command mode is 'z'. This means that to enter a 'z' character into the document the user must hit the 'z' key twice. Quink tries to make all the commands available through the default virtual keyboard on iOS. This makes it quicker to execute a command on a mobile device, but restricts the keys that are able to be bound to commands. To get round this restriction Quink uses the concept of secondary command maps. Commands in a secondary command map are accessed through a prefix key, effectively making them two letter commands. To execute these commands, enter the prefix key followed by the key for the command. If a prefix key is hit by mistake, hitting the same key again aborts the action.
+    The default key binding to enter command mode is 'qq'. To exit command mode enter 'q'. Quink tries to make all the commands available through the default virtual keyboard on iOS. This makes it quicker to execute a command on a mobile device, but restricts the keys that are able to be bound to commands. To get round this restriction Quink uses the concept of secondary command maps. Commands in a secondary command map are accessed through a prefix key, effectively making them two letter commands. To execute these commands, enter the prefix key followed by the key for the command. If a prefix key is hit by mistake, hitting the same key again aborts the action.
 </p>
 <p>
     Here are the prefix keys for the command maps.
 </p>
 <pre>
-z leave insert mode and enter command mode, or exit command mode and return to insert mode<br>f switch to font map<br>y switch to style map<br>p switch to para map<br>
+qq leave insert mode and enter command mode<br>
+q exit command mode and return to insert mode<br>
+f switch to font map<br>
+y switch to style map<br>
+p switch to para map<br>
 </pre>
-<p>As an example, from insert mode to make the current selection bold the key sequence would be:</p><pre>zfb</pre>
+<p>As an example, from insert mode to make the current selection bold the key sequence would be:</p><pre>qqfb</pre>
 <p>When already in command mode to enter a numbered list:</p><pre>pn</pre>
 <H2>The toolbar</H2>
-<p>The Quink toolbar contains a number of tabs which are described in this section. Each of the commands available through the toolbar is shown along with its toolbar icon and command key binding. To use the key bindings Quink has to be in command mode which is achieved by hitting the command mode key ('z' unless otherwise configured).</p>
+<p>The Quink toolbar contains a number of tabs which are described in this section. Each of the commands available through the toolbar is shown along with its toolbar icon and command key binding. To use the key bindings Quink has to be in command mode which is achieved by hitting the command mode key ('qq' unless otherwise configured).</p>
 <h3>
     Misc
 </h3>
@@ -107,17 +111,17 @@ z leave insert mode and enter command mode, or exit command mode and return to i
             <td>insert a link</td>
         </tr>
         <tr>
-            <td><img src="quink/pluginadapters/svg-edit/logo.png"></td>
+            <td><img src="quink/pluginadapters/svg-edit/logo.png" data-qk-ref="src" alt="insert SVG using SVG Editor"></td>
             <td>is</td>
             <td>insert an SVG drawing using SVG Editor</td>
         </tr>
         <tr>
-            <td><img src="quink/pluginadapters/method-draw/logo.svg"></td>
+            <td><img src="quink/pluginadapters/method-draw/logo.svg" data-qk-ref="src" alt="insert SVG with Method draw"></td>
             <td>iv</td>
             <td>insert an SVG drawing using Method Draw</td>
         </tr>
         <tr>
-            <td></td>
+            <td><img src="quink/pluginadapters/image-upload/logo.png" data-qk-ref="src" alt="insert an image"></td>
             <td>ii</td>
             <td>insert an image</td>
         </tr>
@@ -438,7 +442,7 @@ z leave insert mode and enter command mode, or exit command mode and return to i
     <tbody>
         <tr>
             <td><img src="quink/resources/images/extra-keyboard.png" data-qk-ref="src" alt="command mode"/></td>
-            <td>z</td>
+            <td>qq</td>
             <td>indicates that Quink is in command mode</td>
         </tr>
         <tr>

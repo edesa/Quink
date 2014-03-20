@@ -25,11 +25,12 @@ define([
     'use strict';
 
     var CommandStateAdapter = function () {
-        var onStateChange = this.onStateChange.bind(this);
+        var onStateChange = this.onStateChange.bind(this),
+            onDelayStateChange = _.bind(this.onDelayStateChange, this, 10);
         HitHandler.register(this);
         PubSub.subscribe('command.executed', this.onCmdExec.bind(this));
         PubSub.subscribe('nav.executed', this.onNavExec.bind(this));
-        PubSub.subscribe('char.insert', _.bind(this.onDelayStateChange, this, 10));
+        PubSub.subscribe('insert.char', onDelayStateChange);
         PubSub.subscribe('editable.blur', onStateChange);
         PubSub.subscribe('plugin.saved', onStateChange);
         PubSub.subscribe('plugin.exited', onStateChange);
@@ -38,6 +39,8 @@ define([
         PubSub.subscribe('error.persist', this.onPersistError.bind(this));
         PubSub.subscribe('document.state', this.onDocStateChange.bind(this));
         PubSub.subscribe('persist.autosave', this.onAutoSaveStateChange.bind(this));
+        PubSub.subscribe('insert.text', onDelayStateChange);
+        PubSub.subscribe('insert.html', onDelayStateChange);
     };
 
     CommandStateAdapter.prototype.STATE_CMDS = [

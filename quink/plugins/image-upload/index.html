@@ -5,77 +5,30 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
     <link rel="icon" type="image/png" href="images/logo.png"/>
-    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
-    <link rel="stylesheet" href="css/jasny-bootstrap.css" type="text/css"/>
+    <link rel="stylesheet" href="css/bootstrap.css" type="text/css"/>
+    <link rel="stylesheet" href="css/extend/css/jasny-bootstrap.css" type="text/css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <script type="text/javascript" src="lib/jquery.js"></script>
     <title>Image Upload</title>
 </head>
 <body>
-<div class="container">
-    <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
 <div id="image-uploader">
-            <div class="fileinput fileinput-new col-xs-12" data-provides="fileinput">
-                <div class="fileinput-new thumbnail" data-trigger="fileinput">
-                    <img data-src="holder.js/200x200/gray/text:(no image)" alt="(no image)">
-                </div>
-                <div class="fileinput-preview fileinput-exists thumbnail"></div>
-                <span class="btn btn-default btn-file">
-                    <span class="fileinput-new">Select image</span>
-                    <span class="fileinput-exists">Change</span><input type="file" name="...">
-                </span>
+    <div class="fileinput fileinput-new" data-provides="fileinput">
+        <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 200px; height: 150px;"></div>
+        <div>
+            <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span><span
+                    class="fileinput-exists">Change</span><input type="file" name="..."></span>
             <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
         </div>
     </div>
 </div>
-    <div id="sizeInputs" class="col-xs-12 col-md-4 col-lg-3">
-        <div class="form-group">
-            <div class="col-xs-12 col-lg-6">
-                <label for="height-input-group">Height</label>
-                </div>
-            <div id="height-input-group">
-                <div class="col-xs-3 col-md-7">
-                    <input type="text" id="height-input" class="form-control">
-            </div>
-                <div class="col-xs-3 col-sm-2 col-md-5">
-                    <!-- options from w3c http://www.w3.org/Style/Examples/007/units.en.html-->
-                    <select id="height-unit-select" class="form-control">
-                        <option>px</option>
-                        <option>em</option>
-                        <option>%</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <label for="width-input-group">Width</label>
-            </div>
-            <div id="width-input-group">
-
-                <div class="col-xs-3 col-md-7">
-                    <input type="text" class="form-control" id="width-input">
-                </div>
-                <div class="col-xs-3 col-sm-2 col-md-5">
-                    <select id="width-unit-select" class="form-control">
-                        <option>px</option>
-                        <option>em</option>
-                        <option>%</option>
-                    </select>
-            </div>
-        </div>
-    </div>
-    </div>
-</div>
-
 <!-- Placed at the end of the document so the pages load faster -->
 <script type="text/javascript" src="lib/jquery.js"></script>
-<script src="lib/bootstrap.min.js"></script>
+<script src="lib/bootstrap.js"></script>
 <!-- Image/File upload plugin -->
-<script src="lib/jasny-bootstrap.min.js"></script>
-<script src="lib/holder.js"></script>
+<script src="lib/extend/js/jasny-bootstrap.js"></script>
 <script type="text/javascript" src="image-upload.js"></script>
-
 </body>
 </html>
 

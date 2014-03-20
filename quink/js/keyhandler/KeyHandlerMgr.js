@@ -28,12 +28,16 @@ define([
     'use strict';
 
     var KeyHandlerMgr = function () {
+        var onStopKeyHandler = this.onStopKeyHandler.bind(this),
+            onStartKeyHandler = this.onStartKeyHandler.bind(this);
         this.insertKeyHandler = null;
         this.commandKeyHandler = null;
         this.keyHandler = null;
-        PubSub.subscribe('plugin.open', _.bind(this.onPluginOpen, this));
-        PubSub.subscribe('plugin.saved', _.bind(this.onPluginClose, this));
-        PubSub.subscribe('plugin.exited', _.bind(this.onPluginClose, this));
+        PubSub.subscribe('plugin.open', onStopKeyHandler);
+        PubSub.subscribe('plugin.saved', onStartKeyHandler);
+        PubSub.subscribe('plugin.exited', onStartKeyHandler);
+        PubSub.subscribe('info.open', onStopKeyHandler);
+        PubSub.subscribe('info.closed', onStartKeyHandler);
     };
 
     KeyHandlerMgr.prototype.init = function (selector) {
@@ -55,11 +59,11 @@ define([
         return this.keyHandler === this.commandKeyHandler;
     };
 
-    KeyHandlerMgr.prototype.onPluginOpen = function () {
+    KeyHandlerMgr.prototype.onStopKeyHandler = function () {
         this.keyHandler.stop();
     };
 
-    KeyHandlerMgr.prototype.onPluginClose = function () {
+    KeyHandlerMgr.prototype.onStartKeyHandler = function () {
         this.keyHandler.start();
     };
 

@@ -12,7 +12,7 @@
     clear: both;
 }
 .qk_toolbar_container {
-    position: absolute;
+    position: fixed;
     z-index: 100;
     padding: 0;
     border-style: none;
@@ -437,8 +437,10 @@ button {
     border: 1px solid #CEE6FF;
 }
 .qk_state_bar {
-    position: absolute;
+    position: fixed;
+/*    position: absolute; */
     right: 5px;
+
     top: 5px;
     padding: 1px;
     z-index: 90;
@@ -452,6 +454,7 @@ button {
     float: left;
     width: 25px;
     height: 25px;
+    padding: 0px;
 }
 .qk_state_bar_item_bg {
     display: inline-block;
@@ -477,4 +480,7 @@ button {
 .qk_info_help img {
     width: 35px;
     height: 35px;
+}
+.qk_viewport_relative {
+    position: absolute;
 }

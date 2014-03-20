@@ -125,6 +125,20 @@ define([
         $(window).on('beforeunload', save).on('unload', save);
     };
 
+    Persist.prototype.onStopEditing = function () {
+        this.stopChangeMonitor();
+        this.stopAutoSave();
+    };
+
+    Persist.prototype.onStartEditing = function (andSave) {
+        if (andSave) {
+            PubSub.publish('command.exec', 'persist.autosave');
+            this.startChangeMonitor();
+        } else {
+            this.autoSave();
+        }
+    };
+
     /**
      * Stop auto save while a plugin is being used. This is to avoid the situation where plugin
      * artifacts (such as the iframe) are auto saved while the plugin is running, then the page
@@ -137,18 +151,14 @@ define([
      * when the insert is done.
      */
     Persist.prototype.initPluginListeners = function () {
-        PubSub.subscribe('plugin.open', function () {
-            this.stopChangeMonitor();
-            this.stopAutoSave();
-        }.bind(this));
-        PubSub.subscribe('plugin.saved', function () {
-            PubSub.publish('command.exec', 'persist.autosave');
-            this.startChangeMonitor();
-        }.bind(this));
-        PubSub.subscribe('plugin.exited', function () {
-            this.startChangeMonitor();
-            this.autoSave();
-        }.bind(this));
+        var onStartAndSave = this.onStartEditing.bind(this, true),
+            onStartNoSave = this.onStartEditing.bind(this),
+            onStopEditing = this.onStopEditing.bind(this);
+        PubSub.subscribe('plugin.open', onStopEditing);
+        PubSub.subscribe('plugin.saved', onStartAndSave);
+        PubSub.subscribe('plugin.exited', onStartNoSave);
+        PubSub.subscribe('info.open', onStopEditing);
+        PubSub.subscribe('info.closed', onStartNoSave);
     };
 
     Persist.prototype.initAutoSave = function () {

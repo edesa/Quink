@@ -26,13 +26,14 @@ define([
         this.handler = new InsertCommandHandler();
     };
 
-    InsertCommandMsgAdapter.prototype.accept = function (msg) {
-        return msg.split('.')[0] === 'insert';
-    };
-
     InsertCommandMsgAdapter.prototype.handle = function (msg) {
-        var contentType = msg.substr(msg.indexOf('.') + 1);
-        this.handler.insert(contentType);
+        var ar = msg.split('.'),
+            handled;
+        if (ar[0] === 'insert') {
+            this.handler.insert(ar[1]);
+            handled = true;
+        }
+        return handled;
     };
 
     var theInstance;

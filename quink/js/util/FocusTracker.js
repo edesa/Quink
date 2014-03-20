@@ -18,23 +18,48 @@
  */
 
 define([
+    'Underscore',
     'jquery',
     'rangy',
+    'hithandler/HitHandler',
     'util/PubSub'
-], function ($, rangy, PubSub) {
+], function (_, $, rangy, HitHandler, PubSub) {
     'use strict';
 
     var FocusTracker = function () {
-        $('body').on('orientationchange', this.onOrientationChange);
+        this.states = [];
+        this.onSelectionChangeBound = this.onSelectionChange.bind(this);
     };
 
     FocusTracker.prototype.init = function (selector) {
+        var onTextInsert = this.onTextInsert.bind(this);
+        $('body').on('orientationchange', this.onOrientationChange);
+        $(window).on('scroll', this.onScroll());
+        HitHandler.register(this);
         $(selector)
             .on('blur', this.onBlur.bind(this))
             .on('focus', this.onFocus.bind(this));
         // Ensure there's always an editable.
         this.editable = $(selector)[0];
         this.firstFocus = true;
+        this.bindSelectionEvents();
+        PubSub.subscribe('insert.char', onTextInsert);
+        PubSub.subscribe('plugin.saved', onTextInsert);
+        PubSub.subscribe('insert.text', onTextInsert);
+        PubSub.subscribe('insert.html', onTextInsert);
+    };
+
+    /**
+     * If the browser supports selectionchange events use them. Otherwise do the best that we can.
+     */
+    FocusTracker.prototype.bindSelectionEvents = function () {
+        var onSelectionChange = this.onSelectionChange.bind(this);
+        if (document.onselectionchange === undefined) {
+            PubSub.subscribe('command.executed', onSelectionChange);
+            PubSub.subscribe('nav.executed', onSelectionChange);
+            PubSub.subscribe('plugin.exited', onSelectionChange);
+            PubSub.subscribe('editable.range', onSelectionChange);
+        }
     };
 
     /**
@@ -47,60 +72,155 @@ define([
         }, 500);
     };
 
+    /**
+     * Only fire scroll events if there has actually been scrolling. No idea why the browser seems to be firing
+     * scroll events when no scrolling has taken place.
+     */
+    FocusTracker.prototype.onScroll = function () {
+        var lastScrollTop = 0;
+        return function (event) {
+            var scrollTop = $('body').scrollTop();
+            if (scrollTop !== lastScrollTop) {
+                PubSub.publish('window.scroll', event);
+                lastScrollTop = scrollTop;
+            }
+        };
+    };
+
+    /**
+     * Switch off the selection change handler to avoid an empty selection being saved.
+     */
     FocusTracker.prototype.onBlur = function (event) {
-        this.editable = event.target;
-        this.saveState();
-        PubSub.publish('editable.blur', this.editable);
+        var editable = event.delegateTarget;
+        console.log('blur: ' + editable.id);
+        $(document).off('selectionchange.focustracker');
+        this.lastEditable = editable;
+        PubSub.publish('editable.blur', editable);
     };
 
     FocusTracker.prototype.onFocus = function (event) {
-        var old;
-        if (event.target !== this.editable || this.firstFocus) {
-            this.firstFocus = false;
-            old = this.editable;
-            this.editable = event.target;
-            this.saveState();
-            PubSub.publish('editable.change', {
-                oldEditable: old,
-                newEditable: this.editable
-            });
+        var editable = event.delegateTarget,
+            state = this.findState(editable);
+        console.log('focus: ' + editable.id);
+        $(document).on('selectionchange.focustracker', this.onSelectionChangeBound);
+        this.editable = editable;
+        this.lastEditable = editable;
+        if (state.range) {
+            state.range.refresh();
+            rangy.getSelection().setSingleRange(state.range);
         }
+        PubSub.publish('editable.focus', editable);
     };
 
+    /**
+     * Sets the focus to the last editable that had the focus. Ensures that there is always
+     * a range is the focused editable.
+     */
     FocusTracker.prototype.restoreFocus = function () {
-        var range = this.sel;
-        if (this.editable) {
-            this.editable.focus();
+        var editable = this.lastEditable,
+            state = this.findState(editable),
+            range = state.range;
+        editable.focus();
+        if (!range) {
+            range = rangy.createRange();
+            range.setStart(editable, 0);
+            range.collapse(true);
+            state.range = range;
         }
-        if (range) {
-            rangy.getSelection().setSingleRange(range);
-            this.sel = null;
-        }
-        if (this.bodyScrollTop) {
-            $('body').scrollTop(this.bodyScrollTop);
-            this.bodyScrollTop = 0;
-        }
-        if (this.scrollTop) {
-            $(this.editable).scrollTop(this.scrollTop);
-            this.scrollTop = 0;
-        }
+        $(document).on('selectionchange.focustracker', this.onSelectionChange.bind(this));
+        rangy.getSelection().setSingleRange(range);
         return range;
     };
 
-    FocusTracker.prototype.saveState = function () {
-        var sel = rangy.getSelection();
-        if (sel.rangeCount > 0) {
-            this.sel = sel.getRangeAt(0);
-        } else if (this.sel && $(this.sel.startContainer).closest(this.editable).length === 0) {
-            // There is a selection, but it's not within the current editable.
-            this.sel = null;
-        }
-        this.bodyScrollTop = $('body').scrollTop();
-        this.scrollTop = $(this.editable).scrollTop();
+    /**
+     * Removing focus from the current editable, but don't want that change in selection
+     * to be reflected in the saved selection state for the editable.
+     */
+    FocusTracker.prototype.removeFocus = function () {
+        console.log('remove focus');
+        this.storeState(this.editable);
+        $(document).off('selectionchange.focustracker');
+        this.editable.blur();
     };
 
-    FocusTracker.prototype.getEditable = function () {
-        return $(this.editable);
+    FocusTracker.prototype.onSelectionChange = function () {
+        console.log('selection change...');
+        this.storeState(this.editable);
+    };
+
+    /**
+     * Allow time for the DOM to be updated before saving the state.
+     */
+    FocusTracker.prototype.onTextInsert = function () {
+        setTimeout(function () {
+            this.storeState(this.editable);
+        }.bind(this), 20);
+    };
+
+    FocusTracker.prototype.findState = function (editable) {
+        var state = _.find(this.states, function (state) {
+                return state.editable === editable;
+            });
+        if (!state) {
+            state = {
+                editable: editable
+            };
+            this.states.push(state);
+        }
+        return state;
+    };
+
+    FocusTracker.prototype.storeState = function (editable) {
+        console.log('storeState');
+        var state = this.findState(editable);
+        state.range = this.getRange(editable);
+        state.bodyScrollTop = this.bodyScrollTop;
+        state.scrollTop = this.scrollTop;
+        console.log('stored...' + editable.id);
+    };
+
+    FocusTracker.prototype.getRange = function (editable) {
+        console.log('getRange');
+        return this.isRangeIn(editable);
+    };
+
+    FocusTracker.prototype.isRangeIn = function (editable) {
+        var sel = rangy.getSelection(),
+            range = sel.rangeCount && sel.getRangeAt(0),
+            result;
+        if (range && $(range.startContainer).closest(editable).length) {
+            result = range;
+        } else {
+            console.log('@@@ no range... @@@');
+        }
+        return result;
+    };
+
+    /**
+     * Executes func every delay interval until func returns true.
+     */
+    FocusTracker.prototype.until = function until(func, delay) {
+        if (!func()) {
+            _.delay(until, delay, func, delay);
+        }
+    };
+
+    /**
+     * Allow time for the range to be set within the document. It seems to take ages on iOS.
+     * Returns false o allow other hit handlers to access the same event.
+     */
+    FocusTracker.prototype.handle = function (event) {
+        var storeState = function () {
+                var editable = event.event.delegateTarget,
+                    executed;
+                if (this.isRangeIn(editable)) {
+                    executed = true;
+                    this.storeState(editable);
+                }
+                return executed;
+            }.bind(this);
+        this.until(storeState, 10);
+        return false;
     };
 
     var theInstance = new FocusTracker();
@@ -108,7 +228,6 @@ define([
     return {
         init: theInstance.init.bind(theInstance),
         restoreFocus: theInstance.restoreFocus.bind(theInstance),
-        saveState: theInstance.saveState.bind(theInstance),
-        getEditable: theInstance.getEditable.bind(theInstance)
+        removeFocus: theInstance.removeFocus.bind(theInstance)
     };
 });

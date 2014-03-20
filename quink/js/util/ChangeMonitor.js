@@ -55,7 +55,9 @@ define([
         var onChange = this.onDocumentChange.bind(this),
             body = $('body');
         this.subscriptions.push(PubSub.subscribe('command.executed', this.onCmdExec.bind(this)));
-        this.subscriptions.push(PubSub.subscribe('char.insert', onChange));
+        this.subscriptions.push(PubSub.subscribe('insert.char', onChange));
+        this.subscriptions.push(PubSub.subscribe('insert.text', onChange));
+        this.subscriptions.push(PubSub.subscribe('insert.html', onChange));
         this.subscriptions.push(PubSub.subscribe('plugin.saved', onChange));
         body.on('cut.quink paste.quink', onChange);
     };

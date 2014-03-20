@@ -26,20 +26,21 @@ define([
     'Underscore',
     'jquery',
     'util/Event',
-    'util/FocusTracker'
-], function (_, $, Event, FocusTracker) {
+    'util/FocusTracker',
+    'util/PubSub'
+], function (_, $, Event, FocusTracker, PubSub) {
     'use strict';
 
     var Draggable = function (selector) {
-        this.$draggable = $(selector);
+        this.draggable = $(selector);
         this.offX = this.offY = 0;
         this.startCoords = null;
-        this.$draggable[0].addEventListener(Event.eventName('start'), $.proxy(this.onDragStart, this));
+        this.draggable[0].addEventListener(Event.eventName('start'), $.proxy(this.onDragStart, this));
     };
 
     Draggable.prototype.onDragStart = function (event) {
-        var draggableEl = this.$draggable[0],
-            pos = this.$draggable.css(['left', 'top']);
+        var draggableEl = this.draggable[0],
+            pos = this.draggable.css(['left', 'top']);
         this.startCoords = Event.getClientCoords(event);
         this.offX = event.pageX - (parseInt(pos.left, 10) || draggableEl.offsetLeft);
         this.offY = event.pageY - (parseInt(pos.top, 10) || draggableEl.offsetHeight);
@@ -58,7 +59,7 @@ define([
         event.preventDefault();
         if (!Event.inThreshold(event, this.startCoords)) {
             this.dragging = true;
-            this.$draggable.css({
+            this.draggable.css({
                 'left': event.pageX - this.offX,
                 'top': event.pageY - this.offY
             });
@@ -77,10 +78,11 @@ define([
         this.startCoords = null;
         document.removeEventListener(Event.eventName('move'), this.onDragProxy);
         document.removeEventListener(Event.eventName('end'), this.onDragEndProxy);
+        PubSub.publish('draggable.dragend', this.draggable[0]);
     };
 
     function create(selector) {
-        var draggable = new Draggable(selector);
+        return new Draggable(selector);
     }
 
     return {

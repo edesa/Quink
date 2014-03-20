@@ -26,8 +26,9 @@ define([
     'util/Draggable',
     'util/PubSub',
     'util/Env',
+    'util/ViewportRelative',
     'hithandler/HitHandler'
-], function (_, $, rangy, Event, FastTap, Draggable, PubSub, Env, HitHandler) {
+], function (_, $, rangy, Event, FastTap, Draggable, PubSub, Env, ViewportRelative, HitHandler) {
     'use strict';
 
     var Toolbar = function () {
@@ -358,13 +359,14 @@ define([
         });
     };
 
-    Toolbar.prototype.accept = function (event) {
-        return event.hitType === 'double';
-    };
-
     Toolbar.prototype.handle = function (event) {
-        var hit = Event.isTouch ? event.event.originalEvent.changedTouches[0] : event.event;
-        this.showToolbarAt(hit.pageX, hit.pageY);
+        var hit, handled;
+        if (event.hitType === 'double') {
+            hit = Event.isTouch ? event.event.originalEvent.changedTouches[0] : event.event;
+            this.showToolbarAt(hit.pageX, hit.pageY);
+            handled = true;
+        }
+        return handled;
     };
 
     /**
@@ -465,6 +467,7 @@ define([
             'left': x,
             'top': y
         });
+        this.vpToolbar.adjust();
     };
 
     Toolbar.prototype.showToolbar = function () {
@@ -481,6 +484,7 @@ define([
         this.addToolbarButtonListeners();
         this.checkShowSubmit();
         Draggable.create('.qk_toolbar_container');
+        this.vpToolbar = ViewportRelative.create(this.toolbar);
         if (this.keyExecMsgs.length) {
             this.keyExecMsgs.forEach(function (msg) {
                 this.onKeyExecCommand(msg);
