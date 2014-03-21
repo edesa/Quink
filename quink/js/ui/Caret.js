@@ -47,7 +47,7 @@ define([
     Caret.prototype.onSelectionChange = function (func) {
         this.locRange = func();
         if (this.locRange) {
-            this.bodyScrollTop = $('body').scrollTop();
+            this.docScrollTop = $(document).scrollTop();
             this.editableScrollTop = this.locRange.getEditableScrollTop();
             this.showCaret();
         }
@@ -72,9 +72,9 @@ define([
         if (locRange && locRange.isLocatable() && locRange.isCollapsed()) {
             el.removeClass('qk_hidden').css({
                 left: locRange.getX() - this.CARET_WIDTH,
-                top: this.bodyScrollTop - offset + locRange.getBottom() - 2
+                top: this.docScrollTop - offset + locRange.getBottom() - 2
             });
-            console.log('show caret st: ' + this.bodyScrollTop + ' off: ' + offset + ' bot: ' + (locRange.getBottom() - 2) + ' edScrollTop: ' + this.editableScrollTop);
+            console.log('show caret st: ' + this.docScrollTop + ' off: ' + offset + ' bot: ' + (locRange.getBottom() - 2) + ' edScrollTop: ' + this.editableScrollTop);
         } else {
             el.addClass('qk_hidden');
         }

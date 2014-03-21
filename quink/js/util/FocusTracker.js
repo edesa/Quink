@@ -214,6 +214,9 @@ define([
                 if (this.getRange(editable)) {
                     executed = true;
                     this.storeState(editable);
+                    if (document.onselectionchange === undefined) {
+                        this.onSelectionChange();
+                    }
                 }
                 return executed;
             }.bind(this);
