@@ -1,5 +1,4 @@
-
-/*global define, imageUploader*/
+ /*global define, imageUploader*/
 (function ($) {
     'use strict';
     if (!window.imageUploader) {
@@ -7,6 +6,7 @@
             var retFunc,
                 curConfig;
             curConfig = {example_config_key: "example config value"};
+            //*** return function ***
             retFunc = (function () {
                 var curConfig = curConfig,
                     self = {};
@@ -21,13 +21,14 @@
 
                 self.getImageElementAsString = function () {
                     var $imageElement, $widthInput, $widthUnitSelect, $heightInput, $heightInputSelect, returnValue;
-                    //test code: return "error:it's an error";
 
                     $imageElement = $('#image-uploader .fileinput .fileinput-preview');
                     $widthInput = $('#height-input');
                     $widthUnitSelect = $('#height-unit-select');
                     $heightInput = $('#width-input');
                     $heightInputSelect = $('#width-unit-select');
+
+                    //validateSizeInputs([$widthInput, $heightInput]);
 
                     if (isValueKeyed($heightInput)) {
                         $imageElement.find("img").css('height', function () {
