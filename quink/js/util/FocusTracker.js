@@ -39,7 +39,8 @@ define([
         HitHandler.register(this);
         $(selector)
             .on('blur', this.onBlur.bind(this))
-            .on('focus', this.onFocus.bind(this));
+            .on('focus', this.onFocus.bind(this))
+            .on('scroll', this.onEditableScroll.bind(this));
         // Ensure there's always an editable.
         this.editable = $(selector)[0];
         this.firstFocus = true;
@@ -86,6 +87,10 @@ define([
                 lastScrollTop = scrollTop;
             }
         };
+    };
+
+    FocusTracker.prototype.onEditableScroll = function (event) {
+        PubSub.publish('editable.scroll', event);
     };
 
     /**

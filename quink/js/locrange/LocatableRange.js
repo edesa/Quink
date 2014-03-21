@@ -18,7 +18,8 @@
  */
 
 define([
-], function () {
+    'jquery'
+], function ($) {
     'use strict';
 
     /**
@@ -41,6 +42,12 @@ define([
 
     LocatableRange.prototype.getBottom = function () {
         return this.safeRange.getBottom();
+    };
+
+    LocatableRange.prototype.getEditableScrollTop = function () {
+        var el = this.safeRange.getRange().startContainer,
+            editable = $(el).closest('[contenteditable=true]');
+        return editable.scrollTop();
     };
 
     LocatableRange.prototype.isLocatable = function () {

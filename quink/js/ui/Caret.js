@@ -28,23 +28,53 @@ define([
     };
 
     Caret.prototype.idNum = 1;
-    Caret.prototype.idPrefix = 'qk_caret_id';
+    Caret.prototype.ID_PREFIX = 'qk_caret_id';
+
+    /**
+     * The width of the caret in pixels as defined in the css.
+     */
+    Caret.prototype.CARET_WIDTH = 5;
 
     Caret.prototype.init = function () {
-        this.id = this.idPrefix + this.idNum++;
+        this.id = this.ID_PREFIX + this.idNum++;
         PubSub.subscribe('selection.change', this.onSelectionChange.bind(this));
+        PubSub.subscribe('window.scroll', this.onScroll.bind(this));
+        PubSub.subscribe('editable.scroll', this.onScroll.bind(this));
         $('<div>').addClass('qk_caret qk_hidden').attr('id', this.id).appendTo('body');
         return this;
     };
 
     Caret.prototype.onSelectionChange = function (func) {
-        var locRange = func(),
+        this.locRange = func();
+        if (this.locRange) {
+            this.bodyScrollTop = $('body').scrollTop();
+            this.editableScrollTop = this.locRange.getEditableScrollTop();
+            this.showCaret();
+        }
+    };
+
+    /**
+     * Recalculate the editable scroll delta and show the caret.
+     */
+    Caret.prototype.onScroll = function (event) {
+        var scrollDelta = 0,
+            scrollable = event.delegateTarget;
+        if (scrollable !== window) {
+            scrollDelta = $(scrollable).scrollTop() - this.editableScrollTop;
+        }
+        this.showCaret(scrollDelta);
+    };
+
+    Caret.prototype.showCaret = function (scrollOffset) {
+        var offset = scrollOffset || 0,
+            locRange = this.locRange,
             el = $('#' + this.id);
-        if (locRange.isLocatable() && locRange.isCollapsed()) {
+        if (locRange && locRange.isLocatable() && locRange.isCollapsed()) {
             el.removeClass('qk_hidden').css({
-                left: locRange.getX() - 5,
-                top: locRange.getBottom() - 2
+                left: locRange.getX() - this.CARET_WIDTH,
+                top: this.bodyScrollTop - offset + locRange.getBottom() - 2
             });
+            console.log('show caret st: ' + this.bodyScrollTop + ' off: ' + offset + ' bot: ' + (locRange.getBottom() - 2) + ' edScrollTop: ' + this.editableScrollTop);
         } else {
             el.addClass('qk_hidden');
         }
