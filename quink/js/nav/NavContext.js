@@ -18,7 +18,7 @@
  */
 
 define([
-    'nav/LocRange',
+    'locrange/LocRange',
     'nav/Position'
 ], function (LocRange, Position) {
     'use strict';
@@ -32,7 +32,7 @@ define([
     };
 
     NavContext.prototype.setNavStart = function (origin) {
-        this.start = new LocRange(origin.cloneRange(), this.isDown);
+        this.start = new LocRange(origin.cloneRange(), this.isDown).locate();
     };
 
     NavContext.prototype.setOrigin = function (xAnchor) {

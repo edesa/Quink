@@ -1,0 +1,72 @@
+/**
+ * Quink, Copyright (c) 2013-2014 IMD - International Institute for Management Development, Switzerland.
+ *
+ * This file is part of Quink.
+ * 
+ * Quink is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Quink is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+define([
+    'jquery'
+], function ($) {
+    'use strict';
+
+    /**
+     * This is what's returned to clients as part of the selection change publication.
+     * isCollapsed refers to the original unlocated range. The locatable range will not be
+     * collapsed as collapsed ranges have no location on the page.
+     */
+    var LocatableRange = function (safeRange, isCollapsed) {
+        this.safeRange = safeRange;
+        this.collapsed = isCollapsed;
+    };
+
+    LocatableRange.prototype.getX = function () {
+        return this.safeRange.getX();
+    };
+
+    /**
+     * Cache the result because on some paltforms the safeRange will return a result based
+     * on the scroll position, which isn;t what's wanted here.
+     */
+    LocatableRange.prototype.getTop = function () {
+        // Assign and return in one statement
+        return this.top || (this.top = this.safeRange.getTop());
+    };
+
+    /**
+     * Cache the result because on some paltforms the safeRange will return a result based
+     * on the scroll position, which isn;t what's wanted here.
+     */
+    LocatableRange.prototype.getBottom = function () {
+        // Assign and return in one statement
+        return this.bottom || (this.bottom = this.safeRange.getBottom());
+    };
+
+    LocatableRange.prototype.getEditableScrollTop = function () {
+        var el = this.safeRange.getRange().startContainer,
+            editable = $(el).closest('[contenteditable=true]');
+        return editable.scrollTop();
+    };
+
+    LocatableRange.prototype.isLocatable = function () {
+        return this.safeRange.isLocatable;
+    };
+
+    LocatableRange.prototype.isCollapsed = function () {
+        return this.collapsed;
+    };
+
+    return LocatableRange;
+});

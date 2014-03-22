@@ -1,4 +1,4 @@
- /*global define, imageUploader*/
+/*global define, imageUploader*/
 (function ($) {
     'use strict';
     if (!window.imageUploader) {
@@ -7,6 +7,7 @@
                 curConfig;
             curConfig = {example_config_key: "example config value"};
             //*** return function ***
+
             retFunc = (function () {
                 var curConfig = curConfig,
                     self = {},
@@ -22,10 +23,20 @@
                 }
 
                 function validateSizeInputs(sizeInputsArray) {
-
-                    $.each(sizeInputsArray, function(index, $value) {
+                    /* Approach for validation: the overall intention is to give the end-user the minimum amount of keying/rekeying. So
+                     * a) if the user was probably doing something that should be ignored then ignore it (otherwise the user will have to do more work to spell out that it should be ignored)
+                     * b) if it's obvious what the user was trying to do then do it, even if it didn't follow the rules (otherwise the user will have more work to do the same thing)
+                     * c) if the user was probably trying to achieve something but it's not clear what that was then flag it
+                     *
+                     * With this in mind
+                     *
+                     * For a) if the user clicks "save" without selecting an image, then return an empty string from the plugin, and no image is added to the html. This happens even if some text is typed in the boxes.
+                     * For b) if the user enters "50%" in one of the input boxes, then treat this as 50 and % and allow the save.
+                     * For c) if the user enters "50pc" then flag this as a red box and don't save.
+                     */
+                    $.each(sizeInputsArray, function (index, $value) {
                         if ($value.val().trim().match(/^\d*$/) ||
-                            $value.val().trim().match(/^\d+px$/)  ||
+                            $value.val().trim().match(/^\d+px$/) ||
                             $value.val().trim().match(/^\d+em$/) ||
                             $value.val().trim().match(/^\d+%$/)) {
                             $value.closest('.form-group').removeClass('has-error').addClass('has-success');
@@ -35,15 +46,19 @@
                         }
                     });
                 }
+
                 function isImageSelected($image) {
                     return $image && $image.html().trim().length > 0;
                 }
+
                 function extractNumericPart(jQueryObject) {
                     return jQueryObject.val().match(/^\d+/);
                 }
+
                 function extractTrailingText(jQueryObject) {
                     return jQueryObject.val().match(/[^\d]+$/);
                 }
+
                 function hasTrailingText(jQueryObject) {
                     var trailingText = extractTrailingText(jQueryObject);
                     return trailingText && trailingText.length > 0;
@@ -94,13 +109,6 @@
                     return returnValue;
                 };
                 self.init = function () {
-//                        highlight: function (element) {
-//                            $(element).closest('.form-group').removeClass('success').addClass('error');
-//                        },
-//                        success: function (element) {
-//                            element
-//                                .text('OK!').addClass('valid')
-//                                .closest('.form-group').removeClass('error').addClass('success');
                     try {
                         var I = function (d) {
                             if (window.JSON && JSON.stringify) {

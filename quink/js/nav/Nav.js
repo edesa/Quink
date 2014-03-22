@@ -22,7 +22,7 @@ define([
     'jquery',
     'rangy',
     'textrange',
-    'nav/LocRange',
+    'locrange/LocRange',
     'util/PubSub',
     'util/Event',
     'nav/Position',
@@ -244,7 +244,7 @@ define([
                 dr;
             range.setStart(textNode, index);
             range.collapse(true);
-            dr = new LocRange(range, context.isDown);
+            dr = new LocRange(range, context.isDown).locate();
             return context.compare(dr);
         }, startIndex);
         return done;
@@ -270,7 +270,7 @@ define([
             dr;
         range.setStart(node, 0);
         range.collapse(true);
-        dr = new LocRange(range, context.isDown);
+        dr = new LocRange(range, context.isDown).locate();
         return context.compare(dr);
     };
 
@@ -350,7 +350,7 @@ define([
         if (!rge && sel.rangeCount > 0) {
             rge = sel.getRangeAt(0);
             clone = rge.cloneRange();
-            rge = new LocRange(rge);
+            rge = new LocRange(rge).locate();
         }
         try {
             this.makeRangeVisible(rge);
@@ -510,7 +510,7 @@ define([
             } else {
                 this.clearSelAnchor();
             }
-            dr = new LocRange(result, isDown);
+            dr = new LocRange(result, isDown).locate();
             this.ensureVisible(dr);
             dr.detach();
         } else {
@@ -575,7 +575,7 @@ define([
                 xa.refresh();
             } catch (e) {}
         }
-        dr = new LocRange(xa.cloneRange());
+        dr = new LocRange(xa.cloneRange()).locate();
         return new Position(dr.getX(), dr.getBottom());
     };
 
