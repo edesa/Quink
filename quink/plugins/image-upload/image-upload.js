@@ -9,7 +9,9 @@
             //*** return function ***
             retFunc = (function () {
                 var curConfig = curConfig,
-                    self = {};
+                    self = {},
+                    isScreenValid = true;
+
                 //I'm not currently setting any config for image upload, so this isn't being called
                 self.setConfig = function (newConfig) {
                     //a.extend(true, curConfig, newConfig);
@@ -19,26 +21,74 @@
                     return jQueryItem.val().trim().length > 0;
                 }
 
-                self.getImageElementAsString = function () {
-                    var $imageElement, $widthInput, $widthUnitSelect, $heightInput, $heightInputSelect, returnValue;
+                function validateSizeInputs(sizeInputsArray) {
 
-                    $imageElement = $('#image-uploader .fileinput .fileinput-preview');
-                    $widthInput = $('#height-input');
-                    $widthUnitSelect = $('#height-unit-select');
-                    $heightInput = $('#width-input');
-                    $heightInputSelect = $('#width-unit-select');
+                    $.each(sizeInputsArray, function(index, $value) {
+                        if ($value.val().trim().match(/^\d*$/) ||
+                            $value.val().trim().match(/^\d+px$/)  ||
+                            $value.val().trim().match(/^\d+em$/) ||
+                            $value.val().trim().match(/^\d+%$/)) {
+                            $value.closest('.form-group').removeClass('has-error').addClass('has-success');
+                        } else {
+                            isScreenValid = false;
+                            $value.closest('.form-group').removeClass('has-success').addClass('has-error');
+                        }
+                    });
+                }
+                function isImageSelected($image) {
+                    return $image && $image.html().trim().length > 0;
+                }
+                function extractNumericPart(jQueryObject) {
+                    return jQueryObject.val().match(/^\d+/);
+                }
+                function extractTrailingText(jQueryObject) {
+                    return jQueryObject.val().match(/[^\d]+$/);
+                }
+                function hasTrailingText(jQueryObject) {
+                    var trailingText = extractTrailingText(jQueryObject);
+                    return trailingText && trailingText.length > 0;
+                }
 
-                    //validateSizeInputs([$widthInput, $heightInput]);
-
+                function handleKeyedInputs($imageElement, $heightInput, $heightUnitSelect, $widthInput, $widthUnitSelect) {
                     if (isValueKeyed($heightInput)) {
+
+                        if (hasTrailingText($heightInput)) {
+                            $heightUnitSelect.val(extractTrailingText($heightInput)[0]);
+                            $heightInput.val(extractNumericPart($heightInput)[0]);
+                        }
                         $imageElement.find("img").css('height', function () {
-                            return $heightInput.val() + $heightInputSelect.val();
+                            return $heightInput.val() + $heightUnitSelect.val();
                         });
                     }
                     if (isValueKeyed($widthInput)) {
+                        if (hasTrailingText($widthInput)) {
+                            $widthUnitSelect.val(extractTrailingText($widthInput)[0]);
+                            $widthInput.val(extractNumericPart($widthInput)[0]);
+                        }
                         $imageElement.find("img").css('width', function () {
                             return $widthInput.val() + $widthUnitSelect.val();
                         });
+                    }
+                }
+
+                self.getImageElementAsString = function () {
+                    var $imageElement, $widthInput, $widthUnitSelect, $heightInput, $heightUnitSelect, returnValue;
+
+                    isScreenValid = true;
+
+                    $imageElement = $('#image-uploader .fileinput .fileinput-preview');
+                    $heightInput = $('#height-input');
+                    $heightUnitSelect = $('#height-unit-select');
+                    $widthInput = $('#width-input');
+                    $widthUnitSelect = $('#width-unit-select');
+
+                    if (isImageSelected($imageElement)) {
+                        validateSizeInputs([$widthInput, $heightInput]);
+
+                        if (!isScreenValid) {
+                            return "error:inputs failed validation";
+                        }
+                        handleKeyedInputs($imageElement, $heightInput, $heightUnitSelect, $widthInput, $widthUnitSelect);
                     }
                     returnValue = $imageElement.html();
                     return returnValue;
