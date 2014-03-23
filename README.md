@@ -27,3 +27,11 @@ It uses the content editable features of modern browsers.
 * Keyboard driven navigation (vi-like mapping in this repo) and selection
 * Keyboard mapping possible for all commands
 * Allowances for limited mobile keyboards missing control/command keys.
+
+##Getting Started
+* Clone the repo
+* Build using build.sh in the /build folder
+* Copy the /prebuilt folder onto your server
+* Load Quink into your page using the path you set up: `<script type="text/javascript" src="[YOUR (relative) PATH]/quink.js"></script>`
+* Add one or more contenteditable divs to your page: `<div contenteditable="true"></div>`
+* Try it out
