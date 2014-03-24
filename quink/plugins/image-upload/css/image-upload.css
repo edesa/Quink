@@ -1,0 +1,4 @@
+/* override bootstrap for the input element*/
+.has-error input {
+    background-color: #f2dede;
+}
