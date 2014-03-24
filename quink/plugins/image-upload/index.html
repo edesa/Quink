@@ -14,13 +14,14 @@
 </head>
 <body>
 <div class="container">
-    <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
+    <div class="col-xs-6 col-sm-4 col-md-3">
         <div id="image-uploader">
-            <div class="fileinput fileinput-new col-xs-12" data-provides="fileinput">
-                <div class="fileinput-new thumbnail" data-trigger="fileinput">
+            <div class="fileinput fileinput-new" data-provides="fileinput">
+                <!-- xs-12 to stop button going up RHS -->
+                <div class="fileinput-new thumbnail  col-xs-12" data-trigger="fileinput">
                     <img data-src="holder.js/200x200/gray/text:(no image)" alt="(no image)">
                 </div>
-                <div class="fileinput-preview fileinput-exists thumbnail"></div>
+                <div class="fileinput-preview fileinput-exists thumbnail" id="image-preview"></div>
                 <span class="btn btn-default btn-file">
                     <span class="fileinput-new">Select image</span>
                     <span class="fileinput-exists">Select image</span><input type="file" name="...">
@@ -30,16 +31,16 @@
         </div>
     </div>
     <form id="size-inputs-form">
-        <div id="size-inputs" class="col-xs-12 col-md-4 col-lg-3">
+        <div id="size-inputs" class="col-xs-12 col-md-9">
             <div class="form-group">
-                <div class="col-xs-12 col-lg-6">
+                <div class="col-xs-12">
                     <label for="height-input-group">Height</label>
                 </div>
                 <div id="height-input-group">
-                    <div class="col-xs-3 col-md-7">
-                        <input type="text" id="height-input" class="form-control">
+                    <div class="col-xs-2">
+                        <input type="text" id="height-input" class="form-control quink-reduced-padding">
                     </div>
-                    <div class="col-xs-3 col-sm-2 col-md-5">
+                    <div class="col-xs-2">
                         <!-- options from w3c http://www.w3.org/Style/Examples/007/units.en.html-->
                         <select id="height-unit-select" class="form-control">
                             <option>px</option>
@@ -55,10 +56,10 @@
                 </div>
                 <div id="width-input-group">
 
-                    <div class="col-xs-3 col-md-7">
-                        <input type="text" class="form-control" id="width-input">
+                    <div class="col-xs-2">
+                        <input type="text" class="form-control quink-reduced-padding" id="width-input">
                     </div>
-                    <div class="col-xs-3 col-sm-2 col-md-5">
+                    <div class="col-xs-2">
                         <select id="width-unit-select" class="form-control">
                             <option>px</option>
                             <option>em</option>
