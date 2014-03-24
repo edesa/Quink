@@ -36,22 +36,12 @@ define([
         return this.safeRange.getX();
     };
 
-    /**
-     * Cache the result because on some paltforms the safeRange will return a result based
-     * on the scroll position, which isn;t what's wanted here.
-     */
     LocatableRange.prototype.getTop = function () {
-        // Assign and return in one statement
-        return this.top || (this.top = this.safeRange.getTop());
+        return this.safeRange.getTop();
     };
 
-    /**
-     * Cache the result because on some paltforms the safeRange will return a result based
-     * on the scroll position, which isn;t what's wanted here.
-     */
     LocatableRange.prototype.getBottom = function () {
-        // Assign and return in one statement
-        return this.bottom || (this.bottom = this.safeRange.getBottom());
+        return this.safeRange.getBottom();
     };
 
     LocatableRange.prototype.getEditableScrollTop = function () {

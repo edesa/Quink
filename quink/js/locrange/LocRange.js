@@ -62,6 +62,8 @@ define([
         this.rect = null;
         this.xcoord = null;
         this.offsetBound = null;
+        this.rectTop = null;
+        this.rectBottom = null;
     };
 
     LocRange.prototype.upMap = {
@@ -92,12 +94,22 @@ define([
         return this.rect[this.xcoord || this.map.x];
     };
 
+    /**
+     * Cache the result so the top value remains the same for this object even if the scroll value
+     * value changes.
+     */
     LocRange.prototype.getTop = function () {
-        return this.rect.top - this.getViewportCorrection();
+        // assign and return
+        return this.rectTop || (this.rectTop = this.rect.top - this.getViewportCorrection());
     };
 
+    /**
+     * Cache the result so the bottom value remains the same for this object even if the scroll value
+     * value changes.
+     */
     LocRange.prototype.getBottom = function () {
-        return this.rect.bottom - this.getViewportCorrection();
+        // assign and return
+        return this.rectBottom || (this.rectBottom = this.rect.bottom - this.getViewportCorrection());
     };
 
     /**
