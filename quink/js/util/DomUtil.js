@@ -19,8 +19,10 @@
 
 /*global Node */
 define([
-    'util/Env'
-], function (Env) {
+    'jquery',
+    'util/Env',
+    'util/Event'
+], function ($, Env, Event) {
     'use strict';
 
     /**
@@ -145,11 +147,47 @@ define([
         }
     }
 
+    /**
+     * Assumes that a touch device has a virtual keyboard which occupies different amounts of
+     * screen real estate depending on the device orientation. The keyboard will be active if
+     * there is an active element in the document (i.e. something has focus).
+     * Only take a virtual keyboard into account if this 
+     */
+    function getMaxVisibleHeight(allowForVirtualKeyboard) {
+        var win = $(window),
+            height = win.height(),
+            result = height,
+            visArea;
+        if (Event.isTouch && !!document.activeElement && allowForVirtualKeyboard) {
+            visArea = height > win.width() ? 0.60 : 0.35;
+            result = height * visArea;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the top and bottom coordinates for the visible part of the editable.
+    */
+    function getVisibleBounds(editable, allowForVirtualKeyboard) {
+        var cont = $(editable),
+            body = $(document),
+            virtContTop, virtContBottom, visContTop, visContBottom;
+        virtContTop = cont.offset().top - body.scrollTop();
+        virtContBottom = virtContTop + cont.innerHeight();
+        visContTop = Math.max(virtContTop, 0);
+        visContBottom = Math.min(virtContBottom, getMaxVisibleHeight(allowForVirtualKeyboard));
+        return {
+            top: visContTop,
+            bottom: visContBottom
+        };
+    }
+
     return {
         popEl: popEl,
         pushEl: pushEl,
         isWithinDocument: isWithinDocument,
         nlSome: nlSome,
-        makeQuinkRelative: makeQuinkRelative
+        makeQuinkRelative: makeQuinkRelative,
+        getVisibleBounds: getVisibleBounds
     };
 });

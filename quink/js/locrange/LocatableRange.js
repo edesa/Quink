@@ -32,6 +32,11 @@ define([
         this.collapsed = isCollapsed;
     };
 
+    LocatableRange.prototype.getEditable = function () {
+        var el = this.safeRange.getRange().startContainer;
+        return $(el).closest('[contenteditable=true]');
+    };
+
     LocatableRange.prototype.getX = function () {
         return this.safeRange.getX();
     };
@@ -45,9 +50,7 @@ define([
     };
 
     LocatableRange.prototype.getEditableScrollTop = function () {
-        var el = this.safeRange.getRange().startContainer,
-            editable = $(el).closest('[contenteditable=true]');
-        return editable.scrollTop();
+        return this.getEditable().scrollTop();
     };
 
     LocatableRange.prototype.isLocatable = function () {
