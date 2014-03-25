@@ -36,9 +36,15 @@
                      */
                     $.each(sizeInputsArray, function (index, $value) {
                         if ($value.val().trim().match(/^\d*$/) ||
-                            $value.val().trim().match(/^\d+px$/) ||
-                            $value.val().trim().match(/^\d+em$/) ||
-                            $value.val().trim().match(/^\d+%$/)) {
+                            $value.val().trim().match(/^\d*\.?\d*$/) ||
+                            $value.val().trim().match(/^\d*\.?\d*mm$/) ||
+                            $value.val().trim().match(/^\d*\.?\d*cm$/) ||
+                            $value.val().trim().match(/^\d*\.?\d*in$/) ||
+                            $value.val().trim().match(/^\d*\.?\d*pt$/) ||
+                            $value.val().trim().match(/^\d*\.?\d*pc$/) ||
+                            $value.val().trim().match(/^\d*\.?\d*px$/) ||
+                            $value.val().trim().match(/^\d*\.?\d*em$/) ||
+                            $value.val().trim().match(/^\d*\.?\d*ex$/)) {
                             $value.closest('.form-group').removeClass('has-error').addClass('has-success');
                         } else {
                             isScreenValid = false;
@@ -52,11 +58,11 @@
                 }
 
                 function extractNumericPart(jQueryObject) {
-                    return jQueryObject.val().match(/^\d+/);
+                    return jQueryObject.val().match(/^\d*\.?\d*$/);
                 }
 
                 function extractTrailingText(jQueryObject) {
-                    return jQueryObject.val().match(/[^\d]+$/);
+                    return jQueryObject.val().match(/[^\d.]+$/);
                 }
 
                 function hasTrailingText(jQueryObject) {
