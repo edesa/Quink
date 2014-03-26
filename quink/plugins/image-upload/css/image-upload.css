@@ -17,3 +17,7 @@ input, select {
     min-width: 60px;
     max-width: 70px;
 }
+.image-dialog-contents {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
