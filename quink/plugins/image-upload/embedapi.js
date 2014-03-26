@@ -1,4 +1,6 @@
 ﻿function embedded_image_upload(frame) {
+    "use strict";
+
     //initialize communication
     this.frame = frame;
     //this.stack = [] //callback stack
@@ -48,11 +50,14 @@
 }
 
 embedded_image_upload.prototype.setImage = function (newImageHTML) {
-    var $imageUploadFrameContents,
+    var REGEXP_TRAILING_TEXT = /[^\d]+$/,
+        $imageUploadFrameContents,
         returnValue = false,
         $newImageHTML,
         existingWidth,
-        existingHeight;
+        existingWidthUnit,
+        existingHeight,
+        existingHeightUnit;
 
     $newImageHTML = $(newImageHTML).removeAttr('width').removeAttr('height').css({ width: "", height: "" });
 
@@ -67,10 +72,14 @@ embedded_image_upload.prototype.setImage = function (newImageHTML) {
         //see jasny-bootstrap.css - if the container class (new/exists) doesn't match the button's class (new/exists) then display:none
         $imageUploadFrameContents.find('.fileinput').addClass('fileinput-exists').removeClass('fileinput-new');
         $imageUploadFrameContents.find('.fileinput-preview').append($newImageHTML);
-        $imageUploadFrameContents.find('#width-input').val(existingWidth.match(/\d+/g)[0]);
-        $imageUploadFrameContents.find('#width-unit-select').val(existingWidth.match(/[^\d]+/g)[0]);
-        $imageUploadFrameContents.find('#height-input').val(existingHeight.match(/\d+/g)[0]);
-        $imageUploadFrameContents.find('#height-unit-select').val(existingHeight.match(/[^\d]+/g)[0]);
+
+        existingWidthUnit = existingWidth.match(REGEXP_TRAILING_TEXT)[0];
+        $imageUploadFrameContents.find('#width-input').val(existingWidth.split(existingWidthUnit)[0]);
+        $imageUploadFrameContents.find('#width-unit-select').val(existingWidthUnit);
+
+        existingHeightUnit = existingHeight.match(REGEXP_TRAILING_TEXT)[0];
+        $imageUploadFrameContents.find('#height-input').val(existingHeight.split(existingHeightUnit)[0]);
+        $imageUploadFrameContents.find('#height-unit-select').val(existingHeightUnit);
 
         $newImageHTML.css({ width: "", height: "" });
         returnValue = true;

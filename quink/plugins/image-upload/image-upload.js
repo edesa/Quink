@@ -1,6 +1,9 @@
 /*global define, imageUploader*/
 (function ($) {
     'use strict';
+    var REGEXP_TRAILING_TEXT = /[^\d]+$/,
+        REGEXP_CSS_UNITS = /^(mm|cm|in|pt|pt|pc|px|em|ex|%)$/;
+
     if (!window.imageUploader) {
         window.imageUploader = function ($) {
             var retFunc,
@@ -35,16 +38,11 @@
                      * For c) if the user enters "50pc" then flag this as a red box and don't save.
                      */
                     $.each(sizeInputsArray, function (index, $value) {
-                        if ($value.val().trim().match(/^\d*$/) ||
-                            $value.val().trim().match(/^\d*\.?\d*$/) ||
-                            $value.val().trim().match(/^\d*\.?\d*mm$/) ||
-                            $value.val().trim().match(/^\d*\.?\d*cm$/) ||
-                            $value.val().trim().match(/^\d*\.?\d*in$/) ||
-                            $value.val().trim().match(/^\d*\.?\d*pt$/) ||
-                            $value.val().trim().match(/^\d*\.?\d*pc$/) ||
-                            $value.val().trim().match(/^\d*\.?\d*px$/) ||
-                            $value.val().trim().match(/^\d*\.?\d*em$/) ||
-                            $value.val().trim().match(/^\d*\.?\d*ex$/)) {
+                        var trailingText;
+                        trailingText = extractTrailingText($value);
+                        if ((!trailingText ||
+                            trailingText.trim().match(REGEXP_CSS_UNITS)) &&
+                            isNumber(extractNumericText($value))) {
                             $value.closest('.form-group').removeClass('has-error').addClass('has-success');
                         } else {
                             isScreenValid = false;
@@ -53,29 +51,50 @@
                     });
                 }
 
+                function isNumber(n) {
+                    return !isNaN(parseFloat(n)) && isFinite(n);
+                }
+
                 function isImageSelected($image) {
                     return $image && $image.html().trim().length > 0;
                 }
 
-                function extractNumericPart(jQueryObject) {
-                    return jQueryObject.val().match(/^\d*\.?\d*$/);
+                function extractNumericText($screenItem) {
+                    var screenItemText, trailingText;
+                    screenItemText = $screenItem.val().trim();
+                    trailingText = extractTrailingText($screenItem);
+                    if (trailingText) {
+                        return screenItemText.split(trailingText)[0].trim();
+                    } else {
+                        return screenItemText;
+                    }
                 }
 
-                function extractTrailingText(jQueryObject) {
-                    return jQueryObject.val().match(/[^\d.]+$/);
+                function extractTrailingText($screenItem) {
+                    var valueText, matchedArray;
+                    valueText = $screenItem.val().trim();
+                    matchedArray = valueText.match(REGEXP_TRAILING_TEXT);
+                    if (matchedArray && matchedArray.length > 0) {
+                        return matchedArray[0].trim();
+                    } else {
+                        return null;
+                    }
                 }
 
-                function hasTrailingText(jQueryObject) {
-                    var trailingText = extractTrailingText(jQueryObject);
-                    return trailingText && trailingText.length > 0;
+                function hasTrailingText($screenItem) {
+                    if (extractTrailingText($screenItem) === null) {
+                        return false;
+                    } else {
+                        return true;
+                    }
                 }
 
                 function handleKeyedInputs($imageElement, $heightInput, $heightUnitSelect, $widthInput, $widthUnitSelect) {
                     if (isValueKeyed($heightInput)) {
 
                         if (hasTrailingText($heightInput)) {
-                            $heightUnitSelect.val(extractTrailingText($heightInput)[0]);
-                            $heightInput.val(extractNumericPart($heightInput)[0]);
+                            $heightUnitSelect.val(extractTrailingText($heightInput));
+                            $heightInput.val(extractNumericText($heightInput));
                         }
                         $imageElement.find("img").css('height', function () {
                             return $heightInput.val() + $heightUnitSelect.val();
@@ -83,8 +102,8 @@
                     }
                     if (isValueKeyed($widthInput)) {
                         if (hasTrailingText($widthInput)) {
-                            $widthUnitSelect.val(extractTrailingText($widthInput)[0]);
-                            $widthInput.val(extractNumericPart($widthInput)[0]);
+                            $widthUnitSelect.val(extractTrailingText($widthInput));
+                            $widthInput.val(extractNumericText($widthInput));
                         }
                         $imageElement.find("img").css('width', function () {
                             return $widthInput.val() + $widthUnitSelect.val();
