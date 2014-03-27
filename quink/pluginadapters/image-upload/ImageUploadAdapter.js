@@ -26,7 +26,14 @@ require([
     'use strict';
     //the iframe and the imageUploader component
     var $frameElements,
-        imageUploader;
+        imageUploader,
+        $mask;
+
+    //two finger scroll on trackpad appears as the mousewheel event
+    $mask = $('<div>').addClass('qk_mask')
+        .on('touchmove touchmove touchend click mousewheel', function (event) {
+            event.preventDefault();
+        });
     /**
      * Runs func every delay milliseconds until func returns true.
      * (same technique as method draw and svg edit to wait till DOM is loaded)
@@ -67,7 +74,7 @@ require([
      *
      * If data is provided, load with the image so that it can be viewed and, optionally, changed
      */
-    function configureForEmbed(data)  {
+    function configureForEmbed(data) {
         if (data) {
             until(_.partial(imageUploader.setImage, data), 100);
         }
@@ -79,6 +86,7 @@ require([
 
         return true;
     }
+
     /**
      *
      * remove the iframe containing the image uploader so that control can pass back to the main form
@@ -87,6 +95,7 @@ require([
      */
     function closePlugin(topic, data) {
         $frameElements.detach();
+        $mask.detach();
         $frameElements.addClass('qk_invisible');
         window.removeEventListener('orientationchange', sizeFrame, false);
         Context.publish(topic, data);
@@ -129,9 +138,11 @@ require([
      */
     function open(data) {
         $frameElements.appendTo('body');
+        $mask.appendTo('body');
         window.addEventListener('orientationchange', sizeFrame, false);
         until(_.partial(configureForEmbed, data), 100);
     }
+
     //called by function fetchCss to
     //get the markup that comprises the UI for this plugin
     function fetchMarkup() {
@@ -147,8 +158,8 @@ require([
                 dom: $frameElements[0].parentNode
             });
         }).fail(function (jqxhr, textStatus, error) {
-                console.log('Failed to load image upload markup from: ' + url + '. ' + jqxhr.status + '. ' + error);
-            });
+            console.log('Failed to load image upload markup from: ' + url + '. ' + jqxhr.status + '. ' + error);
+        });
     }
 
     //called by function fetchScript to
@@ -159,8 +170,8 @@ require([
             $('<style>').html(data).appendTo('head');
             fetchMarkup();
         }).fail(function (jqxhr, textStatus, error) {
-                console.log('Failed to load image upload css from: ' + url + '. ' + jqxhr.status + '. ' + error);
-            });
+            console.log('Failed to load image upload css from: ' + url + '. ' + jqxhr.status + '. ' + error);
+        });
     }
 
     /**
@@ -171,9 +182,10 @@ require([
         $.getScript(url).done(function () {
             fetchCss();
         }).fail(function (jqxhr, textStatus, error) {
-                console.log('Failed to load embed-image-upload from: ' + url + '. ' + jqxhr.status + '. ' + error);
-            });
+            console.log('Failed to load embed-image-upload from: ' + url + '. ' + jqxhr.status + '. ' + error);
+        });
     }
+
     //immediately run fetchScript to set things up
     fetchPluginArtifacts();
 });
