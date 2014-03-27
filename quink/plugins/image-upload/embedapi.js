@@ -50,19 +50,22 @@
 }
 
 embedded_image_upload.prototype.setImage = function (newImageHTML) {
-    var REGEXP_TRAILING_TEXT = /[^\d]+$/,
+    var returnValue = false,
         $imageUploadFrameContents,
-        returnValue = false,
         $newImageHTML,
         existingWidth,
+        existingWidthSize,
         existingWidthUnit,
         existingHeight,
-        existingHeightUnit;
+        existingHeightSize,
+        existingHeightUnit,
+        shouldDisplayActualSize;
 
     $newImageHTML = $(newImageHTML).removeAttr('width').removeAttr('height').css({ width: "", height: "" });
 
-
     $newImageHTML = $(newImageHTML);
+    existingWidthSize = $newImageHTML.width();
+    existingHeightSize = $newImageHTML.height();
     existingWidth = $newImageHTML.css('width');
     existingHeight = $newImageHTML.css('height');
 
@@ -72,15 +75,21 @@ embedded_image_upload.prototype.setImage = function (newImageHTML) {
         //see jasny-bootstrap.css - if the container class (new/exists) doesn't match the button's class (new/exists) then display:none
         $imageUploadFrameContents.find('.fileinput').addClass('fileinput-exists').removeClass('fileinput-new');
         $imageUploadFrameContents.find('.fileinput-preview').append($newImageHTML);
+        if (existingHeightSize > 0) {
 
-        existingWidthUnit = existingWidth.match(REGEXP_TRAILING_TEXT)[0];
-        $imageUploadFrameContents.find('#width-input').val(existingWidth.split(existingWidthUnit)[0]);
-        $imageUploadFrameContents.find('#width-unit-select').val(existingWidthUnit);
+            existingWidthUnit = existingWidth.split(existingWidthSize)[1];
+            $imageUploadFrameContents.find('#width-input').val(existingWidthSize);
+            $imageUploadFrameContents.find('#width-unit-select').val(existingWidthUnit);
 
-        existingHeightUnit = existingHeight.match(REGEXP_TRAILING_TEXT)[0];
-        $imageUploadFrameContents.find('#height-input').val(existingHeight.split(existingHeightUnit)[0]);
-        $imageUploadFrameContents.find('#height-unit-select').val(existingHeightUnit);
-
+            existingHeightUnit = existingHeight.split(existingHeightSize)[1];
+            $imageUploadFrameContents.find('#height-input').val(existingHeightSize);
+            $imageUploadFrameContents.find('#height-unit-select').val(existingHeightUnit);
+        } else {
+            $imageUploadFrameContents.find('#width-input').val("");
+            $imageUploadFrameContents.find('#width-unit-select').val("%");
+            $imageUploadFrameContents.find('#height-input').val("");
+            $imageUploadFrameContents.find('#height-unit-select').val("%");
+        }
         $newImageHTML.css({ width: "", height: "" });
         returnValue = true;
     }

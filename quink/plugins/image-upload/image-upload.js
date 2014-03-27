@@ -11,6 +11,7 @@
             curConfig = {example_config_key: "example config value"};
             //*** return function ***
 
+
             retFunc = (function () {
                 var curConfig = curConfig,
                     self = {},
@@ -21,8 +22,24 @@
                     //a.extend(true, curConfig, newConfig);
                     //if (newConfig.extensions)curConfig.extensions = newConfig.extensions
                 };
-                function isValueKeyed(jQueryItem) {
-                    return jQueryItem.val().trim().length > 0;
+                function isValidTrailingTextOrNone(trailingText) {
+                    return !trailingText ||
+                        trailingText.trim().match(REGEXP_CSS_UNITS);
+                }
+
+                function isValidNonBlankSizeField($element) {
+                    var trailingText, returnValue;
+                    trailingText = extractTrailingText($element);
+                    returnValue = isValidTrailingTextOrNone(trailingText) &&
+                        isNumber(extractNumericText($element));
+                    return returnValue;
+                }
+                function isValueKeyed(Selement) {
+                    return Selement.val().trim().length > 0;
+                }
+
+                function isValidSizeField($element) {
+                    return !isValueKeyed($element) || isValidNonBlankSizeField($element);
                 }
 
                 function validateSizeInputs(sizeInputsArray) {
@@ -37,16 +54,12 @@
                      * For b) if the user enters "50%" in one of the input boxes, then treat this as 50 and % and allow the save.
                      * For c) if the user enters "50pc" then flag this as a red box and don't save.
                      */
-                    $.each(sizeInputsArray, function (index, $value) {
-                        var trailingText;
-                        trailingText = extractTrailingText($value);
-                        if ((!trailingText ||
-                            trailingText.trim().match(REGEXP_CSS_UNITS)) &&
-                            isNumber(extractNumericText($value))) {
-                            $value.closest('.form-group').removeClass('has-error').addClass('has-success');
+                    $.each(sizeInputsArray, function (index, $element) {
+                        if (isValidSizeField($element)) {
+                            $element.closest('.form-group').removeClass('has-error').addClass('has-success');
                         } else {
                             isScreenValid = false;
-                            $value.closest('.form-group').removeClass('has-success').addClass('has-error');
+                            $element.closest('.form-group').removeClass('has-success').addClass('has-error');
                         }
                     });
                 }
