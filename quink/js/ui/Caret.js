@@ -98,8 +98,9 @@ define([
     };
 
     function init() {
-        var caret;
-        if (Env.getParam('caret', 'off') === 'on') {
+        var dflt = Env.isIos() ? 'on' : 'off',
+            caret;
+        if (Env.getParam('caret', dflt) === 'on') {
             caret = new Caret().init();
         }
         return caret;
