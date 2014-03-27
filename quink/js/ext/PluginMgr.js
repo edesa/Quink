@@ -49,8 +49,10 @@ define([
             if (container) {
                 if (container.element && container['class']) {
                     container.primary = container.element + '.' + container['class'];
+                } else if (container.element && container['plugin-created']) {
+                    container.primary = container.element;
                 } else {
-                    throw new Error('Missing container element and class.');
+                    throw new Error('Invalid container definition.');
                 }
                 if (container['alt-classes']) {
                     container['alt-classes'] = container['alt-classes'].map(function (cls) {
