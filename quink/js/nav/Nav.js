@@ -24,11 +24,11 @@ define([
     'textrange',
     'locrange/LocRange',
     'util/PubSub',
-    'util/Event',
     'nav/Position',
     'hithandler/HitHandler',
-    'util/Env'
-], function (_, $, rangy, textrange, LocRange, PubSub, Event, Position, HitHandler, Env) {
+    'util/Env',
+    'util/DomUtil'
+], function (_, $, rangy, textrange, LocRange, PubSub, Position, HitHandler, Env, DomUtil) {
     'use strict';
 
     var Nav = function () {
@@ -321,22 +321,6 @@ define([
     };
 
     /**
-     * Assumes that a touch device has a virtual keyboard which occupies different amounts of
-     * screen real estate depending on the device orientation.
-     */
-    Nav.prototype.getMaxVisHeight = function () {
-        var $win = $(window),
-            height = $win.height(),
-            result = height,
-            visArea;
-        if (Event.isTouch) {
-            visArea = height > $win.width() ? 0.60 : 0.35;
-            result = height * visArea;
-        }
-        return result;
-    };
-
-    /**
      * Can be called with a range (LocRange object) or with no args. If there are no args
      * then ensures that the current selection is visible. Otherwise ensures that the range
      * argument is visible.
@@ -366,31 +350,27 @@ define([
      * On the iPad the document itself is scrolled because of the virtual keyboard.
      */
     Nav.prototype.makeRangeVisible = function (range) {
-        var $cont, $body, bodyScrollTop, virtContTop, virtContBottom, visContTop, visContBottom,
+        var cont, body, visBounds,
             rangeTop, contScrollTop, delta;
         if (range) {
-            $cont = $(this.getState().editable);
-            $body = $('body');
-            bodyScrollTop = $body.scrollTop();
-            virtContTop = $cont.offset().top - bodyScrollTop;
-            virtContBottom = virtContTop + $cont.innerHeight();
-            visContTop = Math.max(virtContTop, 0);
-            visContBottom = Math.min(virtContBottom, this.getMaxVisHeight());
+            cont = $(this.getState().editable);
+            body = $('body');
+            visBounds = DomUtil.getVisibleBounds(cont, true);
             rangeTop = range.getTop();
-            contScrollTop = $cont.scrollTop();
-            if (rangeTop < visContTop) {
-                delta = Math.ceil(visContTop - rangeTop);
-                $cont.scrollTop(contScrollTop - delta);
-                if ($cont.scrollTop() !== contScrollTop - delta) {
+            contScrollTop = cont.scrollTop();
+            if (rangeTop < visBounds.top) {
+                delta = Math.ceil(visBounds.top - rangeTop);
+                cont.scrollTop(contScrollTop - delta);
+                if (cont.scrollTop() !== contScrollTop - delta) {
                     // Container didn't scroll enough, try the body
-                    $body.scrollTop($body.scrollTop() - delta);
+                    body.scrollTop(body.scrollTop() - delta);
                 }
-            } else if (range.getBottom() > visContBottom) {
-                delta = Math.ceil(range.getBottom() - visContBottom);
-                $cont.scrollTop(contScrollTop + delta);
-                if ($cont.scrollTop() !== contScrollTop + delta) {
+            } else if (range.getBottom() > visBounds.bottom) {
+                delta = Math.ceil(range.getBottom() - visBounds.bottom);
+                cont.scrollTop(contScrollTop + delta);
+                if (cont.scrollTop() !== contScrollTop + delta) {
                     // Container didn't scroll enough, try the body
-                    $body.scrollTop($body.scrollTop() + delta);
+                    body.scrollTop(body.scrollTop() + delta);
                 }
             }
         }

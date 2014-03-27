@@ -19,9 +19,10 @@
 
 define([
     'jquery',
+    'util/DomUtil',
     'util/Env',
     'util/PubSub'
-], function ($, Env, PubSub) {
+], function ($, DomUtil, Env, PubSub) {
     'use strict';
 
     var Caret = function () {
@@ -31,9 +32,11 @@ define([
     Caret.prototype.ID_PREFIX = 'qk_caret_id';
 
     /**
-     * The width of the caret in pixels as defined in the css.
+     * The width and height of the caret in pixels as defined in the css.
      */
     Caret.prototype.CARET_WIDTH = 5;
+    Caret.prototype.CARET_HEIGHT = 5;
+
 
     Caret.prototype.init = function () {
         this.id = this.ID_PREFIX + this.idNum++;
@@ -65,24 +68,39 @@ define([
         this.showCaret(scrollDelta);
     };
 
-    Caret.prototype.showCaret = function (scrollOffset) {
-        var offset = scrollOffset || 0,
-            locRange = this.locRange,
-            el = $('#' + this.id);
+    /**
+     * Returns the y coordinate for the visible caret or undefined if the caret shouldn't be shown.
+     */
+    Caret.prototype.showCaretAt = function (locRange, offset) {
+        var visibleBounds, top, showAt;
         if (locRange && locRange.isLocatable() && locRange.isCollapsed()) {
+            top = this.docScrollTop - offset + locRange.getBottom() - 2;
+            visibleBounds = DomUtil.getVisibleBounds(locRange.getEditable());
+            if (top >= visibleBounds.top && top + this.CARET_HEIGHT <= visibleBounds.bottom) {
+                showAt = top;
+            }
+        }
+        return showAt;
+    };
+
+    Caret.prototype.showCaret = function (scrollOffset) {
+        var locRange = this.locRange,
+            el = $('#' + this.id),
+            top = this.showCaretAt(locRange, scrollOffset || 0);
+        if (top !== undefined) {
             el.removeClass('qk_hidden').css({
                 left: locRange.getX() - this.CARET_WIDTH,
-                top: this.docScrollTop - offset + locRange.getBottom() - 2
+                top: top
             });
-            console.log('show caret st: ' + this.docScrollTop + ' off: ' + offset + ' bot: ' + (locRange.getBottom() - 2) + ' edScrollTop: ' + this.editableScrollTop);
         } else {
             el.addClass('qk_hidden');
         }
     };
 
     function init() {
-        var caret;
-        if (Env.getParam('caret', 'off') === 'on') {
+        var dflt = Env.isIos() ? 'on' : 'off',
+            caret;
+        if (Env.getParam('caret', dflt) === 'on') {
             caret = new Caret().init();
         }
         return caret;

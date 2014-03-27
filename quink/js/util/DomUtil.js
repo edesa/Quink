@@ -19,8 +19,10 @@
 
 /*global Node */
 define([
-    'util/Env'
-], function (Env) {
+    'jquery',
+    'util/Env',
+    'util/Event'
+], function ($, Env, Event) {
     'use strict';
 
     /**
@@ -145,11 +147,49 @@ define([
         }
     }
 
+    /**
+     * Assumes that a touch device has a virtual keyboard which occupies different amounts of
+     * screen real estate depending on the device orientation. The keyboard will be active if
+     * there is an active element in the document (i.e. something has focus).
+     * isNavScroll means that the calculation is being done when deciding whether to scroll as a result
+     * of a navigation operation in which case the returned value takes into account the virtual keyboard.
+     * If this isn't for nav scroll then the height doesn't allow for a virtual keyboard and takes
+     * any document scroll into account.
+     */
+    function getMaxVisibleHeight(isNavScroll) {
+        var win = $(window),
+            height = win.height() + (!isNavScroll ? $(document).scrollTop() : 0),
+            result = height,
+            visArea;
+        if (Event.isTouch && !!document.activeElement && isNavScroll) {
+            visArea = height > win.width() ? 0.60 : 0.35;
+            result = height * visArea;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the top and bottom coordinates for the visible part of the editable.
+    */
+    function getVisibleBounds(editable, isNavScroll) {
+        var cont = $(editable),
+            virtContTop, virtContBottom, visContTop, visContBottom;
+        virtContTop = cont.offset().top - $(document).scrollTop();
+        virtContBottom = virtContTop + cont.innerHeight();
+        visContTop = Math.max(virtContTop, 0);
+        visContBottom = Math.min(virtContBottom, getMaxVisibleHeight(isNavScroll));
+        return {
+            top: visContTop,
+            bottom: visContBottom
+        };
+    }
+
     return {
         popEl: popEl,
         pushEl: pushEl,
         isWithinDocument: isWithinDocument,
         nlSome: nlSome,
-        makeQuinkRelative: makeQuinkRelative
+        makeQuinkRelative: makeQuinkRelative,
+        getVisibleBounds: getVisibleBounds
     };
 });
