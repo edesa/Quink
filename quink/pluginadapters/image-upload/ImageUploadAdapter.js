@@ -25,7 +25,7 @@ require([
 ], function (_, $, Context) {
     'use strict';
     //the iframe and the imageUploader component
-    var frame,
+    var $frameElements,
         imageUploader;
     /**
      * Runs func every delay milliseconds until func returns true.
@@ -38,6 +38,8 @@ require([
     }
 
     /**
+     * Comment brought forward from other code:
+     *
      * Called by function configureForEmbed to
      * size the body of the iframe to match the body of the containing document. Anything else
      * doesn't seem to work on iOS. Specifically trying to do it all in css using height 100%
@@ -48,14 +50,15 @@ require([
      * which will have already resized the frame.
      */
     function sizeFrame() {
-        var reqHeight = window.innerHeight,
-            initialHeight = frame.height();
-        frame.contents().find('body').height(reqHeight);
-        setTimeout(function () {
-            if (frame.height() === initialHeight) {
-                frame.height(reqHeight);
-            }
-        }, 0);
+        //I didn't experience the issues in the comment, above, so disabling this code
+//        var reqHeight = window.innerHeight,
+//            initialHeight = frame.height();
+//        frame.contents().find('body').height(reqHeight);
+//        setTimeout(function () {
+//            if (frame.height() === initialHeight) {
+//                frame.height(reqHeight);
+//            }
+//        }, 0);
     }
 
     /**
@@ -70,7 +73,7 @@ require([
         }
         sizeFrame();
         setTimeout(function () {
-            frame.removeClass('qk_invisible');
+            $frameElements.removeClass('qk_invisible');
             Context.publish('opened');
         }, 0);
 
@@ -83,8 +86,8 @@ require([
      *
      */
     function closePlugin(topic, data) {
-        frame.detach();
-        frame.addClass('qk_invisible');
+        $frameElements.detach();
+        $frameElements.addClass('qk_invisible');
         window.removeEventListener('orientationchange', sizeFrame, false);
         Context.publish(topic, data);
     }
@@ -125,7 +128,7 @@ require([
      * Loads the image upload DOM nodes into the document and configures it to run embedded.
      */
     function open(data) {
-        frame.appendTo('body');
+        $frameElements.appendTo('body');
         window.addEventListener('orientationchange', sizeFrame, false);
         until(_.partial(configureForEmbed, data), 100);
     }
@@ -134,14 +137,14 @@ require([
     function fetchMarkup() {
         var url = Context.adapterUrl('image-upload/ImageUploadEmbed.html');
         $.get(url).done(function (data) {
-            frame = $(data);
-            imageUploader = new embedded_image_upload(frame[0]);
+            $frameElements = $(data);
+            imageUploader = new embedded_image_upload($frameElements[0]);
             //associate methods in this object with the lifecycle callbacks for plugins
             Context.publish('loaded', {
                 open: open,
                 save: save,
                 exit: exit,
-                dom: frame[0].parentNode
+                dom: $frameElements[0].parentNode
             });
         }).fail(function (jqxhr, textStatus, error) {
                 console.log('Failed to load image upload markup from: ' + url + '. ' + jqxhr.status + '. ' + error);
