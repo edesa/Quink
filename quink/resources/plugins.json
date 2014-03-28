@@ -8,11 +8,10 @@
 
     "plugins": {
         "86": {
-            "container": {
+            "node": {
                 "element": "svg",
                 "alt-data-tags": ["data-drawing"],
-                "alt-classes": ["drawing"],
-                "plugin-created": true
+                "alt-classes": ["drawing"]
             },
             "url": "method-draw/MethodDrawAdapter.js",
             "name": "Method Draw",

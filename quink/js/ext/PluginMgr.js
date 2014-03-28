@@ -42,15 +42,28 @@ define([
 
     /**
      * Convert the identifiers into valid jQuery selectors.
+     * The plugin definition will contain one of a 'node' or a 'container' object. The former indicates
+     * that the content created by the plugin will be inserted directly into the document, the latter
+     * that Quink will provide a containing element for the plugin content.
      */
     PluginMgr.prototype.editIdentifiers = function () {
         _.some(this.getDefs(), function (def) {
-            var container = def.container;
+            var container = def.container || def.node;
+            if (def.container && def.node) {
+                throw new Error('Invalid container defintion. Must have one of element or node.');
+            }
             if (container) {
+                // Indicates that the plugin creates its own container.
+                if (def.node) {
+                    container.pluginCreated = true;
+                    def.container = def.node;
+                }
                 if (container.element && container['class']) {
                     container.primary = container.element + '.' + container['class'];
-                } else if (container.element && container['plugin-created']) {
+                } else if (container.element && container.pluginCreated) {
                     container.primary = container.element;
+                } else if (container['class'] && container.pluginCreated) {
+                    container.primary = container['class'];
                 } else {
                     throw new Error('Invalid container definition.');
                 }

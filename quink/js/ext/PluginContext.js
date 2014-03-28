@@ -50,7 +50,7 @@ define([
             cont;
         if (this.isEdit()) {
             cont = this.getContainer();
-            if (this.getDefinition().container['plugin-created']) {
+            if (this.getDefinition().container.pluginCreated) {
                 // Use outerHTML if possible as it's more efficient
                 if (cont[0].outerHTML !== undefined) {
                     data = cont[0].outerHTML;
@@ -70,14 +70,14 @@ define([
     PluginContext.prototype.commit = function (data, range) {
         var cfg, el;
         if (this.isEdit()) {
-            if (!this.getDefinition().container['plugin-created']) {
+            if (!this.getDefinition().container.pluginCreated) {
                 this.getContainer().html(data);
             } else {
                 this.getContainer().replaceWith(data);
             }
         } else {
             cfg = this.getContainer();
-            if (!cfg['plugin-created']) {
+            if (!cfg.pluginCreated) {
                 el = document.createElement(cfg.element);
                 el.setAttribute('class', cfg['class']);
                 el.innerHTML = data;
