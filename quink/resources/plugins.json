@@ -53,7 +53,7 @@
             "url": "image-upload/ImageUploadAdapter.js",
             "name": "Image Upload",
             "topic-prefix": "plugin.image-upload",
-            "insert-key": "i",
+            "insert-key": "p",
             "on-toolbar":  true,
             "icon": "image-upload/logo.png",
 
