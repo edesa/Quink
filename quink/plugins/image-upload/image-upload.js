@@ -147,6 +147,13 @@
                     return returnValue;
                 };
                 self.init = function () {
+                    $( window ).resize(function() {
+                        if ($("#windowSize").length > 0) {
+                            $("#windowSize").html($(window).width() + "," + $(window).height());
+                        } else {
+                            $("body").prepend("<div id=\"windowSize\">" + $(window).width() + "," + $(window).height() + "</div>");
+                        }
+                    });
                     try {
                         var I = function (d) {
                             if (window.JSON && JSON.stringify) {
