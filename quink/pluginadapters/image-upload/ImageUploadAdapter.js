@@ -31,9 +31,49 @@ require([
 
     //two finger scroll on trackpad appears as the mousewheel event
     $mask = $('<div>').addClass('qk_mask')
-        .on('touchmove touchmove touchend click mousewheel', function (event) {
+        .on('touchstart touchmove touchend click mousewheel', function (event) {
             event.preventDefault();
         });
+    /**
+     * Plugin API method - see Quink-Plugin-Notes document
+     * (i) add the plugin markup to the DOM (re-using any plugin artifacts that have been previously downloaded)
+     * (ii) show the plugin, ready to be used
+     *
+     * @param data - used to supply the open function with any data that is to be used by the plugin.
+     *
+     */
+    function open(data) {
+        $frameElements.appendTo('body');
+        $mask.appendTo('body');
+        window.addEventListener('orientationchange', sizeFrame, false);
+        until(_.partial(configureForEmbed, data), 100);
+    }
+    /**
+     * Plugin API method - see Quink-Plugin-Notes document
+     *
+     * Publish on a saved topic and as part of the publication include the serialised data to be saved
+     */
+    function save() {
+
+        imageUploader.getImageElementAsString()(function (data, error) {
+            if (error) {
+                console.log('save error: ' + error);
+            } else {
+                closePlugin('saved', data);
+            }
+        });
+    }
+
+    /**
+     * Plugin API method - see Quink-Plugin-Notes document
+     *
+     * When ready to exit, publish on an exited topic
+     */
+    function exit() {
+        //publish on an exited topic
+        closePlugin('exited');
+    }
+
     /**
      * Runs func every delay milliseconds until func returns true.
      * (same technique as method draw and svg edit to wait till DOM is loaded)
@@ -57,6 +97,7 @@ require([
      * which will have already resized the frame.
      */
     function sizeFrame() {
+        console.log('[' + new Date().toISOString() + ']' + "sizeFrame event");
         //I didn't experience the issues in the comment, above, so disabling this code
 //        var reqHeight = window.innerHeight,
 //            initialHeight = frame.height();
@@ -83,7 +124,7 @@ require([
             $frameElements.removeClass('qk_invisible');
             Context.publish('opened');
         }, 0);
-
+        //tell the caller that we succeeded so the until loop will be terminated
         return true;
     }
 
@@ -101,47 +142,7 @@ require([
         Context.publish(topic, data);
     }
 
-    /**
-     * Callback
-     *
-     * set up in fetchMarkup call when opening the plugin.
-     * ("save" menu option -> save() method
-     */
-    function save() {
-        imageUploader.getImageElementAsString()(function (data, error) {
-            if (error) {
-                console.log('save error: ' + error);
-            } else {
-                closePlugin('saved', data);
-            }
-        });
-    }
 
-    /**
-     * Callback
-     *
-     * set up in fetchMarkup call when opening the plugin.
-     * ("exit" menu option -> exit() method
-     */
-    function exit() {
-        closePlugin('exited');
-    }
-
-    /**
-     * Callback
-     *
-     * established in fetchMarkup's Context.publish call
-     * "open plugin" -> open() method
-     * (fetchScript() completes before this call is issued)
-     *
-     * Loads the image upload DOM nodes into the document and configures it to run embedded.
-     */
-    function open(data) {
-        $frameElements.appendTo('body');
-        $mask.appendTo('body');
-        window.addEventListener('orientationchange', sizeFrame, false);
-        until(_.partial(configureForEmbed, data), 100);
-    }
 
     //called by function fetchCss to
     //get the markup that comprises the UI for this plugin
