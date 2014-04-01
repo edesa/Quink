@@ -133,7 +133,6 @@ define([
     PluginMgr.prototype.onDownloadMenu = function (data) {
         var menu = $(data);
         menu.appendTo('body').on(Event.eventName('end'), this.onPluginCloseMenuHit);
-        console.log('plugin menu markup downloaded');
     };
 
     PluginMgr.prototype.onDownloadDefs = function (data) {
@@ -142,7 +141,6 @@ define([
         this.editIdentifiers();
         this.publishKeyBindings();
         this.publishNames();
-        console.log('plugin definitions downloaded');
     };
 
     /**
