@@ -61,6 +61,12 @@ define([
             PubSub.subscribe('nav.executed', onSelectionChange);
             PubSub.subscribe('plugin.exited', onSelectionChange);
             PubSub.subscribe('editable.range', onSelectionChange);
+            PubSub.subscribe('insert.char', function () {
+                setTimeout(onSelectionChange, 20);
+            });
+            PubSub.subscribe('plugin.saved', onSelectionChange);
+            PubSub.subscribe('insert.text', onSelectionChange);
+            PubSub.subscribe('insert.html', onSelectionChange);
         }
     };
 
