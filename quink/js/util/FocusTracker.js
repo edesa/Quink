@@ -153,9 +153,17 @@ define([
         this.editable.blur();
     };
 
+    /**
+     * Make sure that selection change publications are only made if the new selection is within
+     * the editable. On iOS the selection can be in a non-editable div.
+     */
     FocusTracker.prototype.onSelectionChange = function () {
-        this.storeState(this.editable);
-        PubSub.publish('selection.change', LocRangeUtil.getSelectionLoc);
+        var sel = rangy.getSelection(),
+            range = sel.rangeCount && sel.getRangeAt(0);
+        if (range && range.compareNode(this.editable) === range.NODE_BEFORE_AND_AFTER) {
+            this.storeState(this.editable);
+            PubSub.publish('selection.change', LocRangeUtil.getSelectionLoc);
+        }
     };
 
     /**
