@@ -27,9 +27,9 @@ define([
 ], function (_, $, CommandSubscriber, PubSub, Env, ViewportRelative) {
     'use strict';
 
-    var CommandStateBar = function (markupUrl) {
+    var CommandStateBar = function () {
         CommandSubscriber.register(this);
-        this.fetchMarkup(markupUrl);
+        PubSub.subscribe('download.commandstatebar', this.onDownload.bind(this));
         PubSub.subscribe('command.state', this.onStateChange.bind(this));
     };
 
@@ -69,25 +69,19 @@ define([
         func.call(this.bar, 'qk_hidden');
     };
 
-    CommandStateBar.prototype.fetchMarkup = function (url) {
-        var me = this;
-        $.get(url).done(function (data) {
-            me.bar = $(data).appendTo('body');
-            me.vpBar = ViewportRelative.create(me.bar, {
-                top: 5
-            });
-            console.log('command state bar markup downloaded');
-            if (Env.getParam('statusbar', 'on') === 'on') {
-                me.toggleVisibleState();
-                PubSub.publish('command.exec.key', 'ui.toggle.status');
-            }
-        }).fail(function (jqxhr, textError, error) {
-            console.log('Failed to download command state bar markup from: ' + url + ' ' + jqxhr.status + '. ' + error);
+    CommandStateBar.prototype.onDownload = function (data) {
+        this.bar = $(data).appendTo('body');
+        this.vpBar = ViewportRelative.create(this.bar, {
+            top: 5
         });
+        if (Env.getParam('statusbar', 'on') === 'on') {
+            this.toggleVisibleState();
+            PubSub.publish('command.exec.key', 'ui.toggle.status');
+        }
     };
 
-    function create(markupUrl) {
-        return new CommandStateBar(markupUrl);
+    function create() {
+        return new CommandStateBar();
     }
 
     return {

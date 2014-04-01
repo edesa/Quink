@@ -29,11 +29,8 @@ define([
     'use strict';
 
     var PluginMgr = function () {
-    };
-
-    PluginMgr.prototype.init = function (pluginDefUrl, menuMarkupUrl) {
-        this.fetchPluginDefs(pluginDefUrl);
-        this.fetchMenuMarkup(menuMarkupUrl);
+        PubSub.subscribe('download.plugins', this.onDownloadDefs.bind(this));
+        PubSub.subscribe('download.pluginmenu', this.onDownloadMenu.bind(this));
     };
 
     PluginMgr.prototype.getDefs = function () {
@@ -133,29 +130,19 @@ define([
         vertical: 'top'
     };
 
-    PluginMgr.prototype.fetchMenuMarkup = function (url) {
-        var me = this;
-        $.get(url).done(function (data) {
-            var menu = $(data);
-            menu.appendTo('body').on(Event.eventName('end'), me.onPluginCloseMenuHit);
-            console.log('plugin menu markup downloaded');
-        }).fail(function (jqxhr, textStatus, error) {
-            console.log('Failed to fetch plugin menu markup from: ' + url + '. ' + jqxhr.status + '. ' + error);
-        });
+    PluginMgr.prototype.onDownloadMenu = function (data) {
+        var menu = $(data);
+        menu.appendTo('body').on(Event.eventName('end'), this.onPluginCloseMenuHit);
+        console.log('plugin menu markup downloaded');
     };
 
-    PluginMgr.prototype.fetchPluginDefs = function (url) {
-        var me = this;
-        $.getJSON(url).done(function (data) {
-            me.pluginDefs = data.plugins;
-            me.ui = data.ui;
-            me.editIdentifiers();
-            me.publishKeyBindings();
-            me.publishNames();
-            console.log('plugin definitions downloaded');
-        }).fail(function (jqxhr, textStatus, error) {
-            console.log('Failed to fetch plugin definitions from: ' + url + '. ' + jqxhr.status + '. ' + error);
-        });
+    PluginMgr.prototype.onDownloadDefs = function (data) {
+        this.pluginDefs = data.plugins;
+        this.ui = data.ui;
+        this.editIdentifiers();
+        this.publishKeyBindings();
+        this.publishNames();
+        console.log('plugin definitions downloaded');
     };
 
     /**
@@ -369,12 +356,7 @@ define([
 
     var theInstance = new PluginMgr();
 
-    function init(pluginDefUrl, menuMarkupUrl) {
-        theInstance.init(pluginDefUrl, menuMarkupUrl);
-    }
-
     return {
-        init: init,
         loadPlugin: theInstance.loadPlugin.bind(theInstance),
         identifyPlugin: theInstance.identifyPlugin.bind(theInstance)
     };

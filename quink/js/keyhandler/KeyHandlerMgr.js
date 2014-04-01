@@ -33,6 +33,7 @@ define([
         this.insertKeyHandler = null;
         this.commandKeyHandler = null;
         this.keyHandler = null;
+        PubSub.subscribe('download.keymap', this.onDownload.bind(this));
         PubSub.subscribe('plugin.open', onStopKeyHandler);
         PubSub.subscribe('plugin.saved', onStartKeyHandler);
         PubSub.subscribe('plugin.exited', onStartKeyHandler);
@@ -70,32 +71,27 @@ define([
     var insertKeyBindings;
 
     /**
-     * Fetches the keymaps from the given url and loads them into the command key handler.
+     * Loads the downloaded keymaps into the command key handler.
      * Publishes the mode switch key and adds it to the COMMAND_MAP to ensure that the key used
      * to enter command mode is also used to leave command mode.
      */
-    function fetchCommandMap(url) {
-        $.getJSON(url).done(function (data) {
-            var msk;
-            $.each(data, function (mapName, map) {
-                if (mapName === 'mode-switch-key') {
-                    msk = map;
-                } else {
-                    CommandKeyHandler.prototype[mapName] = map;
-                }
-            });
-            CommandKeyHandler.prototype.COMMAND_MAP[msk] = 'exit';
-            InsertKeyHandler.prototype.MODE_SWITCH_KEY_CODE = parseInt(msk, 10);
-            if (insertKeyBindings) {
-                onInsertKeybindings(insertKeyBindings);
-                insertKeyBindings = null;
+    KeyHandlerMgr.prototype.onDownload = function (data) {
+        var msk;
+        $.each(data, function (mapName, map) {
+            if (mapName === 'mode-switch-key') {
+                msk = map;
+            } else {
+                CommandKeyHandler.prototype[mapName] = map;
             }
-            CommandKeyHandler.prototype.map = CommandKeyHandler.prototype.COMMAND_MAP;
-            console.log('keymap downloaded');
-        }).fail(function (jqxhr, textStatus, error) {
-            console.log('Failed to fetch keymap from: ' + url + '. ' + jqxhr.status + '. ' + error);
         });
-    }
+        CommandKeyHandler.prototype.COMMAND_MAP[msk] = 'exit';
+        InsertKeyHandler.prototype.MODE_SWITCH_KEY_CODE = parseInt(msk, 10);
+        if (insertKeyBindings) {
+            onInsertKeybindings(insertKeyBindings);
+            insertKeyBindings = null;
+        }
+        CommandKeyHandler.prototype.map = CommandKeyHandler.prototype.COMMAND_MAP;
+    };
 
     /**
      * If this publication arrives before the key maps are initialised, save the keybindings
@@ -138,9 +134,8 @@ define([
         });
     }
 
-    function init(selector, keyMapUrl) {
+    function init(selector) {
         initSubscriptions();
-        fetchCommandMap(keyMapUrl);
         create(selector);
     }
 
