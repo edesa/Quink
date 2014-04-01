@@ -43,6 +43,7 @@ define([
             .on('scroll', this.onEditableScroll.bind(this));
         // Ensure there's always an editable.
         this.editable = $(selector)[0];
+        this.lastEditable = this.editable;
         this.firstFocus = true;
         this.bindSelectionEvents();
         PubSub.subscribe('insert.char', onTextInsert);
