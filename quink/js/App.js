@@ -50,16 +50,16 @@ define([
         var selector = '[contenteditable=true]';
         rangy.init();
         Env.init();
-        DownloadMgr.download('keymap.json', 'commandstatebar.html',
-            'plugins.json', 'pluginmenu.html',
-            'toolbar.html', 'insertmenu.html');
         KeyHandlerMgr.init(selector);
         FocusTracker.init(selector);
         Command.init();
         CommandStateBar.create();
         HitHandler.init(selector);
-        Persist.create();
         Toolbar.init();
+        DownloadMgr.download('keymap.json', 'commandstatebar.html',
+            'plugins.json', 'pluginmenu.html',
+            'toolbar.html', 'insertmenu.html');
+        Persist.create();
         Caret.init();
     }
 
