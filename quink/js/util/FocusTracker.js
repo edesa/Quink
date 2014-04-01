@@ -56,7 +56,7 @@ define([
      * If the browser supports selectionchange events use them. Otherwise do the best that we can.
      */
     FocusTracker.prototype.bindSelectionEvents = function () {
-        var onSelectionChange = this.onSelectionChange.bind(this);
+        var onSelectionChange = this.onSelectionChangeBound;
         if (document.onselectionchange === undefined) {
             PubSub.subscribe('command.executed', onSelectionChange);
             PubSub.subscribe('nav.executed', onSelectionChange);
