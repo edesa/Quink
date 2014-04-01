@@ -17,7 +17,7 @@
  * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global embedded_image_upload */
+/*global EmbeddedImageUpload */
 require([
     'Underscore',
     'jquery',
@@ -46,7 +46,7 @@ require([
         $frameElements.appendTo('body');
         $mask.appendTo('body');
         window.addEventListener('orientationchange', sizeFrame, false);
-        until(_.partial(configureForEmbed, data), 100);
+        until(_.partial(configurePluginForEmbed, data), 100);
     }
     /**
      * Plugin API method - see Quink-Plugin-Notes document
@@ -54,7 +54,6 @@ require([
      * Publish on a saved topic and as part of the publication include the serialised data to be saved
      */
     function save() {
-
         imageUploader.getImageElementAsString()(function (data, error) {
             if (error) {
                 console.log('save error: ' + error);
@@ -115,7 +114,7 @@ require([
      *
      * If data is provided, load with the image so that it can be viewed and, optionally, changed
      */
-    function configureForEmbed(data) {
+    function configurePluginForEmbed(data) {
         if (data) {
             until(_.partial(imageUploader.setImage, data), 100);
         }
@@ -129,10 +128,8 @@ require([
     }
 
     /**
-     *
-     * remove the iframe containing the image uploader so that control can pass back to the main form
-     * called by functions save() and exit()
-     *
+     * save() and exit() API functions call this to remove the iframe
+     * containing the image uploader so that control can pass back to the main form
      */
     function closePlugin(topic, data) {
         $frameElements.detach();
@@ -147,10 +144,10 @@ require([
     //called by function fetchCss to
     //get the markup that comprises the UI for this plugin
     function fetchMarkup() {
-        var url = Context.adapterUrl('image-upload/ImageUploadEmbed.html');
+        var url = Context.adapterUrl('image-upload/image-upload-embed.html');
         $.get(url).done(function (data) {
             $frameElements = $(data);
-            imageUploader = new embedded_image_upload($frameElements[0]);
+            imageUploader = new EmbeddedImageUpload($frameElements[0]);
             //associate methods in this object with the lifecycle callbacks for plugins
             Context.publish('loaded', {
                 open: open,
@@ -166,7 +163,7 @@ require([
     //called by function fetchScript to
     //get the style sheet that comprises the UI for this plugin
     function fetchCss() {
-        var url = Context.adapterUrl('image-upload/ImageUploadEmbed.css');
+        var url = Context.adapterUrl('image-upload/image-upload-embed.css');
         $.get(url).done(function (data) {
             $('<style>').html(data).appendTo('head');
             fetchMarkup();
@@ -179,7 +176,7 @@ require([
      * Get the scripts, then the css, which gets the html
      */
     function fetchPluginArtifacts() {
-        var url = Context.pluginUrl('image-upload/embedapi.js');
+        var url = Context.pluginUrl('image-upload/embed-api.js');
         $.getScript(url).done(function () {
             fetchCss();
         }).fail(function (jqxhr, textStatus, error) {

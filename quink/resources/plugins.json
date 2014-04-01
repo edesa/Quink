@@ -50,7 +50,7 @@
                 "alt-data-tags": ["data-image-uploading"],
                 "alt-classes": ["image-uploading"]
             },
-            "url": "image-upload/ImageUploadAdapter.js",
+            "url": "image-upload/image-upload-adapter.js",
             "name": "Image Upload",
             "topic-prefix": "plugin.image-upload",
             "insert-key": "p",

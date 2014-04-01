@@ -1,11 +1,15 @@
-﻿function embedded_image_upload(frame) {
+﻿/**
+ * @param frame
+ * @constructor
+ */
+function EmbeddedImageUpload(frame) {
     "use strict";
 
     //initialize communication
     this.frame = frame;
     //this.stack = [] //callback stack
     this.callbacks = {}; //successor to stack
-    this.encode = embedded_image_upload.encode;
+    this.encode = EmbeddedImageUpload.encode;
     //List of functions extracted with this:
     //Run in firebug on http://svg-edit.googlecode.com/svn/trunk/docs/files/svgcanvas-js.html
     var functions = ["getImageElementAsString"];
@@ -49,7 +53,7 @@
     }, false);
 }
 
-embedded_image_upload.prototype.setImage = function (newImageHTML) {
+EmbeddedImageUpload.prototype.setImage = function (newImageHTML) {
     var returnValue = false,
         $imageUploadFrameContents,
         $newImageHTML,
@@ -95,7 +99,7 @@ embedded_image_upload.prototype.setImage = function (newImageHTML) {
     }
     return returnValue;
 };
-embedded_image_upload.prototype.send = function (name, args, callback) {
+EmbeddedImageUpload.prototype.send = function (name, args, callback) {
     var cbid = Math.floor(Math.random() * 31776352877 + 993577).toString();
     //this.stack.push(callback);
     this.callbacks[cbid] = callback;
