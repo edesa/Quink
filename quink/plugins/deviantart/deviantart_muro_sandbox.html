@@ -1,0 +1,53 @@
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>embedded deviantART muro sandbox</title>
+<style>
+body { margin: 0; }
+</style>
+</head>
+<body>
+<script>
+(function (window, undefined) {
+"use strict";
+
+var options = {};
+
+// ***** SITE CONFIG: Set your default variables here.
+//
+
+// Docs: http://github.com/deviantART/embedded-deviantART-muro/wiki/Embed-Options-Reference
+
+// Uncomment to set default background image layer for your site.
+// This MUST point at an image on your sandbox domain or that you have
+// valid cross-domain access to from your sandbox, otherwise browsers
+// WILL NOT allow the data to be read.
+// options.background = 'http://somewhere.on.my.domain/fancy_background.png';
+
+// Uncomment to set default Sta.sh folder to save drawings to.
+// options.stash_folder = 'My Embedded Drawings';
+
+//
+// ***** END OF SITE CONFIG: No changes below this point.
+
+var match,
+    plus   = /\+/g,
+    search = /([^&=]+)=?([^&]*)/g,
+    decode = function (s) { return decodeURIComponent(s.replace(plus, " ")); },
+    query  = window.location.search.substring(1);
+
+while (match = search.exec(query)) {
+    options[decode(match[1])] = decode(match[2]);
+}
+
+window.muroOptions = options;
+
+var document = window.document,
+    el = document.createElement("script"),
+    buster = Math.round(new Date().getTime() / (options.vm ? 1 : 3600000));
+el.src = "http://st.deviantart." + (options.vm ? "lan" : "com") + "/css/muro_embed" + (options.vm ? "" : "_jc") + ".js?" + buster;
+document.getElementsByTagName("body")[0].appendChild(el);
+})(window);
+</script>
+</body>
+</html>

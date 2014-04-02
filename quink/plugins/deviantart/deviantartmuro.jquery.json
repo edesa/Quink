@@ -1,0 +1,33 @@
+{
+    "name": "deviantartmuro",
+    "title": "deviantART muro jQuery plugin",
+    "description": "jQuery plugin for embedding the HTML5 drawing app, deviantART muro.",
+    "keywords": [
+        "image",
+        "drawing",
+        "image-editing"
+    ],
+    "version": "1.0.2",
+    "author": {
+        "name": "deviantART, Inc",
+        "url": "http://www.deviantart.com/"
+    },
+    "maintainers": [
+        {
+            "name": "deviantART, Inc",
+            "url": "http://www.deviantart.com/"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "BSD-3-Clause",
+            "url": "https://github.com/deviantART/jquery.deviantartmuro/blob/master/LICENSES.txt"
+        }
+    ],
+    "bugs": "https://github.com/deviantART/jquery.deviantartmuro/issues",
+    "homepage": "http://deviantart.github.com/jquery.deviantartmuro/",
+    "docs": "https://github.com/deviantART/jquery.deviantartmuro/wiki",
+    "dependencies": {
+        "jquery": ">=1.7"
+    }
+}
