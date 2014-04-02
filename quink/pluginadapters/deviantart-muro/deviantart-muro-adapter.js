@@ -37,14 +37,6 @@ require([
 
     /**
      * Plugin API method - see Quink-Plugin-Notes document
-     *
-     */
-    function load() {
-        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.load() called');
-    }
-
-    /**
-     * Plugin API method - see Quink-Plugin-Notes document
      * (i) add the plugin markup to the DOM (re-using any plugin artifacts that have been previously downloaded)
      * (ii) show the plugin, ready to be used
      *
@@ -53,6 +45,7 @@ require([
      */
     function open(data) {
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.open(data) called');
+        Context.publish('opened');
     }
     /**
      * Plugin API method - see Quink-Plugin-Notes document
@@ -61,6 +54,8 @@ require([
      */
     function save() {
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.save() called');
+        //can add data to the save
+        Context.publish('saved');
     }
      /**
      * Plugin API method - see Quink-Plugin-Notes document
@@ -69,5 +64,17 @@ require([
      */
     function exit() {
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.exit() called');
+        Context.publish('exited');
     }
- });
+    function fetchPluginArtifacts() {
+        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.fetchPluginArtifacts() called');
+        //load plugin scripts, markup and css ready to use
+        //when plugin loaded...
+        Context.publish('loaded', {
+            open: open,
+            save: save,
+            exit: exit
+        });
+    }
+    fetchPluginArtifacts();
+});

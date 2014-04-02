@@ -7,34 +7,19 @@
     },
 
     "plugins": {
-        "86": {
+        "68": {
             "container": {
                 "element": "div",
-                "class": "svg",
-                "alt-data-tags": ["data-drawing"],
-                "alt-classes": ["drawing"]
+                "class": "deviantartmuro",
+                "alt-data-tags": ["data-deviantart-muro"],
+                "alt-classes": ["data-deviantart-muro"]
             },
-            "url": "method-draw/MethodDrawAdapter.js",
-            "name": "Method Draw",
-            "topic-prefix": "plugin.method-draw",
-            "insert-key": "v",
-            "on-toolbar": true,
-            "icon": "method-draw/logo.svg"
-        },
-
-        "83": {
-            "container": {
-                "element": "div",
-                "class": "svgedit",
-                "alt-data-tags": ["data-svg-drawing"],
-                "alt-classes": ["svg-drawing"]
-            },
-            "url": "svg-edit/SvgEditAdapter.js",
-            "name": "SVG Edit",
-            "topic-prefix": "plugin.svg-edit",
-            "insert-key": "s",
-            "on-toolbar": true,
-            "icon": "svg-edit/logo.png",
+            "url": "deviantart-muro/deviantart-muro-adapter.js",
+            "name": "deviantart-muro",
+            "topic-prefix": "plugin.deviantart-muro",
+            "insert-key": "d",
+            "on-toolbar":  true,
+            "icon": "deviantart-muro/logo.png",
 
             "ui": {
                 "menu": {
@@ -63,6 +48,42 @@
                     "vertical": "top"
                 }
             }
+        },
+
+        "83": {
+            "container": {
+                "element": "div",
+                "class": "svgedit",
+                "alt-data-tags": ["data-svg-drawing"],
+                "alt-classes": ["svg-drawing"]
+            },
+            "url": "svg-edit/SvgEditAdapter.js",
+            "name": "SVG Edit",
+            "topic-prefix": "plugin.svg-edit",
+            "insert-key": "s",
+            "on-toolbar": true,
+            "icon": "svg-edit/logo.png",
+
+            "ui": {
+                "menu": {
+                    "lateral": "left",
+                    "vertical": "top"
+                }
+            }
+        },
+        "86": {
+            "container": {
+                "element": "div",
+                "class": "svg",
+                "alt-data-tags": ["data-drawing"],
+                "alt-classes": ["drawing"]
+            },
+            "url": "method-draw/MethodDrawAdapter.js",
+            "name": "Method Draw",
+            "topic-prefix": "plugin.method-draw",
+            "insert-key": "v",
+            "on-toolbar": true,
+            "icon": "method-draw/logo.svg"
         }
     }
 }
