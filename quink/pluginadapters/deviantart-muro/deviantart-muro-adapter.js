@@ -16,25 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 /*global */
-require([
-    'Underscore',
-    'jquery',
-    'ext/PluginAdapterContext'
-], function (_, $, Context) {
+require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Context) {
     'use strict';
-    //the iframe and the imageUploader component
-    var $frameElements,
-        imageUploader,
-        $mask;
-
-    //two finger scroll on trackpad appears as the mousewheel event
-    $mask = $('<div>').addClass('qk_mask')
-        .on('touchstart touchmove touchend click mousewheel', function (event) {
-            event.preventDefault();
-        });
-
+    //the iframe component
+    var $iframe,
+        BODY_TAG_NAME = "body";
     /**
      * Plugin API method - see Quink-Plugin-Notes document
      * (i) add the plugin markup to the DOM (re-using any plugin artifacts that have been previously downloaded)
@@ -45,8 +32,13 @@ require([
      */
     function open(data) {
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.open(data) called');
+        //add the iframe to the HTML
+        $iframe.appendTo(BODY_TAG_NAME);
+        $iframe.removeClass('qk_invisible');
+        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing opened event');
         Context.publish('opened');
     }
+
     /**
      * Plugin API method - see Quink-Plugin-Notes document
      *
@@ -54,26 +46,51 @@ require([
      */
     function save() {
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.save() called');
-        //can add data to the save
-        Context.publish('saved');
+        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing saved event');
+        closePlugin('saved');
     }
-     /**
+
+    /**
      * Plugin API method - see Quink-Plugin-Notes document
      *
      * When ready to exit, publish on an exited topic
      */
     function exit() {
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.exit() called');
-        Context.publish('exited');
+        closePlugin('exited');
     }
+
+    /**
+     * save() and exit() API functions call this to remove the iframe
+     * containing the image uploader so that control can pass back to the main form
+     */
+    function closePlugin(topic, data) {
+        $iframe.addClass('qk_invisible');
+        $iframe.detach();
+        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing ' + topic + ' event');
+        Context.publish(topic, data);
+    }
+
     function fetchPluginArtifacts() {
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.fetchPluginArtifacts() called');
-        //load plugin scripts, markup and css ready to use
-        //when plugin loaded...
-        Context.publish('loaded', {
-            open: open,
-            save: save,
-            exit: exit
+        var url = Context.adapterUrl('deviantart-muro/deviantart-muro-embed.css');
+        $.get(url).done(function (data) {
+            $('<style>').html(data).appendTo('head');
+            var url = Context.adapterUrl('deviantart-muro/deviantart-muro-embed.html');
+            $.get(url).done(function (data) {
+                $iframe = $(data);
+                console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing loaded event');
+                Context.publish('loaded', {
+                    open: open,
+                    save: save,
+                    exit: exit
+                });
+                console.log('DeviantArtPlugin.fetchPluginArtifacts() download markup successful');
+            }).fail(function (jqxhr, textStatus, error) {
+                console.log('DeviantArtPlugin.fetchPluginArtifacts() failed to load deviantart muro markup from: ' + url + '. ' + jqxhr.status + '. ' + error);
+            });
+        }).fail(function (jqxhr, textStatus, error) {
+            console.log('Failed to load image upload css from: ' + url + '. ' + jqxhr.status + '. ' + error);
         });
     }
     fetchPluginArtifacts();

@@ -18,7 +18,7 @@
             "name": "deviantart-muro",
             "topic-prefix": "plugin.deviantart-muro",
             "insert-key": "d",
-            "on-toolbar":  true,
+            "on-toolbar": true,
             "icon": "deviantart-muro/logo.png",
 
             "ui": {
@@ -39,7 +39,7 @@
             "name": "Image Upload",
             "topic-prefix": "plugin.image-upload",
             "insert-key": "p",
-            "on-toolbar":  true,
+            "on-toolbar": true,
             "icon": "image-upload/logo.png",
 
             "ui": {
@@ -49,7 +49,6 @@
                 }
             }
         },
-
         "83": {
             "container": {
                 "element": "div",
