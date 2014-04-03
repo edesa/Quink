@@ -25,9 +25,10 @@ require([
 ], function (_, $, Context) {
     'use strict';
     //the iframe and the imageUploader component
-    var $frameElements,
+    var $iframe,
         imageUploader,
-        $mask;
+        $mask,
+        BODY_TAG_NAME = 'body';
 
     //two finger scroll on trackpad appears as the mousewheel event
     $mask = $('<div>').addClass('qk_mask')
@@ -43,8 +44,8 @@ require([
      *
      */
     function open(data) {
-        $frameElements.appendTo('body');
-        $mask.appendTo('body');
+        $iframe.appendTo(BODY_TAG_NAME);
+        $mask.appendTo(BODY_TAG_NAME);
         window.addEventListener('orientationchange', sizeFrame, false);
         until(_.partial(configurePluginForEmbed, data), 100);
     }
@@ -69,10 +70,20 @@ require([
      * When ready to exit, publish on an exited topic
      */
     function exit() {
-        //publish on an exited topic
         closePlugin('exited');
     }
 
+    /**
+     * save() and exit() API functions call this to remove the iframe
+     * containing the image uploader so that control can pass back to the main form
+     */
+    function closePlugin(topic, data) {
+        $iframe.addClass('qk_invisible');
+        $iframe.detach();
+        $mask.detach();
+        window.removeEventListener('orientationchange', sizeFrame, false);
+        Context.publish(topic, data);
+    }
     /**
      * Runs func every delay milliseconds until func returns true.
      * (same technique as method draw and svg edit to wait till DOM is loaded)
@@ -120,40 +131,29 @@ require([
         }
         sizeFrame();
         setTimeout(function () {
-            $frameElements.removeClass('qk_invisible');
+            $iframe.removeClass('qk_invisible');
             Context.publish('opened');
         }, 0);
         //tell the caller that we succeeded so the until loop will be terminated
         return true;
     }
 
-    /**
-     * save() and exit() API functions call this to remove the iframe
-     * containing the image uploader so that control can pass back to the main form
-     */
-    function closePlugin(topic, data) {
-        $frameElements.detach();
-        $mask.detach();
-        $frameElements.addClass('qk_invisible');
-        window.removeEventListener('orientationchange', sizeFrame, false);
-        Context.publish(topic, data);
-    }
 
 
 
     //called by function fetchCss to
     //get the markup that comprises the UI for this plugin
-    function fetchMarkup() {
+    function downloadHTML() {
         var url = Context.adapterUrl('image-upload/image-upload-embed.html');
         $.get(url).done(function (data) {
-            $frameElements = $(data);
-            imageUploader = new EmbeddedImageUpload($frameElements[0]);
+            $iframe = $(data);
+            imageUploader = new EmbeddedImageUpload($iframe[0]);
             //associate methods in this object with the lifecycle callbacks for plugins
             Context.publish('loaded', {
                 open: open,
                 save: save,
                 exit: exit,
-                dom: $frameElements[0].parentNode
+                dom: $iframe[0].parentNode
             });
         }).fail(function (jqxhr, textStatus, error) {
             console.log('Failed to load image upload markup from: ' + url + '. ' + jqxhr.status + '. ' + error);
@@ -162,11 +162,11 @@ require([
 
     //called by function fetchScript to
     //get the style sheet that comprises the UI for this plugin
-    function fetchCss() {
+    function downloadCSSAndHTML() {
         var url = Context.adapterUrl('image-upload/image-upload-embed.css');
         $.get(url).done(function (data) {
             $('<style>').html(data).appendTo('head');
-            fetchMarkup();
+            downloadHTML();
         }).fail(function (jqxhr, textStatus, error) {
             console.log('Failed to load image upload css from: ' + url + '. ' + jqxhr.status + '. ' + error);
         });
@@ -178,7 +178,7 @@ require([
     function fetchPluginArtifacts() {
         var url = Context.pluginUrl('image-upload/embed-api.js');
         $.getScript(url).done(function () {
-            fetchCss();
+            downloadCSSAndHTML();
         }).fail(function (jqxhr, textStatus, error) {
             console.log('Failed to load embed-image-upload from: ' + url + '. ' + jqxhr.status + '. ' + error);
         });

@@ -38,7 +38,6 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing opened event');
         Context.publish('opened');
     }
-
     /**
      * Plugin API method - see Quink-Plugin-Notes document
      *
@@ -70,28 +69,46 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing ' + topic + ' event');
         Context.publish(topic, data);
     }
+    /**
+     * Runs func every delay milliseconds until func returns true.
+     * (same technique as method draw and svg edit to wait till DOM is loaded)
+     */
+    function until(func, delay) {
+        if (!func()) {
+            _.delay(until, delay, func, delay);
+        }
+    }
 
-    function fetchPluginArtifacts() {
-        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.fetchPluginArtifacts() called');
+    function downloadHTML() {
+        var url = Context.adapterUrl('deviantart-muro/deviantart-muro-embed.html');
+        $.get(url).done(function (data) {
+            $iframe = $(data);
+            console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing loaded event');
+            Context.publish('loaded', {
+                open: open,
+                save: save,
+                exit: exit
+            });
+            console.log('DeviantArtPlugin.fetchPluginArtifacts() download HTML successful');
+        }).fail(function (jqxhr, textStatus, error) {
+            console.log('DeviantArtPlugin.fetchPluginArtifacts() failed to load deviantart muro markup from: ' + url + '. ' + jqxhr.status + '. ' + error);
+        });
+    }
+
+    function downloadCSSAndHTML() {
         var url = Context.adapterUrl('deviantart-muro/deviantart-muro-embed.css');
         $.get(url).done(function (data) {
             $('<style>').html(data).appendTo('head');
-            var url = Context.adapterUrl('deviantart-muro/deviantart-muro-embed.html');
-            $.get(url).done(function (data) {
-                $iframe = $(data);
-                console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing loaded event');
-                Context.publish('loaded', {
-                    open: open,
-                    save: save,
-                    exit: exit
-                });
-                console.log('DeviantArtPlugin.fetchPluginArtifacts() download markup successful');
-            }).fail(function (jqxhr, textStatus, error) {
-                console.log('DeviantArtPlugin.fetchPluginArtifacts() failed to load deviantart muro markup from: ' + url + '. ' + jqxhr.status + '. ' + error);
-            });
+            console.log('DeviantArtPlugin.fetchPluginArtifacts() download CSS successful');
+            downloadHTML();
         }).fail(function (jqxhr, textStatus, error) {
-            console.log('Failed to load image upload css from: ' + url + '. ' + jqxhr.status + '. ' + error);
+            console.log('Failed to load deviantArt css from: ' + url + '. ' + jqxhr.status + '. ' + error);
         });
+    }
+
+    function fetchPluginArtifacts() {
+        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.fetchPluginArtifacts() called');
+        downloadCSSAndHTML();
     }
     fetchPluginArtifacts();
 });
