@@ -36,7 +36,7 @@ define([
         },
         events: null,
 
-        isTouch: window.hasOwnProperty('ontouchstart'),
+        isTouch: window.ontouchstart !== undefined,
         TOUCH_THRESHOLD: 5,
 
         eventName: function (eventType) {
