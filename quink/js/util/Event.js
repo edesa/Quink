@@ -18,8 +18,7 @@
  */
 
 define([
-    'Underscore'
-], function (_) {
+], function () {
     'use strict';
 
     var event = {
@@ -29,14 +28,17 @@ define([
             'move': 'touchmove',
             'end': 'touchend'
         },
+
         mouseEvents: {
             'start': 'mousedown',
             'move': 'mousemove',
             'end': 'mouseup'
         },
+
         events: null,
 
         isTouch: window.ontouchstart !== undefined,
+
         TOUCH_THRESHOLD: 5,
 
         eventName: function (eventType) {
@@ -46,21 +48,16 @@ define([
             return this.events[eventType];
         },
 
-        getClientCoords: function (event) {
-            var coords = {};
-            if (event.type === 'mousedown') {
-                coords.x = event.clientX;
-                coords.y = event.clientY;
-            } else {
-                coords.x = event.targetTouches[0].clientX;
-                coords.y = event.targetTouches[0].clientY;
-            }
-            return coords;
+        /**
+         * Returns an object that can be used to locate the event. i.e. it has the page and client
+         * coordinates.
+         */
+        getLocEvent: function (event) {
+            return this.isTouch ? event.targetTouches[0] : event;
         },
 
-        inThreshold: function (event, coords) {
-            var hit = this.isTouch ? event.touches[0] : event,
-                result = false;
+        inThreshold: function (hit, coords) {
+            var result;
             if (Math.abs(hit.clientX - coords.x) <= this.TOUCH_THRESHOLD &&
                 Math.abs(hit.clientY - coords.y) <= this.TOUCH_THRESHOLD) {
                 result = true;
@@ -70,9 +67,9 @@ define([
     };
 
     return {
-        eventName: _.bind(event.eventName, event),
+        eventName: event.eventName.bind(event),
         isTouch: event.isTouch,
-        getClientCoords: event.getClientCoords,
-        inThreshold: _.bind(event.inThreshold, event)
+        getLocEvent: event.getLocEvent.bind(event),
+        inThreshold: event.inThreshold.bind(event)
     };
 });

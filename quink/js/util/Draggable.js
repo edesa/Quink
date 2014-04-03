@@ -19,8 +19,6 @@
 
 /**
  * Makes an element draggable.
- * Note that we have to use the native (non-jQuery) mechanism for event addition and removal
- * because jQuery doesn't handle the touch events.
  */
 define([
     'Underscore',
@@ -35,17 +33,21 @@ define([
         this.draggable = $(selector);
         this.offX = this.offY = 0;
         this.startCoords = null;
-        this.draggable[0].addEventListener(Event.eventName('start'), $.proxy(this.onDragStart, this));
+        this.draggable[0].addEventListener(Event.eventName('start'), this.onDragStart.bind(this));
     };
 
     Draggable.prototype.onDragStart = function (event) {
         var draggableEl = this.draggable[0],
-            pos = this.draggable.css(['left', 'top']);
-        this.startCoords = Event.getClientCoords(event);
-        this.offX = event.pageX - (parseInt(pos.left, 10) || draggableEl.offsetLeft);
-        this.offY = event.pageY - (parseInt(pos.top, 10) || draggableEl.offsetHeight);
-        this.onDragProxy = this.onDragProxy || $.proxy(this.onDrag, this);
-        this.onDragEndProxy = this.onDragEndProxy || $.proxy(this.onDragEnd, this);
+            pos = this.draggable.css(['left', 'top']),
+            locEvent = Event.getLocEvent(event);
+        this.startCoords = {
+            x: locEvent.clientX,
+            y: locEvent.clientY
+        };
+        this.offX = locEvent.pageX - (parseInt(pos.left, 10) || draggableEl.offsetLeft);
+        this.offY = locEvent.pageY - (parseInt(pos.top, 10) || draggableEl.offsetHeight);
+        this.onDragProxy = this.onDragProxy || this.onDrag.bind(this);
+        this.onDragEndProxy = this.onDragEndProxy || this.onDragEnd.bind(this);
         document.addEventListener(Event.eventName('move'), this.onDragProxy, false);
         document.addEventListener(Event.eventName('end'), this.onDragEndProxy, false);
     };
@@ -56,12 +58,13 @@ define([
      * Always preventDefault to stop the whole page from scrolling on the device.
      */
     Draggable.prototype.onDrag = function (event) {
+        var locEvent = Event.getLocEvent(event);
         event.preventDefault();
-        if (!Event.inThreshold(event, this.startCoords)) {
+        if (!Event.inThreshold(locEvent, this.startCoords)) {
             this.dragging = true;
             this.draggable.css({
-                'left': event.pageX - this.offX,
-                'top': event.pageY - this.offY
+                'left': locEvent.pageX - this.offX,
+                'top': locEvent.pageY - this.offY
             });
         }
     };

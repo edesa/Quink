@@ -76,7 +76,11 @@ define([
     };
 
     FastTap.prototype.onTouchStart = function (event) {
-        this.startCoords = Event.getClientCoords(event);
+        var locEvent = Event.getLocEvent(event);
+        this.startCoords = {
+            x: locEvent.clientX,
+            y: locEvent.clientY
+        };
         this.initActive();
         this.setActive(true);
         this.el.addEventListener(Event.eventName('end'), this, false);
