@@ -21,7 +21,8 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
     'use strict';
     //the iframe component
     var $iframe,
-        BODY_TAG_NAME = "body";
+        BODY_TAG_NAME = "body",
+        IMAGE_TAG = "<img>";
     /**
      * Plugin API method - see Quink-Plugin-Notes document
      * (i) add the plugin markup to the DOM (re-using any plugin artifacts that have been previously downloaded)
@@ -44,13 +45,7 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
      * Publish on a saved topic and as part of the publication include the serialised data to be saved
      */
     function save() {
-        window.addEventListener('message',function(message) {
-            console.log('[' + new Date().toISOString() + ']' + 'save message.data=' + JSON.stringify(message.data));
-            console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing saved event');
-            var $image = $("<img>");
-            $image.attr('src', message.data.image);
-            closePlugin('saved', $image[0].outerHTML);
-        },false);
+        window.addEventListener('message', handleQueryImageReply, false);
 
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.save() called');
         //reply listener was registered in the open method
@@ -71,10 +66,23 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
     }
 
     /**
+     *
+     * @param message
+     */
+    function handleQueryImageReply(message) {
+        console.log('[' + new Date().toISOString() + ']' + 'save message.data=' + JSON.stringify(message.data));
+        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing saved event');
+
+        var $image = $(IMAGE_TAG);
+        $image.attr('src', message.data.image);
+        closePlugin('saved', $image[0].outerHTML);
+    }
+    /**
      * save() and exit() API functions call this to remove the iframe
      * containing the image uploader so that control can pass back to the main form
      */
     function closePlugin(topic, data) {
+        window.removeEventListener('message', handleQueryImageReply, false);
         $iframe.addClass('qk_invisible');
         $iframe.detach();
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing ' + topic + ' event');
