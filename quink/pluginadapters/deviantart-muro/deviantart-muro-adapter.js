@@ -72,10 +72,12 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
     function handleQueryImageReply(message) {
         console.log('[' + new Date().toISOString() + ']' + 'save message.data=' + JSON.stringify(message.data));
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing saved event');
-
-        var $image = $(IMAGE_TAG);
-        $image.attr('src', message.data.image);
-        closePlugin('saved', $image[0].outerHTML);
+        //only handle replies to query image
+        if (message.data && message.data.image) {
+            var $image = $(IMAGE_TAG);
+            $image.attr('src', message.data.image);
+            closePlugin('saved', $image[0].outerHTML);
+        }
     }
     /**
      * save() and exit() API functions call this to remove the iframe
