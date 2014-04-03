@@ -44,9 +44,20 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
      * Publish on a saved topic and as part of the publication include the serialised data to be saved
      */
     function save() {
+        window.addEventListener('message',function(message) {
+            console.log('[' + new Date().toISOString() + ']' + 'save message.data=' + JSON.stringify(message.data));
+            console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing saved event');
+            var $image = $("<img>");
+            $image.attr('src', message.data.image);
+            closePlugin('saved', $image[0].outerHTML);
+        },false);
+
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.save() called');
-        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing saved event');
-        closePlugin('saved');
+        //reply listener was registered in the open method
+        $iframe[0].contentWindow.postMessage({
+            type:      'query',
+            query:   'image'
+        }, '*');
     }
 
     /**
