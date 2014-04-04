@@ -18,7 +18,8 @@
  */
 
 define([
-], function () {
+    'jquery'
+], function ($) {
     'use strict';
 
     var event = {
@@ -63,6 +64,15 @@ define([
                 result = true;
             }
             return result;
+        },
+
+        /**
+         * obj can be either a node or an event. Returns a jQuery object that contains the editable. This
+         * can be empty.
+         */
+        getEditable: function (obj) {
+            var el = $.Event.prototype.isPrototypeOf(obj) ? $(obj.target) : obj;
+            return $(el).closest('[contenteditable=true]');
         }
     };
 
@@ -70,6 +80,7 @@ define([
         eventName: event.eventName.bind(event),
         isTouch: event.isTouch,
         getLocEvent: event.getLocEvent.bind(event),
-        inThreshold: event.inThreshold.bind(event)
+        inThreshold: event.inThreshold.bind(event),
+        getEditable: event.getEditable
     };
 });

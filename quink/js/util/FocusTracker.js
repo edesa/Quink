@@ -23,8 +23,9 @@ define([
     'rangy',
     'hithandler/HitHandler',
     'locrange/LocRangeUtil',
+    'util/Event',
     'util/PubSub'
-], function (_, $, rangy, HitHandler, LocRangeUtil, PubSub) {
+], function (_, $, rangy, HitHandler, LocRangeUtil, Event, PubSub) {
     'use strict';
 
     var FocusTracker = function () {
@@ -220,15 +221,15 @@ define([
 
     /**
      * Allow time for the range to be set within the document. It seems to take ages on iOS.
-     * Returns false o allow other hit handlers to access the same event.
+     * Returns false to allow other hit handlers to access the same event.
      */
     FocusTracker.prototype.handle = function (event) {
         var storeState = function () {
-                var editable = event.event.delegateTarget,
+                var editable = Event.getEditable(event.event),
                     executed;
                 if (this.getRange(editable)) {
                     executed = true;
-                    this.storeState(editable);
+                    this.storeState(editable[0]);
                     if (document.onselectionchange === undefined) {
                         this.onSelectionChange();
                     }

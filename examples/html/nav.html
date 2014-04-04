@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Quink Example - cursor navigation from the host page</title>
+        <script type="text/javascript" src="../../quink.js"></script>
+    </head>
+    <body>
+        <div contenteditable="true" id="ed-1">
+            This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page.
+        </div>
+        <div contenteditable="true" id="ed-2">
+            A second editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more.
+        </div>
+        <div contenteditable="true" id="ed-3">
+            A second editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more.
+        </div>
+        <button id="btn-toggle">Toggle and select</button>
+        <button id="btn-nav">Nav</button>
+        <script type="text/javascript">
+            QUINK.ready = function (PubSub) {
+                var btnToggle = document.querySelector('#btn-toggle'),
+                    btnNav = document.querySelector('#btn-nav');
+                btnToggle.addEventListener('click', function () {
+                    PubSub.publish('command.exec', 'nav.toggle.select');
+                });
+                btnNav.addEventListener('click', function () {
+                    var ed = document.querySelector('#ed-1');
+                    ed.focus();
+                    PubSub.publish('command.exec', 'nav.word.next');
+                });
+            };
+        </script>
+    <body>
+</html>

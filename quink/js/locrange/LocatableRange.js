@@ -18,8 +18,9 @@
  */
 
 define([
-    'jquery'
-], function ($) {
+    'jquery',
+    'util/Event'
+], function ($, Event) {
     'use strict';
 
     /**
@@ -34,7 +35,7 @@ define([
 
     LocatableRange.prototype.getEditable = function () {
         var el = this.safeRange.getRange().startContainer;
-        return $(el).closest('[contenteditable=true]');
+        return Event.getEditable(el);
     };
 
     LocatableRange.prototype.getX = function () {
