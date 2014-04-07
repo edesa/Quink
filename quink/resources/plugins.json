@@ -45,10 +45,11 @@
         "80": {
             "container": {
                 "element": "div",
-                "class": "uploaded-image",
-                "alt-data-tags": ["data-uploaded-image"]
+                "class": "imageuploader",
+                "alt-data-tags": ["data-image-uploading"],
+                "alt-classes": ["image-uploading"]
             },
-            "url": "image-upload/ImageUploadAdapter.js",
+            "url": "image-upload/image-upload-adapter.js",
             "name": "Image Upload",
             "topic-prefix": "plugin.image-upload",
             "insert-key": "i",
@@ -65,8 +66,9 @@
         "68": {
             "container": {
                 "element": "div",
-                "class": "deviantart-muro-image",
-                "alt-data-tags": ["data-deviantart-muro-image"]
+                "class": "deviantartmuro",
+                "alt-data-tags": ["data-deviantart-muro"],
+                "alt-classes": ["data-deviantart-muro"]
             },
             "url": "deviantart-muro/deviantart-muro-adapter.js",
             "name": "deviantart-muro",
