@@ -22,7 +22,8 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
     //the iframe component
     var $iframe,
         BODY_TAG_NAME = "body",
-        IMAGE_TAG = "<img>";
+        IMAGE_TAG = "<img>",
+        tempData;
     /**
      * Plugin API method - see Quink-Plugin-Notes document
      * (i) add the plugin markup to the DOM (re-using any plugin artifacts that have been previously downloaded)
@@ -37,7 +38,21 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
         $iframe.appendTo(BODY_TAG_NAME);
         $iframe.removeClass('qk_invisible');
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing opened event');
-        Context.publish('opened');
+        window.addEventListener('message', handleCommandImportLayerReply, false);
+        tempData = data;
+        if (data) {
+//            setTimeout($iframe[0].contentWindow.postMessage({
+//                type: 'command',
+//                command: 'setBackgroundLayer',
+//                layerData: {
+//                    width: 100,
+//                    height: 100,
+//                    url: $(tempData).attr('src')
+//                }
+//            }, '*'),0);
+        } else {
+            Context.publish('opened');
+        }
     }
     /**
      * Plugin API method - see Quink-Plugin-Notes document
@@ -80,11 +95,44 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
         }
     }
     /**
+     * deviantArt issues a number of messages. The data.type values encountered during debugging (so actually issued by this implementation) are:
+     *
+     * gotDeviationId
+     *
+     * ready
+     *
+     * @param message
+     */
+    function handleCommandImportLayerReply(message) {
+        console.log('[' + new Date().toISOString() + ']' + 'save message.data=' + JSON.stringify(message.data));
+        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing opened event');
+        if (message.data && message.data.type === 'ready') {
+            if (tempData) {
+                $iframe[0].contentWindow.postMessage({
+                    type: 'command',
+                    command: 'importLayer',
+                    layerData: {
+                        url: $(tempData).attr('src')
+                    }
+                }, '*');
+            }
+            //only handle replies to query image
+            Context.publish('opened');
+        }
+//
+//        if (message.data && message.data.image) {
+//            var $image = $(IMAGE_TAG);
+//            $image.attr('src', message.data.image);
+//            closePlugin('saved', $image[0].outerHTML);
+//        }
+    }
+    /**
      * save() and exit() API functions call this to remove the iframe
      * containing the image uploader so that control can pass back to the main form
      */
     function closePlugin(topic, data) {
         window.removeEventListener('message', handleQueryImageReply, false);
+        window.removeEventListener('message', handleCommandImportLayerReply, false);
         $iframe.addClass('qk_invisible');
         $iframe.detach();
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing ' + topic + ' event');
