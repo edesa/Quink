@@ -45,9 +45,8 @@
         "80": {
             "container": {
                 "element": "div",
-                "class": "imageuploader",
-                "alt-data-tags": ["data-image-uploading"],
-                "alt-classes": ["image-uploading"]
+                "class": "uploaded-image",
+                "alt-data-tags": ["data-uploaded-image"]
             },
             "url": "image-upload/ImageUploadAdapter.js",
             "name": "Image Upload",
@@ -66,9 +65,8 @@
         "68": {
             "container": {
                 "element": "div",
-                "class": "deviantartmuro",
-                "alt-data-tags": ["data-deviantart-muro"],
-                "alt-classes": ["data-deviantart-muro"]
+                "class": "deviantart-muro-image",
+                "alt-data-tags": ["data-deviantart-muro-image"]
             },
             "url": "deviantart-muro/deviantart-muro-adapter.js",
             "name": "deviantart-muro",
