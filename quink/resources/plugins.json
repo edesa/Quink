@@ -45,8 +45,7 @@
         "80": {
             "container": {
                 "element": "div",
-                "class": "uploaded-image",
-                "alt-data-tags": ["data-uploaded-image"]
+                "class": "uploaded-image"
             },
             "url": "image-upload/image-upload-adapter.js",
             "name": "Image Upload",
@@ -66,7 +65,7 @@
             "container": {
                 "element": "div",
                 "class": "deviantart-muro",
-                "alt-data-tags": ["data-deviantart-muro"]
+                "alt-classes": ["uploaded-image"]
             },
             "url": "deviantart-muro/deviantart-muro-adapter.js",
             "name": "deviantart-muro",
