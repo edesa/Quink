@@ -22,7 +22,7 @@
  *      - include the prebuilt/quink directory
  *      - load this script
  */
-(function () {
+(function (global) {
     'use strict';
 
     var QUINK_ROOT = 'quink',
@@ -68,14 +68,15 @@
             qi = src.indexOf('quink.js');
             if (qi >= 0) {
                 root = src.substr(0, qi);
-                window.QUINK_ROOT = root;
+                global.QUINK.root = root;
                 break;
             }
         }
     }
 
+    global.QUINK = {};
     calcRoot();
     loadStyleSheet();
     loadScripts();
 
-}());
+}(window));

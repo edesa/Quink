@@ -7,48 +7,20 @@
     },
 
     "plugins": {
-        "68": {
-            "container": {
-                "element": "div",
-                "class": "deviantartmuro",
-                "alt-data-tags": ["data-deviantart-muro"],
-                "alt-classes": ["data-deviantart-muro"]
+        "86": {
+            "node": {
+                "element": "svg",
+                "alt-data-tags": ["data-drawing"],
+                "alt-classes": ["drawing"]
             },
-            "url": "deviantart-muro/deviantart-muro-adapter.js",
-            "name": "deviantart-muro",
-            "topic-prefix": "plugin.deviantart-muro",
-            "insert-key": "d",
+            "url": "method-draw/MethodDrawAdapter.js",
+            "name": "Method Draw",
+            "topic-prefix": "plugin.method-draw",
+            "insert-key": "v",
             "on-toolbar": true,
-            "icon": "deviantart-muro/logo.png",
-
-            "ui": {
-                "menu": {
-                    "lateral": "left",
-                    "vertical": "top"
-                }
-            }
+            "icon": "method-draw/logo.svg"
         },
-        "80": {
-            "container": {
-                "element": "div",
-                "class": "imageuploader",
-                "alt-data-tags": ["data-image-uploading"],
-                "alt-classes": ["image-uploading"]
-            },
-            "url": "image-upload/image-upload-adapter.js",
-            "name": "Image Upload",
-            "topic-prefix": "plugin.image-upload",
-            "insert-key": "p",
-            "on-toolbar": true,
-            "icon": "image-upload/logo.png",
 
-            "ui": {
-                "menu": {
-                    "lateral": "left",
-                    "vertical": "top"
-                }
-            }
-        },
         "83": {
             "container": {
                 "element": "div",
@@ -70,19 +42,46 @@
                 }
             }
         },
-        "86": {
+        "80": {
             "container": {
                 "element": "div",
-                "class": "svg",
-                "alt-data-tags": ["data-drawing"],
-                "alt-classes": ["drawing"]
+                "class": "imageuploader",
+                "alt-data-tags": ["data-image-uploading"],
+                "alt-classes": ["image-uploading"]
             },
-            "url": "method-draw/MethodDrawAdapter.js",
-            "name": "Method Draw",
-            "topic-prefix": "plugin.method-draw",
-            "insert-key": "v",
+            "url": "image-upload/ImageUploadAdapter.js",
+            "name": "Image Upload",
+            "topic-prefix": "plugin.image-upload",
+            "insert-key": "i",
+            "on-toolbar":  true,
+            "icon": "image-upload/logo.png",
+
+            "ui": {
+                "menu": {
+                    "lateral": "left",
+                    "vertical": "top"
+                }
+            }
+        },
+        "68": {
+            "container": {
+                "element": "div",
+                "class": "deviantartmuro",
+                "alt-data-tags": ["data-deviantart-muro"],
+                "alt-classes": ["data-deviantart-muro"]
+            },
+            "url": "deviantart-muro/deviantart-muro-adapter.js",
+            "name": "deviantart-muro",
+            "topic-prefix": "plugin.deviantart-muro",
+            "insert-key": "d",
             "on-toolbar": true,
-            "icon": "method-draw/logo.svg"
+            "icon": "deviantart-muro/logo.png",
+            "ui": {
+                "menu": {
+                    "lateral": "left",
+                    "vertical": "top"
+                }
+            }
         }
     }
 }

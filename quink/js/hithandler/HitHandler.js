@@ -33,7 +33,7 @@ define([
     HitHandler.prototype.DOUBLE_TAP_THRESHOLD = 300;
 
     HitHandler.prototype.init = function (selector) {
-        $(selector).on(Event.eventName('end'), this.onHit.bind(this));
+        $(document).on(Event.eventName('end'), selector, this.onHit.bind(this));
     };
 
     /**

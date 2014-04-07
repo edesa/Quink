@@ -17,34 +17,56 @@
  * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*global QUINK */
 define([
     'rangy',
-    'ui/Toolbar',
-    'ui/CommandStateBar',
-    'util/FocusTracker',
     'command/Command',
-    'keyhandler/KeyHandlerMgr',
     'hithandler/HitHandler',
-    'util/Env',
-    'ext/PluginMgr',
+    'keyhandler/KeyHandlerMgr',
+    'service/DownloadMgr',
     'service/Persist',
-    'ui/Caret'
-], function (rangy, Toolbar, CommandStateBar, FocusTracker, Command, KeyHandlerMgr, HitHandler, Env, PluginMgr, Persist, Caret) {
+    'ui/Caret',
+    'ui/CommandStateBar',
+    'ui/Toolbar',
+    'util/Env',
+    'util/FocusTracker',
+    'util/PubSub'
+], function (rangy, Command, HitHandler, KeyHandlerMgr, DownloadMgr, Persist, Caret, CommandStateBar, Toolbar, Env, FocusTracker, PubSub) {
     'use strict';
 
-    function init() {
+    var count = 0;
+
+    /**
+     * Invoked when all downloads are complete and again when all modules are initialised.
+     * Once both invocations have been received this invokes the ready function.
+     */
+    function checkReady() {
+        if (QUINK && ++count === 2 && typeof QUINK.ready === 'function') {
+            QUINK.ready(PubSub);
+        }
+    }
+
+    function initModules() {
         var selector = '[contenteditable=true]';
         rangy.init();
         Env.init();
-        KeyHandlerMgr.init(selector, Env.resource('keymap.json'));
+        KeyHandlerMgr.init(selector);
         FocusTracker.init(selector);
         Command.init();
-        CommandStateBar.create(Env.resource('commandstatebar.html'));
+        CommandStateBar.create();
         HitHandler.init(selector);
-        PluginMgr.init(Env.resource('plugins.json'), Env.resource('pluginmenu.html'));
+        Toolbar.init();
+        DownloadMgr.download('keymap.json', 'commandstatebar.html',
+            'plugins.json', 'pluginmenu.html',
+            'toolbar.html', 'insertmenu.html');
         Persist.create();
-        Toolbar.init(Env.resource('toolbar.html'), Env.resource('insertmenu.html'));
         Caret.init();
+    }
+
+    function init() {
+        PubSub.subscribe('download.all', checkReady);
+        initModules();
+        checkReady();
     }
 
     return {

@@ -40,9 +40,28 @@ define([
         return this.getContainer() instanceof $;
     };
 
+    /**
+     * Returns the data that the containing element current holds. The containing element can be
+     * created by the plugin or by Quink. In the former case the element and its content are returned.
+     * In the latter case only the content is returned.
+     */
     PluginContext.prototype.getContainerData = function () {
-        var cont = this.getContainer();
-        return this.isEdit() ? cont.html() : null;
+        var data = null,
+            cont;
+        if (this.isEdit()) {
+            cont = this.getContainer();
+            if (this.getDefinition().container.pluginCreated) {
+                // Use outerHTML if possible as it's more efficient
+                if (cont[0].outerHTML !== undefined) {
+                    data = cont[0].outerHTML;
+                } else {
+                    data = $('<div>').append(cont.clone()).html();
+                }
+            } else {
+                data = cont.html();
+            }
+        }
+        return data;
     };
 
     /**
@@ -51,12 +70,20 @@ define([
     PluginContext.prototype.commit = function (data, range) {
         var cfg, el;
         if (this.isEdit()) {
-            this.getContainer().html(data);
+            if (!this.getDefinition().container.pluginCreated) {
+                this.getContainer().html(data);
+            } else {
+                this.getContainer().replaceWith(data);
+            }
         } else {
             cfg = this.getContainer();
-            el = document.createElement(cfg.element);
-            el.setAttribute('class', cfg['class']);
-            el.innerHTML = data;
+            if (!cfg.pluginCreated) {
+                el = document.createElement(cfg.element);
+                el.setAttribute('class', cfg['class']);
+                el.innerHTML = data;
+            } else {
+                el = $(data)[0];
+            }
             if (!range.collapsed) {
                 range.deleteContents();
             }

@@ -1,0 +1,26 @@
+{
+    "plugins": {
+        "86": {
+            "node": {
+            },
+            "url": "method-draw/MethodDrawAdapter.js",
+            "name": "Method Draw",
+            "topic-prefix": "plugin.method-draw",
+            "insert-key": "v",
+            "on-toolbar": true,
+            "icon": "method-draw/logo.svg"
+        },
+
+        "83": {
+            "node": {
+                "element": "svg"
+            },
+            "url": "svg-edit/SvgEditAdapter.js",
+            "name": "SVG Edit",
+            "topic-prefix": "plugin.svg-edit",
+            "on-toolbar": true,
+            "insert-key": "s",
+            "icon": "svg-edit/logo.png"
+        }
+    }
+}

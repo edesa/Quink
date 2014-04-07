@@ -26,7 +26,8 @@ require([
     'use strict';
 
     var frame,
-        svgCanvas;
+        svgCanvas,
+        throttledSizeFrame;
 
     /**
      * Runs func every delay milliseconds until func returns true.
@@ -95,6 +96,7 @@ require([
         frame.detach();
         frame.addClass('qk_invisible');
         window.removeEventListener('orientationchange', sizeFrame, false);
+        window.removeEventListener('resize', throttledSizeFrame, false);
         Context.publish(topic, data);
     }
 
@@ -125,6 +127,7 @@ require([
     function open(data) {
         frame.appendTo('body');
         window.addEventListener('orientationchange', sizeFrame, false);
+        window.addEventListener('resize', throttledSizeFrame, false);
         until(_.partial(configureForEmbed, data), 100);
     }
 
@@ -166,5 +169,6 @@ require([
         });
     }
 
+    throttledSizeFrame = _.throttle(sizeFrame, 100);
     fetchScript();
 });

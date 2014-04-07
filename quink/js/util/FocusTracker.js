@@ -23,8 +23,9 @@ define([
     'rangy',
     'hithandler/HitHandler',
     'locrange/LocRangeUtil',
+    'util/Event',
     'util/PubSub'
-], function (_, $, rangy, HitHandler, LocRangeUtil, PubSub) {
+], function (_, $, rangy, HitHandler, LocRangeUtil, Event, PubSub) {
     'use strict';
 
     var FocusTracker = function () {
@@ -43,6 +44,7 @@ define([
             .on('scroll', this.onEditableScroll.bind(this));
         // Ensure there's always an editable.
         this.editable = $(selector)[0];
+        this.lastEditable = this.editable;
         this.firstFocus = true;
         this.bindSelectionEvents();
         PubSub.subscribe('insert.char', onTextInsert);
@@ -55,12 +57,18 @@ define([
      * If the browser supports selectionchange events use them. Otherwise do the best that we can.
      */
     FocusTracker.prototype.bindSelectionEvents = function () {
-        var onSelectionChange = this.onSelectionChange.bind(this);
+        var onSelectionChange = this.onSelectionChangeBound;
         if (document.onselectionchange === undefined) {
             PubSub.subscribe('command.executed', onSelectionChange);
             PubSub.subscribe('nav.executed', onSelectionChange);
             PubSub.subscribe('plugin.exited', onSelectionChange);
             PubSub.subscribe('editable.range', onSelectionChange);
+            PubSub.subscribe('insert.char', function () {
+                setTimeout(onSelectionChange, 20);
+            });
+            PubSub.subscribe('plugin.saved', onSelectionChange);
+            PubSub.subscribe('insert.text', onSelectionChange);
+            PubSub.subscribe('insert.html', onSelectionChange);
         }
     };
 
@@ -146,9 +154,17 @@ define([
         this.editable.blur();
     };
 
+    /**
+     * Make sure that selection change publications are only made if the new selection is within
+     * the editable. On iOS the selection can be in a non-editable div.
+     */
     FocusTracker.prototype.onSelectionChange = function () {
-        this.storeState(this.editable);
-        PubSub.publish('selection.change', LocRangeUtil.getSelectionLoc);
+        var sel = rangy.getSelection(),
+            range = sel.rangeCount && sel.getRangeAt(0);
+        if (range && range.compareNode(this.editable) === range.NODE_BEFORE_AND_AFTER) {
+            this.storeState(this.editable);
+            PubSub.publish('selection.change', LocRangeUtil.getSelectionLoc);
+        }
     };
 
     /**
@@ -205,15 +221,15 @@ define([
 
     /**
      * Allow time for the range to be set within the document. It seems to take ages on iOS.
-     * Returns false o allow other hit handlers to access the same event.
+     * Returns false to allow other hit handlers to access the same event.
      */
     FocusTracker.prototype.handle = function (event) {
         var storeState = function () {
-                var editable = event.event.delegateTarget,
+                var editable = Event.getEditable(event.event),
                     executed;
                 if (this.getRange(editable)) {
                     executed = true;
-                    this.storeState(editable);
+                    this.storeState(editable[0]);
                     if (document.onselectionchange === undefined) {
                         this.onSelectionChange();
                     }

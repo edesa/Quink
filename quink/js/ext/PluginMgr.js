@@ -29,11 +29,8 @@ define([
     'use strict';
 
     var PluginMgr = function () {
-    };
-
-    PluginMgr.prototype.init = function (pluginDefUrl, menuMarkupUrl) {
-        this.fetchPluginDefs(pluginDefUrl);
-        this.fetchMenuMarkup(menuMarkupUrl);
+        PubSub.subscribe('download.plugins', this.onDownloadDefs.bind(this));
+        PubSub.subscribe('download.pluginmenu', this.onDownloadMenu.bind(this));
     };
 
     PluginMgr.prototype.getDefs = function () {
@@ -42,15 +39,28 @@ define([
 
     /**
      * Convert the identifiers into valid jQuery selectors.
+     * The plugin definition will contain one of a 'node' or a 'container' object. The former indicates
+     * that the content created by the plugin will be inserted directly into the document, the latter
+     * that Quink will provide a containing element for the plugin content.
      */
     PluginMgr.prototype.editIdentifiers = function () {
         _.some(this.getDefs(), function (def) {
-            var container = def.container;
+            var container = def.container || def.node;
+            if (def.container && def.node) {
+                throw new Error('Invalid container defintion. Must have one of element or node.');
+            }
             if (container) {
+                // Indicates that the plugin creates its own container.
+                if (def.node) {
+                    container.pluginCreated = true;
+                    def.container = def.node;
+                }
                 if (container.element && container['class']) {
                     container.primary = container.element + '.' + container['class'];
-                } else {
-                    throw new Error('Missing container element and class.');
+                } else if (container.element && container.pluginCreated) {
+                    container.primary = container.element;
+                } else if (container['class'] && container.pluginCreated) {
+                    container.primary = container['class'];
                 }
                 if (container['alt-classes']) {
                     container['alt-classes'] = container['alt-classes'].map(function (cls) {
@@ -118,29 +128,17 @@ define([
         vertical: 'top'
     };
 
-    PluginMgr.prototype.fetchMenuMarkup = function (url) {
-        var me = this;
-        $.get(url).done(function (data) {
-            var menu = $(data);
-            menu.appendTo('body').on(Event.eventName('end'), me.onPluginCloseMenuHit);
-            console.log('plugin menu markup downloaded');
-        }).fail(function (jqxhr, textStatus, error) {
-            console.log('Failed to fetch plugin menu markup from: ' + url + '. ' + jqxhr.status + '. ' + error);
-        });
+    PluginMgr.prototype.onDownloadMenu = function (data) {
+        var menu = $(data);
+        menu.appendTo('body').on(Event.eventName('end'), this.onPluginCloseMenuHit);
     };
 
-    PluginMgr.prototype.fetchPluginDefs = function (url) {
-        var me = this;
-        $.getJSON(url).done(function (data) {
-            me.pluginDefs = data.plugins;
-            me.ui = data.ui;
-            me.editIdentifiers();
-            me.publishKeyBindings();
-            me.publishNames();
-            console.log('plugin definitions downloaded');
-        }).fail(function (jqxhr, textStatus, error) {
-            console.log('Failed to fetch plugin definitions from: ' + url + '. ' + jqxhr.status + '. ' + error);
-        });
+    PluginMgr.prototype.onDownloadDefs = function (data) {
+        this.pluginDefs = data.plugins;
+        this.ui = data.ui;
+        this.editIdentifiers();
+        this.publishKeyBindings();
+        this.publishNames();
     };
 
     /**
@@ -354,12 +352,7 @@ define([
 
     var theInstance = new PluginMgr();
 
-    function init(pluginDefUrl, menuMarkupUrl) {
-        theInstance.init(pluginDefUrl, menuMarkupUrl);
-    }
-
     return {
-        init: init,
         loadPlugin: theInstance.loadPlugin.bind(theInstance),
         identifyPlugin: theInstance.identifyPlugin.bind(theInstance)
     };

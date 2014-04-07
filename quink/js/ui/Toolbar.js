@@ -33,6 +33,8 @@ define([
 
     var Toolbar = function () {
         HitHandler.register(this, true);
+        PubSub.subscribe('download.toolbar', this.onDownload.bind(this));
+        PubSub.subscribe('download.insertmenu', this.onDownload.bind(this));
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
         PubSub.subscribe('command.exec.key', this.onKeyExecCommand.bind(this));
         PubSub.subscribe('command.state', this.onCommandState.bind(this));
@@ -227,7 +229,6 @@ define([
         var func = this[id];
         if (typeof func === 'function') {
             func.apply(this, args);
-            // this[id](event, args);
         } else {
             console.log('no function: ' + id);
         }
@@ -434,20 +435,6 @@ define([
         }
     };
 
-    Toolbar.prototype.fetchInsertMenuMarkup = function (url) {
-        var me = this;
-        $.get(url, function (data) {
-            console.log('insert menu markup downloaded');
-            me.insertMenu = $(data);
-            if (me.pluginNames) {
-                me.processPluginData(me.pluginNames, me.insertMenu);
-                delete me.pluginNames;
-            }
-        }).fail(function (jqXhr, textStatus, error) {
-            console.log('Failed to download insert menu markup from: ' + url + '. ' + jqXhr.status + ' ' + error);
-        });
-    };
-
     Toolbar.prototype.checkShowSubmit = function () {
         if (Env.getSubmitUrl()) {
             this.toolbar.find('[data-cmd-id=submitDocument]').removeClass('qk_hidden');
@@ -495,23 +482,40 @@ define([
         }
     };
 
-    Toolbar.prototype.init = function (toolbarMarkupUrl, insertMenuMarkupUrl) {
-        var me = this;
-        $.get(toolbarMarkupUrl, function (data) {
-            me.toolbar = $(data).appendTo('body');
-            console.log('toolbar markup downloaded');
-            me.fetchInsertMenuMarkup(insertMenuMarkupUrl);
-            me.afterToolbarCreated();
-        }).fail(function (jqXhr, textStatus, error) {
-            console.log('Failed to download toolbar markup from: ' + toolbarMarkupUrl + '. ' + jqXhr.status + ' ' + error);
-        });
+    Toolbar.prototype.onDownloadInsertMenu = function (data) {
+        this.insertMenu = $(data);
+        if (this.pluginNames) {
+            this.processPluginData(this.pluginNames, this.insertMenu);
+            delete this.pluginNames;
+        }
     };
 
-    var toolbar = null;
+    Toolbar.prototype.onDownloadToolbar = function (data) {
+        this.toolbar = $(data).appendTo('body');
+        this.afterToolbarCreated();
+    };
 
-    function init(toolbarMarkupUrl, insertMenuMarkupUrl) {
+    /**
+     * The insert menu download can't be processed until the toolbar download has been handled.
+     */
+    Toolbar.prototype.onDownload = function (data, topic) {
+        if (topic === 'download.toolbar') {
+            this.onDownloadToolbar(data);
+            if (this.insertMenuData) {
+                this.onDownloadInsertMenu(this.insertMenuData);
+                this.insertMenuData = null;
+            }
+        } else if (this.toolbar) {
+            this.onDownloadInsertMenu(data);
+        } else {
+            this.insertMenuData = data;
+        }
+    };
+
+    var toolbar;
+
+    function init() {
         toolbar = new Toolbar();
-        toolbar.init(toolbarMarkupUrl, insertMenuMarkupUrl);
     }
 
     return {

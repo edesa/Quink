@@ -27,8 +27,9 @@ define([
     'nav/Position',
     'hithandler/HitHandler',
     'util/Env',
+    'util/Event',
     'util/DomUtil'
-], function (_, $, rangy, textrange, LocRange, PubSub, Position, HitHandler, Env, DomUtil) {
+], function (_, $, rangy, textrange, LocRange, PubSub, Position, HitHandler, Env, Event, DomUtil) {
     'use strict';
 
     var Nav = function () {
@@ -600,10 +601,10 @@ define([
      */
     Nav.prototype.doHandle = function (event) {
         var isStateStale = function (state, editable) {
-                return !state || state.editable !== editable;
+                return !state || state.editable !== editable[0];
             },
             handleHit = function (event) {
-                if (isStateStale(this.getState(), event.event.delegateTarget)) {
+                if (isStateStale(this.getState(), Event.getEditable(event.event))) {
                     setTimeout(function () {
                         handleHit(event);
                     }, 10);

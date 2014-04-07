@@ -146,8 +146,8 @@ define([
 
     function init() {
         var origin = location.href.split('?')[0];
-        setRoot(window.QUINK_ROOT);
-        delete window.QUINK_ROOT;
+        setRoot(window.QUINK.root);
+        delete window.QUINK.root;
         parseParams();
         autoSaveUrl = ensureUrlIsFile(getParam('autosave', origin));
         saveUrl = ensureUrlIsFile(origin);
