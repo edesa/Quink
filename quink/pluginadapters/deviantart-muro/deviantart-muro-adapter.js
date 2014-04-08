@@ -51,10 +51,10 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
      * Publish on a saved topic and as part of the publication include the serialised data to be saved
      */
     function save() {
+        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.save() called');
+
         window.addEventListener('message', handleQueryImageReply, false);
 
-        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.save() called');
-        //reply listener was registered in the open method
         $iframe[0].contentWindow.postMessage({
             type:      'query',
             query:   'image'

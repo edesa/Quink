@@ -54,6 +54,7 @@ function EmbeddedImageUpload(frame) {
 }
 
 EmbeddedImageUpload.prototype.setImage = function (newImageHTML) {
+    'use strict';
     var returnValue = false,
         $imageUploadFrameContents,
         $newImageHTML,
@@ -100,6 +101,7 @@ EmbeddedImageUpload.prototype.setImage = function (newImageHTML) {
     return returnValue;
 };
 EmbeddedImageUpload.prototype.send = function (name, args, callback) {
+    'use strict';
     var cbid = Math.floor(Math.random() * 31776352877 + 993577).toString();
     //this.stack.push(callback);
     this.callbacks[cbid] = callback;

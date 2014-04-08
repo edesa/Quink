@@ -176,7 +176,7 @@ require([
      * Get the scripts, then the css, which gets the html
      */
     function fetchPluginArtifacts() {
-        var url = Context.pluginUrl('image-upload/embed-api.js');
+        var url = Context.adapterUrl('image-upload/embed-api.js');
         $.getScript(url).done(function () {
             downloadCSSAndHTML();
         }).fail(function (jqxhr, textStatus, error) {
