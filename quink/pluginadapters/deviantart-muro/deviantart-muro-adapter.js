@@ -102,11 +102,12 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
                     command: 'importLayer',
                     layerData: {
                         url: $(imageHTML).attr('src'),
-                        width: 300,
-                        height: 300
+                        width: $(imageHTML).width(),
+                        height: $(imageHTML).height()
                     }
                 }, '*');
             }
+            imageHTML = null;
             //only handle replies to query image
             Context.publish('opened');
         }
