@@ -23,7 +23,7 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
     var $iframe,
         BODY_TAG_NAME = "body",
         IMAGE_TAG = "<img>",
-        tempData;
+        imageHTML;
     /**
      * Plugin API method - see Quink-Plugin-Notes document
      * (i) add the plugin markup to the DOM (re-using any plugin artifacts that have been previously downloaded)
@@ -34,23 +34,14 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
      */
     function open(data) {
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.open(data) called');
+        window.addEventListener('message', handleDeviantArtReady, false);
         //add the iframe to the HTML
         $iframe.appendTo(BODY_TAG_NAME);
         $iframe.removeClass('qk_invisible');
-        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing opened event');
-        window.addEventListener('message', handleCommandImportLayerReply, false);
-        tempData = data;
         if (data) {
-//            setTimeout($iframe[0].contentWindow.postMessage({
-//                type: 'command',
-//                command: 'setBackgroundLayer',
-//                layerData: {
-//                    width: 100,
-//                    height: 100,
-//                    url: $(tempData).attr('src')
-//                }
-//            }, '*'),0);
+            imageHTML = data;
         } else {
+            console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing opened event');
             Context.publish('opened');
         }
     }
@@ -85,12 +76,12 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
      * @param message
      */
     function handleQueryImageReply(message) {
-        console.log('[' + new Date().toISOString() + ']' + 'save message.data=' + JSON.stringify(message.data));
-        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing saved event');
+        console.log('[' + new Date().toISOString() + ']' + 'handleQueryImageReply message.data=' + JSON.stringify(message.data));
         //only handle replies to query image
         if (message.data && message.data.image) {
             var $image = $(IMAGE_TAG);
             $image.attr('src', message.data.image);
+            console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing saved event');
             closePlugin('saved', $image[0].outerHTML);
         }
     }
@@ -103,16 +94,16 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
      *
      * @param message
      */
-    function handleCommandImportLayerReply(message) {
-        console.log('[' + new Date().toISOString() + ']' + 'save message.data=' + JSON.stringify(message.data));
-        console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing opened event');
+    function handleDeviantArtReady(message) {
         if (message.data && message.data.type === 'ready') {
-            if (tempData) {
+            if (imageHTML) {
                 $iframe[0].contentWindow.postMessage({
                     type: 'command',
                     command: 'importLayer',
                     layerData: {
-                        url: $(tempData).attr('src')
+                        url: $(imageHTML).attr('src'),
+                        width: 300,
+                        height: 300
                     }
                 }, '*');
             }
@@ -132,27 +123,18 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
      */
     function closePlugin(topic, data) {
         window.removeEventListener('message', handleQueryImageReply, false);
-        window.removeEventListener('message', handleCommandImportLayerReply, false);
+        window.removeEventListener('message', handleDeviantArtReady, false);
         $iframe.addClass('qk_invisible');
         $iframe.detach();
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing ' + topic + ' event');
         Context.publish(topic, data);
     }
-    /**
-     * Runs func every delay milliseconds until func returns true.
-     * (same technique as method draw and svg edit to wait till DOM is loaded)
-     */
-    function until(func, delay) {
-        if (!func()) {
-            _.delay(until, delay, func, delay);
-        }
-    }
-
     function downloadHTML() {
         var url = Context.adapterUrl('deviantart-muro/deviantart-muro-embed.html');
         $.get(url).done(function (data) {
             $iframe = $(data);
             console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing loaded event');
+            //associate methods in this object with the lifecycle callbacks for plugins
             Context.publish('loaded', {
                 open: open,
                 save: save,
