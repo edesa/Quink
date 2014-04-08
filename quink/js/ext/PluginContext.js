@@ -77,15 +77,15 @@ define([
             }
         } else {
             cfg = this.getContainer();
-            cls = cfg['class'];
             if (!cfg.pluginCreated) {
+                cls = cfg['class'];
                 el = document.createElement(cfg.element);
+                if (cls) {
+                    el.setAttribute('class', cls);
+                }
                 el.innerHTML = data;
             } else {
                 el = $(data)[0];
-            }
-            if (cls) {
-                el.setAttribute('class', cls);
             }
             if (!range.collapsed) {
                 range.deleteContents();
