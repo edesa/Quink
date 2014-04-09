@@ -23,10 +23,15 @@ define([
     'rangy',
     'hithandler/HitHandler',
     'locrange/LocRangeUtil',
+    'util/Env',
     'util/Event',
     'util/PubSub'
-], function (_, $, rangy, HitHandler, LocRangeUtil, Event, PubSub) {
+], function (_, $, rangy, HitHandler, LocRangeUtil, Env, Event, PubSub) {
     'use strict';
+
+    function isBrokenRangeClone() {
+        return false;
+    }
 
     var FocusTracker = function () {
         this.states = [];
@@ -102,6 +107,25 @@ define([
     };
 
     /**
+     * On Android Chrome a blur event can cause the document's insertion point to change incorrectly.
+     * This attempts to detect that situation and uses the value stored by Quink in preference to
+     * the one in the browser.
+     * This only seems to happen on Android Chrome.
+     */
+    FocusTracker.prototype.checkRange = function (range) {
+        var nr = range.nativeRange;
+        if (Env.isAndroidChrome() &&
+            (range.startContainer !== nr.startContainer ||
+             range.startOffset !== nr.startOffset ||
+             range.endContainer !== nr.endContainer ||
+             range.endOffset !== nr.endOffset)) {
+            console.log('@@@ ranges out of sync...');
+            range.setStart(range.startContainer, range.startOffset);
+            range.setEnd(range.endContainer, range.endOffset);
+        }
+    };
+
+    /**
      * Switch off the selection change handler to avoid an empty selection being saved.
      */
     FocusTracker.prototype.onBlur = function (event) {
@@ -118,8 +142,17 @@ define([
         this.editable = editable;
         this.lastEditable = editable;
         if (state.range) {
-            state.range.refresh();
+            this.checkRange(state.range);
             rangy.getSelection().setSingleRange(state.range);
+            // if (state.rangeProps) {
+            //     console.log('range props: ' + state.rangeProps.startOffset);
+            //     state.range.setStart(state.rangeProps.startContainer, state.rangeProps.startOffset);
+            //     state.range.setEnd(state.rangeProps.endContainer, state.rangeProps.endOffset);
+            //     state.range.rangeProps = null;
+            //     rangy.getSelection().setSingleRange(state.range);
+            // }
+        } else {
+            console.log('no range to restore...');
         }
         PubSub.publish('editable.focus', editable);
     };
@@ -162,8 +195,13 @@ define([
         var sel = rangy.getSelection(),
             range = sel.rangeCount && sel.getRangeAt(0);
         if (range && range.compareNode(this.editable) === range.NODE_BEFORE_AND_AFTER) {
+            range.refresh();
+            console.log('updating range position...: ' + range.startOffset);
+            console.log('onSelectionChange: ' + document.getSelection().getRangeAt(0).startOffset);
             this.storeState(this.editable);
             PubSub.publish('selection.change', LocRangeUtil.getSelectionLoc);
+        } else {
+            console.log('onSelectionChange but not in container...');
         }
     };
 
@@ -185,13 +223,34 @@ define([
                 editable: editable
             };
             this.states.push(state);
+            if (editable.id === 'ed-1') {
+                window.QK_STATE = state;
+                console.log('set...');
+            }
         }
         return state;
     };
 
     FocusTracker.prototype.storeState = function (editable) {
         var state = this.findState(editable);
-        state.range = this.getRange(editable);
+        var range = this.getRange(editable);
+        state.range = range.cloneRange();
+        // state.range = this.getRange(editable);
+        if (state.range) {
+            console.log('storeState in conditional: ' + state.range.startOffset);
+            // state.range.refresh();
+            // state.range = state.range.cloneRange();
+            console.log('storeState after refresh: ' + state.range.startOffset + ' ' + state.range.nativeRange.startOffset);
+            if (isBrokenRangeClone()) {
+                state.rangeProps = {
+                    startContainer: state.range.startContainer,
+                    startOffset: state.range.startOffset,
+                    endContainer: state.range.endContainer,
+                    endOffset: state.range.endOffset
+                };
+            }
+        }
+        console.log('storeState: ' + state.range.startOffset);
         state.bodyScrollTop = this.bodyScrollTop;
         state.scrollTop = this.scrollTop;
         return state;

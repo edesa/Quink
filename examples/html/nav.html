@@ -4,19 +4,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
         <title>Quink Example - cursor navigation from the host page</title>
         <script type="text/javascript" src="../../quink.js"></script>
+        <style>
+        .page-button {
+            min-height: 40px;
+            min-width: 100px;
+        }
+        </style>
     </head>
     <body>
         <div contenteditable="true" id="ed-1">
-            This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page.
+This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page.
         </div>
         <div contenteditable="true" id="ed-2">
             A second editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more.
         </div>
-        <div contenteditable="true" id="ed-3">
-            A second editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more.
-        </div>
-        <button id="btn-toggle">Toggle and select</button>
-        <button id="btn-nav">Nav</button>
+        <button class="page-button" id="btn-toggle">Toggle and select</button>
+        <button class="page-button" id="btn-nav">Nav</button>
+        <button class="page-button" id="btn-blur">Blur</button>
+        <button class="page-button" id="btn-focus">Focus</button>
         <script type="text/javascript">
             QUINK.ready = function (PubSub) {
                 var btnToggle = document.querySelector('#btn-toggle'),
@@ -28,6 +33,15 @@
                     var ed = document.querySelector('#ed-1');
                     ed.focus();
                     PubSub.publish('command.exec', 'nav.word.next');
+                });
+
+                document.querySelector('#btn-blur').addEventListener('click', function () {
+                    console.log('host doc... blurring');
+                    document.querySelector('#btn-blur').blur();
+                });
+                document.querySelector('#btn-focus').addEventListener('click', function () {
+                    console.log('host doc... focusing');
+                    document.querySelector('#btn-focus').focus();
                 });
             };
         </script>

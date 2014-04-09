@@ -144,6 +144,10 @@ define([
         return /iPhone|iPad|iPod/i.test(navigator.platform);
     }
 
+    function isAndroidChrome() {
+        return /Android.*Chrome/.test(navigator.userAgent);
+    }
+
     function init() {
         var origin = location.href.split('?')[0];
         setRoot(window.QUINK.root);
@@ -164,6 +168,7 @@ define([
         getSaveUrl: getSaveUrl,
         getSubmitUrl: getSubmitUrl,
         makeQuinkRelative: makeQuinkRelative,
-        isIos: isIos
+        isIos: isIos,
+        isAndroidChrome: isAndroidChrome
     };
 });
