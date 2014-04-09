@@ -31,7 +31,7 @@ define([
 
     var FocusTracker = function () {
         this.states = [];
-        this.onSelectionChangeBound = this.onSelectionChange.bind(this);
+        this.onSelectionChangeThrottled = _.throttle(this.onSelectionChange.bind(this), 100);
     };
 
     FocusTracker.prototype.init = function (selector) {
@@ -58,7 +58,7 @@ define([
      * If the browser supports selectionchange events use them. Otherwise do the best that we can.
      */
     FocusTracker.prototype.bindSelectionEvents = function () {
-        var onSelectionChange = this.onSelectionChangeBound;
+        var onSelectionChange = this.onSelectionChangeThrottled;
         if (document.onselectionchange === undefined) {
             PubSub.subscribe('command.executed', onSelectionChange);
             PubSub.subscribe('nav.executed', onSelectionChange);
@@ -133,7 +133,7 @@ define([
     FocusTracker.prototype.onFocus = function (event) {
         var editable = event.delegateTarget,
             state = this.findState(editable);
-        $(document).on('selectionchange.focustracker', this.onSelectionChangeBound);
+        $(document).on('selectionchange.focustracker', this.onSelectionChangeThrottled);
         this.editable = editable;
         this.lastEditable = editable;
         if (state.range) {
@@ -158,7 +158,7 @@ define([
             range.collapse(true);
             state.range = range;
         }
-        $(document).on('selectionchange.focustracker', this.onSelectionChange.bind(this));
+        $(document).on('selectionchange.focustracker', this.onSelectionChangeThrottled);
         rangy.getSelection().setSingleRange(range);
         return range;
     };
