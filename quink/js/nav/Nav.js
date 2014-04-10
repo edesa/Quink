@@ -35,7 +35,6 @@ define([
     var Nav = function () {
         var onInsert = this.onInsert.bind(this);
         PubSub.subscribe('event.orientationchange', _.bind(this.onOrientationChange, this));
-        PubSub.subscribe('nav.afternormalise', _.bind(this.onAfterNormalise, this));
         PubSub.subscribe('insert.char', onInsert);
         PubSub.subscribe('insert.text', onInsert);
         PubSub.subscribe('insert.html', onInsert);
@@ -400,6 +399,7 @@ define([
         this.ensureVisible(context.result);
         context.clear();
         origin.detach();
+        return !!context.result;
     };
 
     /**
@@ -498,28 +498,7 @@ define([
             this.clearSelAnchor();
         }
         origin.detach();
-    };
-
-    /**
-     * Occasionally the DOM can be changed by the navigation process. The changes are a splitting
-     * of a single text node into 2 then the normalisation of the text node's parent which
-     * merges the split text nodes back into a single node.
-     * If this happens the x-anchor will end up in an inconsistent state as the rangy range keeps
-     * the old pre-change values but the wrapped native range is updated by the browser to reflect
-     * the splitting of the text node. The native range is not updated again when the split text
-     * nodes are re-merged, so the native range is wrong after the normalisation takes place.
-     * This function will be invoked after the normalisation and re-creates a new x-anchor
-     * based on the values held in the original rangy range.
-     */
-    Nav.prototype.onAfterNormalise = function () {
-        var xa = this.getState().xAnchor, n = xa.nativeRange;
-        console.log('onAfterNormalise...');
-        if (xa.startContainer !== n.startContainer ||
-            xa.endContainer !== n.endContainer ||
-            xa.startOffset !== n.startOffset ||
-            xa.endOffset !== n.endOffset) {
-                console.log('onAfterNormalise - out of sync...');
-        }
+        return !!result;
     };
 
     /**

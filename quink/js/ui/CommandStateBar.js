@@ -76,7 +76,6 @@ define([
         });
         if (Env.getParam('statusbar', 'on') === 'on') {
             this.toggleVisibleState();
-            PubSub.publish('command.exec.key', 'ui.toggle.status');
         }
     };
 

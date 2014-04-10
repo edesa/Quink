@@ -13,7 +13,7 @@
         "188": "nav.line.start",
         "190": "nav.line.end",
 
-        "86": "nav.toggle.select",
+        "86": "nav.select.toggle",
         "83": "ui.toggle.status",
 
         "8": "edit.delete",

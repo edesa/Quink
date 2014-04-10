@@ -27,7 +27,7 @@ This is editable... some text in here to fill up the page. Some more text and mo
                 var btnToggle = document.querySelector('#btn-toggle'),
                     btnNav = document.querySelector('#btn-nav');
                 btnToggle.addEventListener('click', function () {
-                    PubSub.publish('command.exec', 'nav.toggle.select');
+                    PubSub.publish('command.exec', 'nav.select.toggle');
                 });
                 btnNav.addEventListener('click', function () {
                     var ed = document.querySelector('#ed-1');

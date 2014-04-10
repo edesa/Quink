@@ -29,7 +29,6 @@ define([
             onDelayStateChange = _.bind(this.onDelayStateChange, this, 10);
         HitHandler.register(this);
         PubSub.subscribe('command.executed', this.onCmdExec.bind(this));
-        PubSub.subscribe('nav.executed', this.onNavExec.bind(this));
         PubSub.subscribe('insert.char', onDelayStateChange);
         PubSub.subscribe('editable.blur', onStateChange);
         PubSub.subscribe('plugin.saved', onStateChange);
@@ -75,10 +74,15 @@ define([
         this.onStateChange();
     };
 
+    /**
+     * Update internal state to reflect changes for persistence and nav and select.
+     */
     CommandStateAdapter.prototype.onCmdExec = function (cmd) {
         if (typeof cmd === 'string' && cmd.split('.')[0] === 'persist') {
             this.isDocDirty = false;
             this.persistError = false;
+        } else if (cmd.cmd && cmd.result && /^nav\.select\./.test(cmd.cmd)) {
+            this.navAndSelect = /\.toggle$/.test(cmd.cmd) ? !this.navAndSelect : /\.on$/.test(cmd.cmd);
         }
         this.onStateChange();
     };
@@ -90,13 +94,6 @@ define([
     CommandStateAdapter.prototype.onPersistError = function (data) {
         if (data && data.operation === 'save') {
             this.persistError = true;
-            this.onStateChange();
-        }
-    };
-
-    CommandStateAdapter.prototype.onNavExec = function (data) {
-        if (data && data.navandselect !== undefined) {
-            this.navAndSelect = data.navandselect;
             this.onStateChange();
         }
     };
