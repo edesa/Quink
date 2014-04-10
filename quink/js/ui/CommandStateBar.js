@@ -57,8 +57,16 @@ define([
 
     CommandStateBar.prototype.handle = function (msg) {
         var handled;
-        if (msg === 'ui.toggle.status') {
-            this.toggleVisibleState();
+        if (/^ui\.status\./.test(msg)) {
+            if (/\.toggle$/.test(msg)) {
+                this.toggleVisibleState();
+            } else {
+                this.setVisibleState(/\.on$/.test(msg));
+            }
+            PubSub.publish('command.executed', {
+                cmd: msg,
+                result: true
+            });
             handled = true;
         }
         return handled;
@@ -69,13 +77,18 @@ define([
         func.call(this.bar, 'qk_hidden');
     };
 
+    CommandStateBar.prototype.setVisibleState = function (isVisible) {
+        var func = isVisible ? this.bar.removeClass : this.bar.addClass;
+        func.call(this.bar, 'qk_hidden');
+    };
+
     CommandStateBar.prototype.onDownload = function (data) {
         this.bar = $(data).appendTo('body');
         this.vpBar = ViewportRelative.create(this.bar, {
             top: 5
         });
         if (Env.getParam('statusbar', 'on') === 'on') {
-            this.toggleVisibleState();
+            PubSub.publish('command.exec', 'ui.status.on');
         }
     };
 

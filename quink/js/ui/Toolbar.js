@@ -32,13 +32,14 @@ define([
     'use strict';
 
     var Toolbar = function () {
+        var onPubBeforeToolbar = this.onPubBeforeToolbar.bind(this);
         HitHandler.register(this, true);
         PubSub.subscribe('download.toolbar', this.onDownload.bind(this));
         PubSub.subscribe('download.insertmenu', this.onDownload.bind(this));
-        PubSub.subscribe('command.executed', this.onCommandExec.bind(this));
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
-        PubSub.subscribe('command.state', this.onCommandState.bind(this));
-        this.keyExecMsgs = [];
+        this.cmdExecSub = PubSub.subscribe('command.executed', onPubBeforeToolbar);
+        this.cmdStateSub = PubSub.subscribe('command.state', onPubBeforeToolbar);
+        this.delayedPubs = [];
     };
 
     Toolbar.prototype.TAB_NAME_PREFIX = 'qk_tab_';
@@ -54,7 +55,8 @@ define([
         'nav.select.off': '#nav_and_select',
         'nav.select.toggle': '#nav_and_select',
         'ui.status.on': '#toggle_status_bar',
-        'ui.status.off': '#toggle_status_bar'
+        'ui.status.off': '#toggle_status_bar',
+        'ui.status.toggle': '#toggle_status_bar'
     };
 
     /**
@@ -176,7 +178,7 @@ define([
         PubSub.publish('command.exec', 'nav.word.next');
     };
 
-    Toolbar.prototype.navAndSelect = function (event) {
+    Toolbar.prototype.navAndSelect = function () {
         PubSub.publish('command.exec', 'nav.select.toggle');
     };
 
@@ -209,7 +211,7 @@ define([
     };
 
     Toolbar.prototype.toggleStatusBar = function () {
-        PubSub.publish('command.exec', 'ui.toggle.status');
+        PubSub.publish('command.exec', 'ui.status.toggle');
     };
 
     Toolbar.prototype.submitDocument = function () {
@@ -459,6 +461,32 @@ define([
         this.showToolbarAt(x, y);
     };
 
+    /**
+     * Sets up the correct subscriptions and processes any that have been received prior to the
+     * toolbar being created.
+     */
+    Toolbar.prototype.processHeldPubs = function () {
+        PubSub.unsubscribe(this.cmdExecSub);
+        PubSub.unsubscribe(this.cmdStateSub);
+        PubSub.subscribe('command.executed', this.onCommandExec.bind(this));
+        PubSub.subscribe('command.state', this.onCommandState.bind(this));
+        if (this.delayedPubs.length) {
+            this.delayedPubs.forEach(function (args) {
+                var func = args[1] === 'command.executed' ? this.onCommandExec : this.onCommandState;
+                func.apply(this, args);
+            }.bind(this));
+            this.delayedPubs = null;
+        }
+    };
+
+    /**
+     * Publications that will be handled using the toolbar are routed here until the toolbar has
+     * been created.
+     */
+    Toolbar.prototype.onPubBeforeToolbar = function () {
+        this.delayedPubs.push(arguments);
+    };
+
     Toolbar.prototype.afterToolbarCreated = function () {
         this.initToolbarTabs();
         this.addToolbarTabListeners(document);
@@ -466,11 +494,7 @@ define([
         this.checkShowSubmit();
         Draggable.create('.qk_toolbar_container');
         this.vpToolbar = ViewportRelative.create(this.toolbar);
-        if (this.keyExecMsgs.length) {
-            this.keyExecMsgs.forEach(function (msg) {
-                this.onKeyExecCommand(msg);
-            }.bind(this));
-        }
+        this.processHeldPubs();
         if (Env.getParam('toolbar', 'off') === 'on') {
             this.showToolbar();
         }

@@ -14,7 +14,7 @@
         "190": "nav.line.end",
 
         "86": "nav.select.toggle",
-        "83": "ui.toggle.status",
+        "83": "ui.status.toggle",
 
         "8": "edit.delete",
         "68": "edit.forwarddelete",
