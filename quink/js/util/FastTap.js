@@ -53,9 +53,11 @@ define([
         ar[1] = 200;
         ar[5] = 100;
         ar[10] = 75;
-        ar[20] = 50;
-        ar[40] = 25;
-        ar[60] = 10;
+        ar[15] = 50;
+        ar[20] = 25;
+        ar[30] = 10;
+        ar[40] = 5;
+        ar[50] = 0;
     }(FastTap.prototype.repeatIntervals));
 
     FastTap.prototype.handleEvent = function (event) {
@@ -155,17 +157,20 @@ define([
     /**
      * Repeats execution of the handler. The execution interval depends on the number of times
      * the handler has been executed with the interval shortening as the execution count rises.
+     * Have to clone the event because something is changing the original event's currentTarget
+     * which is null when the delayed function is called.
      */
     FastTap.prototype.repeat = function (event) {
         var count = 0,
             interval = this.repeatIntervals[0],
-            func = function rpt(event) {
-                count++;
-                interval = this.repeatIntervals[count] || interval;
-                this.execHandler(event);
-                this.repeatTimeout = _.delay(_.bind(rpt, this), interval, event);
-            };
-        this.repeatTimeout = _.delay(_.bind(func, this), interval, event);
+            ev = _.clone(event),
+            func = function () {
+                var newInterval = this.repeatIntervals[++count];
+                interval = newInterval === undefined ? interval : newInterval;
+                this.execHandler(ev);
+                this.repeatTimeout = _.delay(func, interval);
+            }.bind(this);
+        this.repeatTimeout = _.delay(func, interval);
     };
 
     /**
