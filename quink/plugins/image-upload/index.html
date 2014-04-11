@@ -91,7 +91,12 @@
 <script src="lib/jasny-bootstrap.min.js"></script>
 <script src="lib/holder.js"></script>
 <script type="text/javascript" src="image-uploader.js"></script>
-
+<script>
+    $(document).ready(function() {
+        console.log('[' + new Date().toISOString() + ']' + 'imageUpload iframe posting ready');
+        parent.window.postMessage("imageUploadReady", "*");
+    } );
+</script>
 </body>
 </html>
 

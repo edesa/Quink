@@ -124,6 +124,49 @@
                     }
                 }
 
+                self.setImage = function(newImageHTML) {
+                    var returnValue = false,
+                        $newImageHTML,
+                        existingWidth,
+                        existingWidthSize,
+                        existingWidthUnit,
+                        existingHeight,
+                        existingHeightSize,
+                        existingHeightUnit;
+
+                    $newImageHTML = $(newImageHTML).removeAttr('width').removeAttr('height').css({ width: "", height: "" });
+
+                    $newImageHTML = $(newImageHTML);
+                    existingWidthSize = $newImageHTML.width();
+                    existingHeightSize = $newImageHTML.height();
+                    existingWidth = $newImageHTML.css('width');
+                    existingHeight = $newImageHTML.css('height');
+
+                    if ($('.fileinput').length > 0) {
+                        //add the existing image, and mark the container with the "exists" css class so the correct buttons are displayed
+                        //see jasny-bootstrap.css - if the container class (new/exists) doesn't match the button's class (new/exists) then display:none
+                        $('.fileinput').addClass('fileinput-exists').removeClass('fileinput-new');
+                        $('.fileinput-preview').append($newImageHTML);
+                        if (existingHeightSize > 0) {
+
+                            existingWidthUnit = existingWidth.split(existingWidthSize)[1];
+                            $('#width-input').val(existingWidthSize);
+                            $('#width-unit-select').val(existingWidthUnit);
+
+                            existingHeightUnit = existingHeight.split(existingHeightSize)[1];
+                            $('#height-input').val(existingHeightSize);
+                            $('#height-unit-select').val(existingHeightUnit);
+                        } else {
+                            $('#width-input').val("");
+                            $('#width-unit-select').val("%");
+                            $('#height-input').val("");
+                            $('#height-unit-select').val("%");
+                        }
+                        $newImageHTML.css({ width: "", height: "" });
+                        returnValue = true;
+                    }
+                    return returnValue;
+                };
                 self.getImageElementAsString = function () {
                     var $imageElement, $widthInput, $widthUnitSelect, $heightInput, $heightUnitSelect, returnValue;
 
@@ -147,54 +190,7 @@
                     return returnValue;
                 };
                 self.init = function () {
-                    $( window ).resize(function() {
-                        if ($("#windowSize").length > 0) {
-                            $("#windowSize").html($(window).width() + "," + $(window).height());
-                        } else {
-                            $("body").prepend("<div id=\"windowSize\">" + $(window).width() + "," + $(window).height() + "</div>");
-                        }
-                    });
-                    try {
-                        var I = function (d) {
-                            if (window.JSON && JSON.stringify) {
-                                return JSON.stringify(d);
-                            }
-                            //for older browsers, hand-code a JSON stringify based on well-documented approach
-                            var n = arguments.callee,
-                                v;
-                            if (typeof d === "boolean" || typeof d === "number") {
-                                return d + "";
-                            } else if (typeof d === "string") {
-                                return'"' + d.replace(/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g, function (G) {
-                                    return"\\u" + ("0000" + G.charCodeAt(0).toString(16)).slice(-4)
-                                }) + '"';
-                            } else if (d.length) {
-                                for (v = 0; v < d.length; v++) {
-                                    d[v] = n(d[v]);
-                                }
-                                return"[" + d.join(",") + "]";
-                            } else {
-                                v = [];
-                                for (var D in d) {
-                                    v.push(n(D) + ":" + n(d[D]));
-                                }
-                                return"{" + v.join(",") + "}";
-                            }
-                        };
-
-                        //Handler that receives the message from the
-                        window.addEventListener("message", function (d) {
-                            var messageNumber = parseInt(d.data.substr(0, d.data.indexOf(";")));
-                            try {
-                                d.source.postMessage("ImgU" +
-                                    messageNumber + ";" + I(eval(d.data)), "*");
-                            } catch (ex) {
-                                d.source.postMessage("ImgU" + messageNumber + ";error:" + ex.message, "*");
-                            }
-                        }, false);
-                    } catch (ex) {
-                        window.embed_error = ex;
-                    }
+                    //removed event listener setup. add init functionality here if required later
                 };
                 return self;
             }());

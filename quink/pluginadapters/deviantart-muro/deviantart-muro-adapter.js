@@ -85,6 +85,26 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
             closePlugin('saved', $image[0].outerHTML);
         }
     }
+
+    /**
+     *
+     * @param $image - an image wrapped by jQuery
+     */
+    function getImageNaturalSize(image) {
+        var anImage, imageWidth, imageHeight;
+        // Create offscreen image
+        anImage = new Image();
+        anImage.src = $(image).attr("src");
+
+        // Get accurate measurements from off-screen image
+        imageWidth = anImage.width;
+        imageHeight = anImage.height;
+
+        return {
+            height: imageHeight,
+            width: imageWidth
+        };
+    }
     /**
      * deviantArt issues a number of messages. The data.type values encountered during debugging (so actually issued by this implementation) are:
      *
@@ -95,15 +115,19 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
      * @param message
      */
     function handleDeviantArtReady(message) {
+        var size;
         if (message.data && message.data.type === 'ready') {
             if (imageHTML) {
+                size = getImageNaturalSize(imageHTML);
+                console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.handleDeviantArtReady width=' + size.width);
+                console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.handleDeviantArtReady height=' + size.height);
                 $iframe[0].contentWindow.postMessage({
                     type: 'command',
                     command: 'importLayer',
                     layerData: {
                         url: $(imageHTML).attr('src'),
-                        width: $(imageHTML)[0].width,
-                        height: $(imageHTML)[0].height
+                        width: size.width,
+                        height: size.height
                     }
                 }, '*');
                 imageHTML = null;
