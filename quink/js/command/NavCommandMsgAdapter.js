@@ -19,26 +19,26 @@
 
 define([
     'Underscore',
-    'nav/NavCommandHandler'
-], function (_, NavCommandHandler) {
+    'nav/NavCommandHandler',
+    'util/PubSub'
+], function (_, NavCommandHandler, PubSub) {
     'use strict';
 
     var NavCommandMsgAdapter = function () {
         this.handler = new NavCommandHandler();
     };
 
-    NavCommandMsgAdapter.prototype.getHandler = function () {
-        return this.handler;
-    };
-
     NavCommandMsgAdapter.prototype.handle = function (msg) {
         var ar = msg.split('.'),
             funcName = this.getFuncName(ar),
-            handler = this.getHandler(),
-            handled;
+            handled, result;
         if (ar[0] === 'nav') {
-            if (funcName && _.isFunction(handler[funcName])) {
-                handler[funcName]();
+            if (funcName && _.isFunction(this.handler[funcName])) {
+                result = this.handler[funcName]();
+                PubSub.publish('command.executed', {
+                    cmd: msg,
+                    result: result
+                });
             } else {
                 throw new Error('Can\'t handle msg: ' + msg);
             }

@@ -86,7 +86,6 @@ define([
                 this.switchMode();
             } else {
                 PubSub.publish('command.exec', cmd);
-                PubSub.publish('command.exec.key', cmd);
             }
         }
     };

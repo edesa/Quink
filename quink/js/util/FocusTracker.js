@@ -23,14 +23,16 @@ define([
     'rangy',
     'hithandler/HitHandler',
     'locrange/LocRangeUtil',
+    'util/Env',
     'util/Event',
     'util/PubSub'
-], function (_, $, rangy, HitHandler, LocRangeUtil, Event, PubSub) {
+], function (_, $, rangy, HitHandler, LocRangeUtil, Env, Event, PubSub) {
     'use strict';
 
     var FocusTracker = function () {
         this.states = [];
-        this.onSelectionChangeBound = this.onSelectionChange.bind(this);
+        this.onSelectionChangeThrottled = _.throttle(this.onSelectionChange.bind(this), 100);
+        this.sclCount = 0;
     };
 
     FocusTracker.prototype.init = function (selector) {
@@ -57,7 +59,7 @@ define([
      * If the browser supports selectionchange events use them. Otherwise do the best that we can.
      */
     FocusTracker.prototype.bindSelectionEvents = function () {
-        var onSelectionChange = this.onSelectionChangeBound;
+        var onSelectionChange = this.onSelectionChangeThrottled;
         if (document.onselectionchange === undefined) {
             PubSub.subscribe('command.executed', onSelectionChange);
             PubSub.subscribe('nav.executed', onSelectionChange);
@@ -102,23 +104,41 @@ define([
     };
 
     /**
+     * On Android Chrome a blur event can cause the document's insertion point to change incorrectly.
+     * This attempts to detect that situation and uses the value stored by Quink in preference to
+     * the one in the browser.
+     * This only seems to happen on Android Chrome.
+     */
+    FocusTracker.prototype.checkRange = function (range) {
+        var nr = range.nativeRange;
+        if (Env.isAndroidChrome() &&
+            (range.startContainer !== nr.startContainer ||
+             range.startOffset !== nr.startOffset ||
+             range.endContainer !== nr.endContainer ||
+             range.endOffset !== nr.endOffset)) {
+            range.setStart(range.startContainer, range.startOffset);
+            range.setEnd(range.endContainer, range.endOffset);
+        }
+    };
+
+    /**
      * Switch off the selection change handler to avoid an empty selection being saved.
      */
     FocusTracker.prototype.onBlur = function (event) {
         var editable = event.delegateTarget;
-        $(document).off('selectionchange.focustracker');
         this.lastEditable = editable;
+        this.removeSelectionChangeListener();
         PubSub.publish('editable.blur', editable);
     };
 
     FocusTracker.prototype.onFocus = function (event) {
         var editable = event.delegateTarget,
             state = this.findState(editable);
-        $(document).on('selectionchange.focustracker', this.onSelectionChangeBound);
+        this.addSelectionChangeListener();
         this.editable = editable;
         this.lastEditable = editable;
         if (state.range) {
-            state.range.refresh();
+            this.checkRange(state.range);
             rangy.getSelection().setSingleRange(state.range);
         }
         PubSub.publish('editable.focus', editable);
@@ -139,7 +159,6 @@ define([
             range.collapse(true);
             state.range = range;
         }
-        $(document).on('selectionchange.focustracker', this.onSelectionChange.bind(this));
         rangy.getSelection().setSingleRange(range);
         return range;
     };
@@ -150,7 +169,6 @@ define([
      */
     FocusTracker.prototype.removeFocus = function () {
         this.storeState(this.editable);
-        $(document).off('selectionchange.focustracker');
         this.editable.blur();
     };
 
@@ -162,9 +180,26 @@ define([
         var sel = rangy.getSelection(),
             range = sel.rangeCount && sel.getRangeAt(0);
         if (range && range.compareNode(this.editable) === range.NODE_BEFORE_AND_AFTER) {
+            range.refresh();
             this.storeState(this.editable);
             PubSub.publish('selection.change', LocRangeUtil.getSelectionLoc);
         }
+    };
+
+    FocusTracker.prototype.addSelectionChangeListener = function () {
+        if (this.sclCount) {
+            console.log('addSelectionChangeListener for non zero count');
+        }
+        this.sclCount++;
+        $(document).on('selectionchange.focustracker', this.onSelectionChangeThrottled);
+    };
+
+    FocusTracker.prototype.removeSelectionChangeListener = function () {
+        this.sclCount--;
+        if (this.sclCount) {
+            console.log('removeSelectionChangeListener doesn\'t leave zero count');
+        }
+        $(document).off('selectionchange.focustracker');
     };
 
     /**

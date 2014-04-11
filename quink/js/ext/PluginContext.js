@@ -68,7 +68,7 @@ define([
      * The plugin data replaces anything in the existing range.
      */
     PluginContext.prototype.commit = function (data, range) {
-        var cfg, el;
+        var cfg, el, cls;
         if (this.isEdit()) {
             if (!this.getDefinition().container.pluginCreated) {
                 this.getContainer().html(data);
@@ -78,8 +78,11 @@ define([
         } else {
             cfg = this.getContainer();
             if (!cfg.pluginCreated) {
+                cls = cfg['class'];
                 el = document.createElement(cfg.element);
-                el.setAttribute('class', cfg['class']);
+                if (cls) {
+                    el.setAttribute('class', cls);
+                }
                 el.innerHTML = data;
             } else {
                 el = $(data)[0];

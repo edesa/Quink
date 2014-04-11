@@ -32,13 +32,14 @@ define([
     'use strict';
 
     var Toolbar = function () {
+        var onPubBeforeToolbar = this.onPubBeforeToolbar.bind(this);
         HitHandler.register(this, true);
         PubSub.subscribe('download.toolbar', this.onDownload.bind(this));
         PubSub.subscribe('download.insertmenu', this.onDownload.bind(this));
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
-        PubSub.subscribe('command.exec.key', this.onKeyExecCommand.bind(this));
-        PubSub.subscribe('command.state', this.onCommandState.bind(this));
-        this.keyExecMsgs = [];
+        this.cmdExecSub = PubSub.subscribe('command.executed', onPubBeforeToolbar);
+        this.cmdStateSub = PubSub.subscribe('command.state', onPubBeforeToolbar);
+        this.delayedPubs = [];
     };
 
     Toolbar.prototype.TAB_NAME_PREFIX = 'qk_tab_';
@@ -50,8 +51,12 @@ define([
      * string versus checkbox selector for those commands.
      */
     Toolbar.prototype.KEY_COMMAND_MAP = {
-        'nav.toggle.select': '#nav_and_select',
-        'ui.toggle.status': '#toggle_status_bar'
+        'nav.select.on': '#nav_and_select',
+        'nav.select.off': '#nav_and_select',
+        'nav.select.toggle': '#nav_and_select',
+        'ui.status.on': '#toggle_status_bar',
+        'ui.status.off': '#toggle_status_bar',
+        'ui.status.toggle': '#toggle_status_bar'
     };
 
     /**
@@ -174,7 +179,7 @@ define([
     };
 
     Toolbar.prototype.navAndSelect = function () {
-        PubSub.publish('command.exec', 'nav.toggle.select');
+        PubSub.publish('command.exec', 'nav.select.toggle');
     };
 
     Toolbar.prototype.infoHelp = function () {
@@ -206,7 +211,7 @@ define([
     };
 
     Toolbar.prototype.toggleStatusBar = function () {
-        PubSub.publish('command.exec', 'ui.toggle.status');
+        PubSub.publish('command.exec', 'ui.status.toggle');
     };
 
     Toolbar.prototype.submitDocument = function () {
@@ -246,19 +251,6 @@ define([
     };
 
     /**
-     * Ensures that any checkboxes within the button change state whenever there's a hit
-     * on the button.
-     */
-    Toolbar.prototype.handleCheckbox = function (event) {
-        var checkbox = $(event.currentTarget).find('input[type=checkbox]');
-        if (checkbox.length > 0) {
-            if (Event.isTouch || event.target.type !== 'checkbox') {
-                checkbox.prop('checked', !checkbox.prop('checked'));
-            }
-        }
-    };
-
-    /**
      * Executes commands based on the event. If the element has a data-cmd attribute, the
      * value of that is assumed to be a valid contenteditable command and it is invoked.
      * If the element has a data-cmd-id attribute it's value is assumed to be the name of a
@@ -270,7 +262,6 @@ define([
             cmdArgs = el.attr('data-cmd-args'),
             cmdId = el.attr('data-cmd-id'),
             argsArray = [];
-        this.handleCheckbox(event);
         if (cmdId) {
             if (cmdArgs) {
                 argsArray = cmdArgs.split(' ');
@@ -283,19 +274,20 @@ define([
     };
 
     /**
-     * Listen for the command key handler's commands. Keep the toolbar's visual state in
-     * sync with the underlying command handler state.
+     * Ensures that toolbar items that have persistent state (checkboxes) have that state kept
+     * up to date.
      */
-    Toolbar.prototype.onKeyExecCommand = function (msg) {
-        var sel = this.KEY_COMMAND_MAP[msg],
-            checkBox;
-        if (sel) {
-            if (this.toolbar) {
-                checkBox = this.toolbar.find(sel);
-                checkBox.prop('checked', !checkBox.prop('checked'));
+    Toolbar.prototype.onCommandExec = function (data) {
+        var sel = this.KEY_COMMAND_MAP[data.cmd],
+            checkbox, newState;
+        if (data.result && sel) {
+            checkbox = this.toolbar.find(sel);
+            if (/\.toggle$/.test(data.cmd)) {
+                newState = !checkbox.prop('checked');
             } else {
-                this.keyExecMsgs.push(msg);
+                newState = /\.on$/.test(data.cmd);
             }
+            checkbox.prop('checked', newState);
         }
     };
 
@@ -323,13 +315,17 @@ define([
     };
 
     /**
-     * Adds listeners for the toolbar buttons.
+     * Adds listeners for the toolbar buttons. Prevent the UI from changing the state of check boxes. They'll be
+     * changed as the editor state is updated and the toolbar informed via PubSub.
      */
     Toolbar.prototype.addToolbarButtonListeners = function () {
         var toolbar = this;
         $('.qk_toolbar_container .qk_button').each(function () {
             var willRepeat = this.hasAttribute('data-btn-repeat');
             FastTap.fastTap(this, toolbar.cmdHandler, toolbar, true, willRepeat);
+        });
+        $('.qk_toolbar_container .qk_button input[type=checkbox]').on('click ' + Event.eventName('start'), function (event) {
+            event.preventDefault();
         });
     };
 
@@ -465,6 +461,32 @@ define([
         this.showToolbarAt(x, y);
     };
 
+    /**
+     * Sets up the correct subscriptions and processes any that have been received prior to the
+     * toolbar being created.
+     */
+    Toolbar.prototype.processHeldPubs = function () {
+        PubSub.unsubscribe(this.cmdExecSub);
+        PubSub.unsubscribe(this.cmdStateSub);
+        PubSub.subscribe('command.executed', this.onCommandExec.bind(this));
+        PubSub.subscribe('command.state', this.onCommandState.bind(this));
+        if (this.delayedPubs.length) {
+            this.delayedPubs.forEach(function (args) {
+                var func = args[1] === 'command.executed' ? this.onCommandExec : this.onCommandState;
+                func.apply(this, args);
+            }.bind(this));
+            this.delayedPubs = null;
+        }
+    };
+
+    /**
+     * Publications that will be handled using the toolbar are routed here until the toolbar has
+     * been created.
+     */
+    Toolbar.prototype.onPubBeforeToolbar = function () {
+        this.delayedPubs.push(arguments);
+    };
+
     Toolbar.prototype.afterToolbarCreated = function () {
         this.initToolbarTabs();
         this.addToolbarTabListeners(document);
@@ -472,11 +494,7 @@ define([
         this.checkShowSubmit();
         Draggable.create('.qk_toolbar_container');
         this.vpToolbar = ViewportRelative.create(this.toolbar);
-        if (this.keyExecMsgs.length) {
-            this.keyExecMsgs.forEach(function (msg) {
-                this.onKeyExecCommand(msg);
-            }.bind(this));
-        }
+        this.processHeldPubs();
         if (Env.getParam('toolbar', 'off') === 'on') {
             this.showToolbar();
         }

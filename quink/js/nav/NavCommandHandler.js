@@ -21,9 +21,8 @@ define([
     'nav/Nav',
     'nav/LineChangeContext',
     'nav/LineEndContext',
-    'nav/NavStateMgr',
-    'util/PubSub'
-], function (Nav, LineChangeContext, LineEndContext, NavStateMgr, PubSub) {
+    'nav/NavStateMgr'
+], function (Nav, LineChangeContext, LineEndContext, NavStateMgr) {
     'use strict';
 
     var NavCommandHandler = function () {
@@ -36,62 +35,51 @@ define([
         return this.andSelect;
     };
 
-    NavCommandHandler.prototype.toggleSelect = function () {
+    NavCommandHandler.prototype.selectToggle = function () {
         this.andSelect = !this.andSelect;
-        this.publishState('navandselect', this.andSelect);
+        return true;
+    };
+
+    NavCommandHandler.prototype.selectOn = function () {
+        this.andSelect = true;
+        return true;
+    };
+
+    NavCommandHandler.prototype.selectOff = function () {
+        this.andSelect = false;
+        return true;
     };
 
     NavCommandHandler.prototype.lineUp = function () {
-        this.nav.lineAndSelect(false, this.isSelect(), new LineChangeContext(false));
-        this.publish('line', 'up');
+        return this.nav.lineAndSelect(false, this.isSelect(), new LineChangeContext(false));
     };
 
     NavCommandHandler.prototype.lineDown = function () {
-        this.nav.lineAndSelect(true, this.isSelect(), new LineChangeContext(true));
-        this.publish('line', 'down');
+        return this.nav.lineAndSelect(true, this.isSelect(), new LineChangeContext(true));
     };
 
     NavCommandHandler.prototype.lineStart = function () {
-        this.nav.lineAndSelect(false, this.isSelect(), new LineEndContext(false));
-        this.publish('line', 'start');
+        return this.nav.lineAndSelect(false, this.isSelect(), new LineEndContext(false));
     };
 
     NavCommandHandler.prototype.lineEnd = function () {
-        this.nav.lineAndSelect(true, this.isSelect(), new LineEndContext(true));
-        this.publish('line', 'end');
+        return this.nav.lineAndSelect(true, this.isSelect(), new LineEndContext(true));
     };
 
     NavCommandHandler.prototype.wordPrev = function () {
-        this.nav.acrossAndSelect('word', -1, this.isSelect());
-        this.publish('word', 'left');
+        return this.nav.acrossAndSelect('word', -1, this.isSelect());
     };
 
     NavCommandHandler.prototype.wordNext = function () {
-        this.nav.acrossAndSelect('word', 1, this.isSelect());
-        this.publish('word', 'right');
+        return this.nav.acrossAndSelect('word', 1, this.isSelect());
     };
 
     NavCommandHandler.prototype.charPrev = function () {
-        this.nav.acrossAndSelect('character', -1, this.isSelect());
-        this.publish('character', 'left');
+        return this.nav.acrossAndSelect('character', -1, this.isSelect());
     };
 
     NavCommandHandler.prototype.charNext = function () {
-        this.nav.acrossAndSelect('character', 1, this.isSelect());
-        this.publish('character', 'right');
-    };
-
-    NavCommandHandler.prototype.publish = function (unit, direction) {
-        PubSub.publish('nav.executed', {
-            unit: unit,
-            direction: direction
-        });
-    };
-
-    NavCommandHandler.prototype.publishState = function (name, value) {
-        var data = {};
-        data[name] = value;
-        PubSub.publish('nav.executed', data);
+        return this.nav.acrossAndSelect('character', 1, this.isSelect());
     };
 
     return NavCommandHandler;
