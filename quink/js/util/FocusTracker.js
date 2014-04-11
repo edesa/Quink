@@ -32,6 +32,7 @@ define([
     var FocusTracker = function () {
         this.states = [];
         this.onSelectionChangeThrottled = _.throttle(this.onSelectionChange.bind(this), 100);
+        this.sclCount = 0;
     };
 
     FocusTracker.prototype.init = function (selector) {
@@ -125,15 +126,15 @@ define([
      */
     FocusTracker.prototype.onBlur = function (event) {
         var editable = event.delegateTarget;
-        $(document).off('selectionchange.focustracker');
         this.lastEditable = editable;
+        this.removeSelectionChangeListener();
         PubSub.publish('editable.blur', editable);
     };
 
     FocusTracker.prototype.onFocus = function (event) {
         var editable = event.delegateTarget,
             state = this.findState(editable);
-        $(document).on('selectionchange.focustracker', this.onSelectionChangeThrottled);
+        this.addSelectionChangeListener();
         this.editable = editable;
         this.lastEditable = editable;
         if (state.range) {
@@ -158,7 +159,6 @@ define([
             range.collapse(true);
             state.range = range;
         }
-        $(document).on('selectionchange.focustracker', this.onSelectionChangeThrottled);
         rangy.getSelection().setSingleRange(range);
         return range;
     };
@@ -169,7 +169,6 @@ define([
      */
     FocusTracker.prototype.removeFocus = function () {
         this.storeState(this.editable);
-        $(document).off('selectionchange.focustracker');
         this.editable.blur();
     };
 
@@ -185,6 +184,22 @@ define([
             this.storeState(this.editable);
             PubSub.publish('selection.change', LocRangeUtil.getSelectionLoc);
         }
+    };
+
+    FocusTracker.prototype.addSelectionChangeListener = function () {
+        if (this.sclCount) {
+            console.log('addSelectionChangeListener for non zero count');
+        }
+        this.sclCount++;
+        $(document).on('selectionchange.focustracker', this.onSelectionChangeThrottled);
+    };
+
+    FocusTracker.prototype.removeSelectionChangeListener = function () {
+        this.sclCount--;
+        if (this.sclCount) {
+            console.log('removeSelectionChangeListener doesn\'t leave zero count');
+        }
+        $(document).off('selectionchange.focustracker');
     };
 
     /**
