@@ -94,7 +94,7 @@
 <script>
     $(document).ready(function() {
         console.log('[' + new Date().toISOString() + ']' + 'imageUpload iframe posting ready');
-        parent.window.postMessage("imageUploadReady", "*");
+        window.postMessage("imageUploadReady", "*");
     } );
 </script>
 </body>

@@ -44,11 +44,10 @@ require([
          */
         function open(data) {
             imgData = data;
-            window.addEventListener('message', iframeReady, false);
             $iframe.appendTo(BODY_TAG_NAME);
             $mask.appendTo(BODY_TAG_NAME);
+            $iframe[0].contentWindow.addEventListener('message', iframeReady, false);
             window.addEventListener('orientationchange', sizeFrame, false);
-            $iframe.unbind('load');
         }
 
         /**
@@ -75,11 +74,11 @@ require([
          * containing the image uploader so that control can pass back to the main form
          */
         function closePlugin(topic, data) {
+            $iframe[0].contentWindow.removeEventListener('message', iframeReady, false);
             $iframe.addClass('qk_invisible');
             $iframe.detach();
             $mask.detach();
             window.removeEventListener('orientationchange', sizeFrame, false);
-            window.removeEventListener('message', iframeReady, false);
             Context.publish(topic, data);
         }
 
