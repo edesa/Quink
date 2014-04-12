@@ -17,7 +17,7 @@
  * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*global */
-require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Context) {
+require(['Underscore', 'jquery', 'ext/PluginAdapterContext'], function (_, $, Context) {
     'use strict';
     //the iframe component
     var $iframe,
@@ -56,8 +56,8 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
         window.addEventListener('message', handleQueryImageReply, false);
 
         $iframe[0].contentWindow.postMessage({
-            type:      'query',
-            query:   'image'
+            type: 'query',
+            query: 'image'
         }, '*');
     }
 
@@ -121,6 +121,7 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
                 size = getImageNaturalSize(imageHTML);
                 console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.handleDeviantArtReady width=' + size.width);
                 console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.handleDeviantArtReady height=' + size.height);
+                window.addEventListener('message', handleImportLayerCommandComplete, false);
                 $iframe[0].contentWindow.postMessage({
                     type: 'command',
                     command: 'importLayer',
@@ -131,17 +132,27 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
                     }
                 }, '*');
                 imageHTML = null;
+            } else {
+                //no image to load so we are finished
+                Context.publish('opened');
             }
-            //only handle replies to query image
+        }
+    }
+
+    /**
+     *
+     * Respond to deviantArt importLayer commandComplete message by publishing the "opened" message
+     *
+     * @param message - the message from deviantArt
+     */
+
+    function handleImportLayerCommandComplete(message) {
+        if (message.data && message.data.command === 'importLayer' && message.data.type === 'commandComplete') {
+            //deviantArt has loaded the image, so we are finished
             Context.publish('opened');
         }
-//
-//        if (message.data && message.data.image) {
-//            var $image = $(IMAGE_TAG);
-//            $image.attr('src', message.data.image);
-//            closePlugin('saved', $image[0].outerHTML);
-//        }
     }
+
     /**
      * save() and exit() API functions call this to remove the iframe
      * containing the image uploader so that control can pass back to the main form
@@ -149,6 +160,7 @@ require(['Underscore','jquery','ext/PluginAdapterContext'], function (_, $, Cont
     function closePlugin(topic, data) {
         window.removeEventListener('message', handleQueryImageReply, false);
         window.removeEventListener('message', handleDeviantArtReady, false);
+        window.removeEventListener('message', handleImportLayerCommandComplete, false);
         $iframe.addClass('qk_invisible');
         $iframe.detach();
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing ' + topic + ' event');
