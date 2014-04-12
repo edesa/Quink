@@ -16,7 +16,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*global */
+/*
+ *
+ * Makes use of the deviantArt API. This discussion from the muro API web page describes the notification mechanism:
+ *
+ * Embedded deviantART muro communicates with the embedding site via the DOM window.postMessage() mechanism,
+ * sending messages representing events happening within the application.
+ *
+ * The embedding site can also communciate with the embedded deviantART muro, sending commands and queries via
+ * iframe.contentWindow.postMessage(). Commands should be considered those messages designed to make
+ * deviantART muro take some action, whereas queries are side-effect-free requests for information.
+ *
+ * The type of an API message is determined by the type property of the passed message and will be one of:
+ *
+ * - command for sending a command to the application.
+ * - query for sending a query to the application.
+ * - or the name of the event being received from the application.
+ *
+ */
 require(['Underscore', 'jquery', 'ext/PluginAdapterContext'], function (_, $, Context) {
     'use strict';
     //the iframe component
@@ -121,10 +138,12 @@ require(['Underscore', 'jquery', 'ext/PluginAdapterContext'], function (_, $, Co
                 size = getImageNaturalSize(imageHTML);
                 console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.handleDeviantArtReady width=' + size.width);
                 console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.handleDeviantArtReady height=' + size.height);
-                window.addEventListener('message', handleImportLayerCommandComplete, false);
+                window.addEventListener('message', handleNewCanvasCommandComplete, false);
                 $iframe[0].contentWindow.postMessage({
                     type: 'command',
-                    command: 'importLayer',
+                    command: 'newCanvas',
+                    width: size.width,
+                    height: size.height,
                     layerData: {
                         url: $(imageHTML).attr('src'),
                         width: size.width,
@@ -146,8 +165,8 @@ require(['Underscore', 'jquery', 'ext/PluginAdapterContext'], function (_, $, Co
      * @param message - the message from deviantArt
      */
 
-    function handleImportLayerCommandComplete(message) {
-        if (message.data && message.data.command === 'importLayer' && message.data.type === 'commandComplete') {
+    function handleNewCanvasCommandComplete(message) {
+        if (message.data && message.data.command === 'newCanvas' && message.data.type === 'commandComplete') {
             //deviantArt has loaded the image, so we are finished
             Context.publish('opened');
         }
@@ -160,7 +179,7 @@ require(['Underscore', 'jquery', 'ext/PluginAdapterContext'], function (_, $, Co
     function closePlugin(topic, data) {
         window.removeEventListener('message', handleQueryImageReply, false);
         window.removeEventListener('message', handleDeviantArtReady, false);
-        window.removeEventListener('message', handleImportLayerCommandComplete, false);
+        window.removeEventListener('message', handleNewCanvasCommandComplete, false);
         $iframe.addClass('qk_invisible');
         $iframe.detach();
         console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin publishing ' + topic + ' event');
