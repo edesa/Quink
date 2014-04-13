@@ -194,7 +194,8 @@ require(['Underscore', 'jquery', 'ext/PluginAdapterContext'], function (_, $, Co
             Context.publish('loaded', {
                 open: open,
                 save: save,
-                exit: exit
+                exit: exit,
+                dom: $iframe[0].parentNode
             });
             console.log('DeviantArtPlugin.fetchPluginArtifacts() download HTML successful');
         }).fail(function (jqxhr, textStatus, error) {
