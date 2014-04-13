@@ -148,20 +148,22 @@ define([
     }
 
     /**
-     * Assumes that a touch device has a virtual keyboard which occupies different amounts of
+     * On iOS the virtual keyboard which occupies different amounts of
      * screen real estate depending on the device orientation. The keyboard will be active if
      * there is an active element in the document (i.e. something has focus).
      * isNavScroll means that the calculation is being done when deciding whether to scroll as a result
      * of a navigation operation in which case the returned value takes into account the virtual keyboard.
      * If this isn't for nav scroll then the height doesn't allow for a virtual keyboard and takes
      * any document scroll into account.
+     * On Android Chrome the window height changes when the keyboard slides in which is why the test
+     * is now for iOS and not for a touch device.
      */
     function getMaxVisibleHeight(isNavScroll) {
         var win = $(window),
             height = win.height() + (!isNavScroll ? $(document).scrollTop() : 0),
             result = height,
             visArea;
-        if (Event.isTouch && !!document.activeElement && isNavScroll) {
+        if (Env.isIos() && !!document.activeElement && isNavScroll) {
             visArea = height > win.width() ? 0.60 : 0.35;
             result = height * visArea;
         }
