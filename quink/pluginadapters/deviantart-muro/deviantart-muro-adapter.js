@@ -103,25 +103,44 @@ require(['Underscore', 'jquery', 'ext/PluginAdapterContext'], function (_, $, Co
         }
     }
 
+    function isSizeInPixels($imageHTML) {
+        return $imageHTML.width() > 0 && /px$/.test($imageHTML.css("width"));
+    }
+
     /**
      *
-     * @param $image - an image wrapped by jQuery
+     * @param $imageHTML - a jquery object for which the size is in pixels
+     *
      */
-    function getImageNaturalSize(image) {
-        var anImage, imageWidth, imageHeight;
-        // Create offscreen image
-        anImage = new Image();
-        anImage.src = $(image).attr("src");
-
-        // Get accurate measurements from off-screen image
-        imageWidth = anImage.width;
-        imageHeight = anImage.height;
-
+    function getImageComputedSizeInPixels($imageHTML) {
+        var imageWidth, imageHeight;
+        //guard condition
+        if (!(isSizeInPixels($imageHTML))) {
+            throw new Error("getImageComputedSizeInPixels can only be called when size is in pixels");
+        }
+        imageHeight = $imageHTML.height();
+        imageWidth = $imageHTML.width();
         return {
             height: imageHeight,
             width: imageWidth
         };
     }
+    /**
+     *
+     * @param $image - an image wrapped by jQuery
+     */
+    function getImageNaturalSize($imageHTML) {
+        var imageWidth, imageHeight;
+        //guard condition
+        imageHeight = $imageHTML[0].naturalHeight;
+        imageWidth = $imageHTML[0].naturalWidth;
+        return {
+            height: imageHeight,
+            width: imageWidth
+        };
+    }
+
+
     /**
      * deviantArt issues a number of messages. The data.type values encountered during debugging (so actually issued by this implementation) are:
      *
@@ -132,10 +151,15 @@ require(['Underscore', 'jquery', 'ext/PluginAdapterContext'], function (_, $, Co
      * @param message
      */
     function handleDeviantArtReady(message) {
-        var size;
+        var size, $imageHTML;
         if (message.data && message.data.type === 'ready') {
             if (imageHTML) {
-                size = getImageNaturalSize(imageHTML);
+                $imageHTML = $(imageHTML);
+                if (isSizeInPixels($imageHTML)) {
+                    size = getImageComputedSizeInPixels($imageHTML);
+                } else {
+                    size = getImageNaturalSize($imageHTML);
+                }
                 console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.handleDeviantArtReady width=' + size.width);
                 console.log('[' + new Date().toISOString() + ']' + 'DeviantArtPlugin.handleDeviantArtReady height=' + size.height);
                 window.addEventListener('message', handleNewCanvasCommandComplete, false);
