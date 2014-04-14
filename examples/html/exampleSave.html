@@ -29,9 +29,11 @@
                 console.log('GET before save...');
                 return jQuery.ajax({
                     url: url,
-                    method: 'GET'
-                }).done(function () {
+                    method: 'HEAD'
+                }).done(function (d, s, xhr) {
                     console.log('GET done...');
+                    console.log('last modified: ' + xhr.getResponseHeader('last-modified'));
+                    console.log(xhr.getAllResponseHeaders());
                 }).fail(function () {
                     console.log('GET failed...');
                 }).then(function () {
