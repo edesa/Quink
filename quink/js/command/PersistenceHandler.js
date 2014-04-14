@@ -144,24 +144,19 @@ define([
      * User initiated save.
      */
     PersistenceHandler.prototype.save = function () {
-        var result;
-        if (typeof QUINK.save === 'function') {
-            result = this.customSave(this.origDoc, QUINK.save);
-        } else {
-            result = this.persistPage(this.origDoc, 'PUT', Env.getSaveUrl());
-        }
-        return result;
+        return typeof QUINK.save === 'function' ?
+            this.customSave(this.origDoc, QUINK.save, Env.getSaveUrl()) :
+            this.persistPage(this.origDoc, 'PUT', Env.getSaveUrl());
     };
 
-    // PersistenceHandler.prototype.save = function () {
-    //     var url = Env.getSaveUrl();
-    //     return this.persistPage(this.origDoc, 'PUT', url);
-    // };
-
-    PersistenceHandler.prototype.customSave = function (theDoc, func) {
+    /**
+     * Invoke save function provided via the config object. Currently doesn't do any checking of
+     * the return value which should be a jQuery Promise.
+     */
+    PersistenceHandler.prototype.customSave = function (theDoc, func, url) {
         var doc = this.updateBody(document, theDoc),
             docType = this.getDocTypeString(doc);
-        return func.call(null, $, Env.getSaveUrl(), docType, doc);
+        return func.call(null, docType, doc, $, url);
     };
 
     /**

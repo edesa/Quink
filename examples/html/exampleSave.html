@@ -25,7 +25,7 @@
     <body>
         <div class="qk_scroll" contenteditable="true" id="editable-content"></div>
         <script type="text/javascript">
-            QUINK.save = function (jQuery, url, docType, doc) {
+            QUINK.save = function (docType, doc, jQuery, url) {
                 console.log('GET before save...');
                 return jQuery.ajax({
                     url: url,
