@@ -25,22 +25,24 @@
     <body>
         <div class="qk_scroll" contenteditable="true" id="editable-content"></div>
         <script type="text/javascript">
-            document.addEventListener('DOMContentLoaded', function () {
-                var waitForRequire = function waitForRequire() {
-                        if (window.require === undefined || !require.defined('util/PubSub')) {
-                            console.log('waiting...');
-                            setTimeout(function () {
-                                waitForRequire();
-                            }, 500);
-                        } else {
-                            require(['util/PubSub'], function (PubSub) {
-                                console.log('attempting to invoke save...');
-                                PubSub.publish('command.exec', 'persist.save');
-                            });
-                        }
-                    };
-                waitForRequire();
-            });
+            QUINK.save = function (jQuery, url, docType, doc) {
+                console.log('GET before save...');
+                return jQuery.ajax({
+                    url: url,
+                    method: 'GET'
+                }).done(function () {
+                    console.log('GET done...');
+                }).fail(function () {
+                    console.log('GET failed...');
+                }).then(function () {
+                    console.log('Saving...');
+                    return jQuery.ajax({
+                        url: url,
+                        method: 'PUT',
+                        data: docType + '\n' + doc.documentElement.outerHTML
+                    });
+                })
+            };
         </script>
     </body>
 </html>
