@@ -133,10 +133,10 @@ define([
     Persist.prototype.onStartEditing = function (andSave) {
         if (andSave) {
             PubSub.publish('command.exec', 'persist.autosave');
-            this.startChangeMonitor();
         } else {
             this.autoSave();
         }
+        this.startChangeMonitor();
     };
 
     /**
