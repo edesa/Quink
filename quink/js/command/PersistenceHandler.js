@@ -17,7 +17,7 @@
  * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global alert */
+/*global alert, QUINK */
 define([
     'Underscore',
     'jquery',
@@ -121,32 +121,79 @@ define([
         return doc;
     };
 
+    PersistenceHandler.prototype.doAutoSave = function (opts) {
+        return this.isAutoSaveLocal() ?
+            this.autoSaveLocalStorage(this.origDoc) :
+            this.persistPage(this.origDoc, 'PUT', Env.getAutoSaveUrl(), null, opts);
+    };
+
     /**
      * Invoked when leaving the page. Have to make the call synchronous for the
      * process to succeed in that scenario.
      */
     PersistenceHandler.prototype.unloadSave = function () {
-        var url = Env.getAutoSaveUrl();
-        return this.persistPage(this.origDoc, 'PUT', url, null, {
+        return this.doAutoSave({
             async: false
         });
+        // return this.isAutoSaveLocal() ?
+        //     this.autoSaveLocalStorage(this.origDoc) :
+        //     this.persistPage(this.origDoc, 'PUT', Env.getAutoSaveUrl(), null, {
+        //         async: false
+        //     });
+    };
+
+    PersistenceHandler.prototype.getLocalStorageKey = function () {
+        return window.location.pathname.toLowerCase();
+    };
+
+    PersistenceHandler.prototype.autoSaveLocalStorage = function (theDoc) {
+        var doc = this.updateBody(document, theDoc),
+            docType = this.getDocTypeString(doc),
+            key = this.getLocalStorageKey(),
+            deferred = $.Deferred();
+        try {
+            window.localStorage.setItem(key, docType + '\n' + doc.documentElement.outerHTML);
+            deferred.resolve();
+        } catch (e) {
+            deferred.reject(e);
+        }
+        return deferred.promise();
+    };
+
+    PersistenceHandler.prototype.isAutoSaveLocal = function () {
+        return Env.getParam('autosaveto') === 'browser' && window.localStorage !== undefined;
     };
 
     /**
      * Used by auto save for all cases other than page unload.
      */
     PersistenceHandler.prototype.autoSave = function () {
-        var url = Env.getAutoSaveUrl();
-        return this.persistPage(this.origDoc, 'PUT', url);
+        return this.doAutoSave();
+        // return this.isAutoSaveLocal() ?
+        //     this.autoSaveLocalStorage(this.origDoc) :
+        //     this.persistPage(this.origDoc, 'PUT', Env.getAutoSaveUrl());
     };
 
     /**
-     * User initiated save.
+     * User initiated save. Delete the auto save if local storage is being used and if the user initiated
+     * save was successful.
      */
     PersistenceHandler.prototype.save = function () {
-        return typeof QUINK.save === 'function' ?
+        var promise = typeof QUINK.save === 'function' ?
             this.customSave(this.origDoc, QUINK.save, Env.getSaveUrl()) :
             this.persistPage(this.origDoc, 'PUT', Env.getSaveUrl());
+        return promise.then(function () {
+            if (this.isAutoSaveLocal()) {
+                this.removeAutoSaveLocal();
+            }
+        }.bind(this), function () {
+            console.log('Save failed!');
+        });
+    };
+
+    PersistenceHandler.prototype.removeAutoSaveLocal = function () {
+        var key = this.getLocalStorageKey();
+        window.localStorage.removeItem(key);
     };
 
     /**

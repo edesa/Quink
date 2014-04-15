@@ -51,11 +51,9 @@ define([
             if (func) {
                 func.call(this.handler).done(function () {
                     PubSub.publish('command.executed', opId);
-                }).fail(function (jqXhr) {
+                }).fail(function () {
                     PubSub.publish('error.persist', {
-                        operation: opName,
-                        status: jqXhr.status,
-                        text: jqXhr.statusText
+                        operation: opName
                     });
                 });
             } else {
