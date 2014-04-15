@@ -30,8 +30,7 @@ define([
      * Each file downloaded results in a publication that uses the file's base name without the
      * extension as part of the topic name. So 'foo.html' would result in a publication using
      * the topic 'download.foo'.
-     * Once all files have been downloaded an additional publication of 'download.all' is made.
-     * Failed downloads result in a 'download.fail' publication.
+     * Returns a Promise object.
      */
     function download() {
         var jqXhrArray = Array.prototype.slice.call(arguments, 0).map(function (name) {
@@ -44,11 +43,7 @@ define([
                     PubSub.publish('download.' + id, data);
                 });
             });
-        $.when.apply(null, jqXhrArray).then(function () {
-            PubSub.publish('download.all');
-        }, function () {
-            PubSub.publish('download.fail');
-        });
+        return $.when.apply(null, jqXhrArray);
     }
 
     return {

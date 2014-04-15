@@ -34,20 +34,9 @@ define([
 ], function (rangy, Command, HitHandler, KeyHandlerMgr, DownloadMgr, Persist, Caret, CommandStateBar, Toolbar, Env, FocusTracker, PubSub) {
     'use strict';
 
-    var count = 0;
-
-    /**
-     * Invoked when all downloads are complete and again when all modules are initialised.
-     * Once both invocations have been received this invokes the ready function.
-     */
-    function checkReady() {
-        if (QUINK && ++count === 2 && typeof QUINK.ready === 'function') {
-            QUINK.ready(PubSub);
-        }
-    }
-
     function initModules() {
-        var selector = '[contenteditable=true]';
+        var selector = '[contenteditable=true]',
+            promise;
         rangy.init();
         Env.init();
         KeyHandlerMgr.init(selector);
@@ -56,17 +45,20 @@ define([
         CommandStateBar.create();
         HitHandler.init(selector);
         Toolbar.init();
-        DownloadMgr.download('keymap.json', 'commandstatebar.html',
+        promise = DownloadMgr.download('keymap.json', 'commandstatebar.html',
             'plugins.json', 'pluginmenu.html',
             'toolbar.html', 'insertmenu.html');
         Persist.create();
         Caret.init();
+        promise.then(function () {
+            if (typeof QUINK.ready === 'function') {
+                QUINK.ready(PubSub);
+            }
+        });
     }
 
     function init() {
-        PubSub.subscribe('download.all', checkReady);
         initModules();
-        checkReady();
     }
 
     return {
