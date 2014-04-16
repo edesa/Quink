@@ -37,6 +37,7 @@ define([
     function init() {
         var selector = '[contenteditable=true]',
             downloadPromise;
+        Persist.initFromAutoSave();
         rangy.init();
         Env.init();
         KeyHandlerMgr.init(selector);

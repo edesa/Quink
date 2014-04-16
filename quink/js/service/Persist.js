@@ -44,7 +44,7 @@ define([
      * Auto save and persistence through submit both need the original page source, so download
      * it up front.
      */
-    Persist.prototype.doInit = function () {
+    Persist.prototype.init = function () {
         var url = window.location.href,
             me = this;
         $.get(url, function (data) {
@@ -254,12 +254,11 @@ define([
      * what you need is a function call with a result.
      * TODO fix this.
     */
-    Persist.prototype.init = function () {
+    Persist.prototype.initFromAutoSave = function () {
         var handler = new PersistenceHandler();
         if (handler.autoSaveExists() && window.confirm('Do you want to use the last auto save?')) {
             handler.applyAutoSave();
         }
-        this.doInit();
     };
 
 
@@ -314,6 +313,7 @@ define([
     var theInstance = new Persist();
 
     return {
-        init: theInstance.init.bind(theInstance)
+        init: theInstance.init.bind(theInstance),
+        initFromAutoSave: theInstance.initFromAutoSave.bind(theInstance)
     };
 });
