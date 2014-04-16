@@ -43,19 +43,30 @@ define([
 
     PersistenceMsgAdapter.prototype.handle = function (opId) {
         var ar = opId.split('.'),
-            opName, op, func, handled;
+            opName, op, func, handled, result;
         if (ar[0] === 'persist') {
             opName = ar[1];
             op = this.cmdMap[opName];
             func = (typeof this.handler[op] === 'function') && this.handler[op];
             if (func) {
-                func.call(this.handler).done(function () {
-                    PubSub.publish('command.executed', opId);
-                }).fail(function () {
-                    PubSub.publish('error.persist', {
-                        operation: opName
+                result = func.call(this.handler);
+                if (result && typeof result.then === 'function') {
+                    // Assume it's a Promise
+                    result.done(function () {
+                        PubSub.publish('command.executed', opId);
+                    }).fail(function () {
+                        PubSub.publish('error.persist', {
+                            operation: opName
+                        });
                     });
-                });
+                }
+                // func.call(this.handler).done(function () {
+                //     PubSub.publish('command.executed', opId);
+                // }).fail(function () {
+                //     PubSub.publish('error.persist', {
+                //         operation: opName
+                //     });
+                // });
             } else {
                 console.log('No persistence function: ' + op);
             }

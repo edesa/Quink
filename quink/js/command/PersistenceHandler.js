@@ -135,11 +135,6 @@ define([
         return this.doAutoSave({
             async: false
         });
-        // return this.isAutoSaveLocal() ?
-        //     this.autoSaveLocalStorage(this.origDoc) :
-        //     this.persistPage(this.origDoc, 'PUT', Env.getAutoSaveUrl(), null, {
-        //         async: false
-        //     });
     };
 
     PersistenceHandler.prototype.getLocalStorageKey = function () {
@@ -169,9 +164,6 @@ define([
      */
     PersistenceHandler.prototype.autoSave = function () {
         return this.doAutoSave();
-        // return this.isAutoSaveLocal() ?
-        //     this.autoSaveLocalStorage(this.origDoc) :
-        //     this.persistPage(this.origDoc, 'PUT', Env.getAutoSaveUrl());
     };
 
     /**
@@ -219,6 +211,24 @@ define([
         return this.persistPage(doc, 'POST', url, this.makeReadOnly).done(function () {
             alert('Submitted');
         });
+    };
+
+    PersistenceHandler.prototype.autoSaveExists = function () {
+        var key = this.getLocalStorageKey();
+        return window.localStorage !== undefined && !!window.localStorage.getItem(key);
+    };
+
+    /**
+     * This isn't right as it only replaces the body and not the header. Replacing the header doesn't re-apply
+     * the sylesheets to the new content to the resulting display is wrong.
+     * TODO replace the full document and evaluate scripts.
+     */
+    PersistenceHandler.prototype.applyAutoSave = function () {
+        var key = this.getLocalStorageKey(),
+            savedState = window.localStorage.getItem(key),
+            doc = document.implementation.createHTMLDocument();
+        doc.documentElement.innerHTML = savedState;
+        $(document.body).replaceWith(doc.body);
     };
 
     return PersistenceHandler;
