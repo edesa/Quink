@@ -49,6 +49,20 @@
 
             QUINK.submit = function (docType, doc, url) {
                 console.log('submitting...');
+                return jQuery.ajax({
+                    url: url,
+                    method: 'PUT',
+                    data: docType + '\n' + doc.documentElement.outerHTML
+                });
+            };
+
+            QUINK.autosave = function (docType, doc, url, jQuery) {
+                console.log('autosaving...');
+                return jQuery.ajax({
+                    url: url + '-autosaved',
+                    method: 'PUT',
+                    data: docType + '\n' + doc.documentElement.outerHTML
+                });
             };
         </script>
     </body>

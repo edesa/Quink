@@ -133,10 +133,21 @@ define([
     };
 
     PersistenceHandler.prototype.doAutoSave = function (opts) {
-        return this.isAutoSaveLocal() ?
-            this.autoSaveLocalStorage(this.origDoc) :
-            this.persistPage(this.origDoc, 'PUT', Env.getAutoSaveUrl(), null, opts);
+        var promise, persistFunc;
+        if (this.isAutoSaveLocal()) {
+            promise = this.autoSaveLocalStorage(this.origDoc);
+        } else {
+            persistFunc = this.getPersistFunc('autosave', 'PUT');
+            promise = this.persistPage(persistFunc, this.origDoc, Env.getAutoSaveUrl(), opts);
+        }
+        return promise;
     };
+
+    // PersistenceHandler.prototype.doAutoSave = function (opts) {
+    //     return this.isAutoSaveLocal() ?
+    //         this.autoSaveLocalStorage(this.origDoc) :
+    //         this.persistPage(this.origDoc, 'PUT', Env.getAutoSaveUrl(), null, opts);
+    // };
 
     /**
      * Invoked when leaving the page. Have to make the call synchronous for the
