@@ -48,7 +48,7 @@ define([
         var url = window.location.href,
             me = this;
         $.get(url, function (data) {
-            PubSub.publish('persist.init.pagesrc', data);
+            PersistenceHandler.setPageSrc(data);
             me.initPersistMonitors();
             me.initAutoSave();
         });
@@ -248,67 +248,11 @@ define([
         }
     };
 
-    /**
-     * Currrently instantiates its own PersistenceHandler and calls it directly. This is wrong but much
-     * quicker than the alternative which is to go via PubSub for everything. PubSub isn't ideal when
-     * what you need is a function call with a result.
-     * TODO fix this.
-    */
     Persist.prototype.initFromAutoSave = function () {
-        var handler = new PersistenceHandler();
-        if (handler.autoSaveExists() && window.confirm('Do you want to use the last auto save?')) {
-            handler.applyAutoSave();
+        if (PersistenceHandler.autoSaveExists() && window.confirm('Do you want to use the last auto save?')) {
+            PersistenceHandler.applyAutoSave();
         }
     };
-
-
-    // Persist.prototype.checkUseAutoSave = function () {
-    //     function useAutoSave() {
-    //         var deferred = $.Deferred();
-    //         PubSub.subscribe('persist.appliedautosave', function (success) {
-    //             var func = success ? deferred.resolve : deferred.reject;
-    //             func.call(deferred, success);
-    //         });
-    //         PubSub.publish('command.exec', 'persist.applyautsave');
-    //         return deferred.promise();
-    //     }
-    // 
-    //     function willUseAutoSave() {
-    //         var deferred = $.Deferred(),
-    //             sub = PubSub.subscribe('command.executed', function (data) {
-    //                 var msg = 'Do you want to use the last auto save?',
-    //                     func;
-    //                 if (data && data.cmd === 'persist.hasautosave') {
-    //                     func = data.result === 'exists' && window.confirm(msg) ? deferred.resolve : deferred.reject;
-    //                     func.call(deferred);
-    //                 }
-    //             });
-    //         PubSub.publish('command.exec', 'persist.hasautosave');
-    //         return deferred.promise();
-    //     }
-    // 
-    //     var init = function () {
-    //             this.init();
-    //         }.bind(this);
-    //     return willUseAutoSave()
-    //         .then(useAutoSave)
-    //         .then(init, init);
-    // };
-
-    // Persist.prototype.checkForAutoSave = function () {
-    //     var deferred = $.Deferred();
-    //     PubSub.subscribe('persist.autosave.exists', function (autoSaveExists) {
-    //         if (autoSaveExists) {
-    //             if (window.confirm('Do you want to use the last auto save?')) {
-    //                 PubSub.subscribe('persist.useautosave.done');
-    //                 PubSub.publish('persist.useautosave', true);
-    //             }
-    //         }
-    //         deferred.resolve(autoSaveExists);
-    //     });
-    //     PubSub.publish('persist.checkautosave');
-    //     return deferred;
-    // };
 
     var theInstance = new Persist();
 

@@ -49,13 +49,17 @@ define([
     PersistenceHandler.prototype.copyBody = function (srcDoc, destDoc) {
         var srcBody = srcDoc.body,
             destBody = destDoc.body,
-            srcNodes, i, length, node;
+            srcNodes, i, length, node, iNode;
         if (srcBody.hasChildNodes()) {
             srcNodes = srcBody.childNodes;
             for (i = 0, length = srcNodes.length; i < length; i++) {
                 node = srcNodes[i];
                 if (DomUtil.isWithinDocument(node)) {
-                    destBody.appendChild(destDoc.importNode(node, true));
+                    iNode = destDoc.importNode(node, true);
+                    if (iNode.nodeType === 1) {
+                        iNode.classList.remove('qk_command_mode');
+                    }
+                    destBody.appendChild(iNode);
                 }
             }
         }
@@ -111,12 +115,14 @@ define([
     PersistenceHandler.prototype.makeReadOnly = function (doc) {
         var scriptTag = doc.querySelector('script[src*="quink.js"]'),
             editables = doc.querySelectorAll('[contenteditable="true"]'),
-            i, length;
+            i, length, ed;
         if (scriptTag) {
             scriptTag.parentNode.removeChild(scriptTag);
         }
         for (i = 0, length = editables.length; i < length; i++) {
-            editables[i].removeAttribute('contenteditable');
+            ed = editables[i];
+            ed.removeAttribute('contenteditable');
+            ed.classList.remove('qk_command_mode');
         }
         return doc;
     };
@@ -231,5 +237,16 @@ define([
         $(document.body).replaceWith(doc.body);
     };
 
-    return PersistenceHandler;
+
+    var theInstance = new PersistenceHandler();
+
+    return {
+        setPageSrc: theInstance.setPageSrc.bind(theInstance),
+        autoSaveExists: theInstance.autoSaveExists.bind(theInstance),
+        applyAutoSave:  theInstance.applyAutoSave.bind(theInstance),
+        submit: theInstance.submit.bind(theInstance),
+        save: theInstance.save.bind(theInstance),
+        unloadSave: theInstance.unloadSave.bind(theInstance),
+        autoSave: theInstance.autoSave.bind(theInstance)
+    };
 });
