@@ -27,6 +27,7 @@ define([
     'use strict';
 
     var PersistenceHandler = function () {
+        this.autoSaveLocalStorageBound = this.autoSaveLocalStorage.bind(this);
     };
 
     PersistenceHandler.prototype.emptyNode = function (node) {
@@ -133,21 +134,10 @@ define([
     };
 
     PersistenceHandler.prototype.doAutoSave = function (opts) {
-        var promise, persistFunc;
-        if (this.isAutoSaveLocal()) {
-            promise = this.autoSaveLocalStorage(this.origDoc);
-        } else {
-            persistFunc = this.getPersistFunc('autosave', 'PUT');
-            promise = this.persistPage(persistFunc, this.origDoc, Env.getAutoSaveUrl(), opts);
-        }
-        return promise;
+        var persistFunc = this.isAutoSaveLocal() ?
+                this.autoSaveLocalStorageBound : this.getPersistFunc('autosave', 'PUT');
+        return this.persistPage(persistFunc, this.origDoc, Env.getAutoSaveUrl(), opts);
     };
-
-    // PersistenceHandler.prototype.doAutoSave = function (opts) {
-    //     return this.isAutoSaveLocal() ?
-    //         this.autoSaveLocalStorage(this.origDoc) :
-    //         this.persistPage(this.origDoc, 'PUT', Env.getAutoSaveUrl(), null, opts);
-    // };
 
     /**
      * Invoked when leaving the page. Have to make the call synchronous for the
@@ -163,10 +153,8 @@ define([
         return window.location.pathname.toLowerCase();
     };
 
-    PersistenceHandler.prototype.autoSaveLocalStorage = function (theDoc) {
-        var doc = this.updateBody(document, theDoc),
-            docType = this.getDocTypeString(doc),
-            key = this.getLocalStorageKey(),
+    PersistenceHandler.prototype.autoSaveLocalStorage = function (docType, doc) {
+        var key = this.getLocalStorageKey(),
             deferred = $.Deferred();
         try {
             window.localStorage.setItem(key, docType + '\n' + doc.documentElement.outerHTML);
