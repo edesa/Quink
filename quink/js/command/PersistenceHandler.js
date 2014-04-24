@@ -43,10 +43,6 @@ define([
         return doc;
     };
 
-    PersistenceHandler.prototype.setPageSrc = function (src) {
-        this.origDoc = this.createDoc(src);
-    };
-
     PersistenceHandler.prototype.copyBody = function (srcDoc, destDoc) {
         var srcBody = srcDoc.body,
             destBody = destDoc.body,
@@ -91,30 +87,6 @@ define([
         return this.docTypeString;
     };
 
-    PersistenceHandler.prototype.createDefaultPersistFunc = function (method, opts) {
-        return function (docType, doc, url, $) {
-            var options = _.extend({
-                url: url,
-                method: method,
-                data: docType + '\n' + doc.documentElement.outerHTML
-            }, opts);
-            return $.ajax(options);
-        };
-    };
-
-    /**
-     * To provide callbacks on success or failure, attach to the returned promise object.
-     * done and fail are the usual options but there are others.
-     */
-    PersistenceHandler.prototype.persistPage = function (persistFunc, theDoc, url, transformFunc) {
-        var doc = this.updateBody(document, theDoc),
-            docType = this.getDocTypeString(doc);
-        if (typeof transformFunc === 'function') {
-            doc = transformFunc.call(this, doc);
-        }
-        return persistFunc(docType, doc, url, $);
-    };
-
     /**
      * Removes the Quink script tag and any contenteditable attributes from the page.
      */
@@ -133,20 +105,24 @@ define([
         return doc;
     };
 
-    PersistenceHandler.prototype.doAutoSave = function (opts) {
-        var persistFunc = this.isAutoSaveLocal() ?
-                this.autoSaveLocalStorageBound : this.getPersistFunc('autosave', 'PUT');
-        return this.persistPage(persistFunc, this.origDoc, Env.getAutoSaveUrl(), opts);
+    PersistenceHandler.prototype.createDefaultPersistFunc = function (method, opts) {
+        return function (docType, doc, url, $) {
+            var options = _.extend({
+                url: url,
+                method: method,
+                data: docType + '\n' + doc.documentElement.outerHTML
+            }, opts);
+            return $.ajax(options);
+        };
     };
 
-    /**
-     * Invoked when leaving the page. Have to make the call synchronous for the
-     * process to succeed in that scenario.
-     */
-    PersistenceHandler.prototype.unloadSave = function () {
-        return this.doAutoSave({
-            async: false
-        });
+    PersistenceHandler.prototype.getPersistFunc = function (funcName, method) {
+        return typeof QUINK[funcName] === 'function' ? QUINK[funcName] : this.createDefaultPersistFunc(method);
+    };
+
+    PersistenceHandler.prototype.removeAutoSaveLocal = function () {
+        var key = this.getLocalStorageKey();
+        window.localStorage.removeItem(key);
     };
 
     PersistenceHandler.prototype.getLocalStorageKey = function () {
@@ -167,6 +143,35 @@ define([
 
     PersistenceHandler.prototype.isAutoSaveLocal = function () {
         return Env.getParam('autosaveto') === 'browser' && window.localStorage !== undefined;
+    };
+
+    /**
+     * To provide callbacks on success or failure, attach to the returned promise object.
+     * done and fail are the usual options but there are others.
+     */
+    PersistenceHandler.prototype.persistPage = function (persistFunc, theDoc, url, transformFunc) {
+        var doc = this.updateBody(document, theDoc),
+            docType = this.getDocTypeString(doc);
+        if (typeof transformFunc === 'function') {
+            doc = transformFunc.call(this, doc);
+        }
+        return persistFunc(docType, doc, url, $);
+    };
+
+    PersistenceHandler.prototype.doAutoSave = function (opts) {
+        var persistFunc = this.isAutoSaveLocal() ?
+                this.autoSaveLocalStorageBound : this.getPersistFunc('autosave', 'PUT');
+        return this.persistPage(persistFunc, this.origDoc, Env.getAutoSaveUrl(), opts);
+    };
+
+    /**
+     * Invoked when leaving the page. Have to make the call synchronous for the
+     * process to succeed in that scenario.
+     */
+    PersistenceHandler.prototype.unloadSave = function () {
+        return this.doAutoSave({
+            async: false
+        });
     };
 
     /**
@@ -192,11 +197,6 @@ define([
         });
     };
 
-    PersistenceHandler.prototype.removeAutoSaveLocal = function () {
-        var key = this.getLocalStorageKey();
-        window.localStorage.removeItem(key);
-    };
-
     /**
      * The submitted document should be read only so the original document is copied
      * to avoid having to replace script tags in the right place after the submission.
@@ -217,8 +217,8 @@ define([
         return promise;
     };
 
-    PersistenceHandler.prototype.getPersistFunc = function (funcName, method) {
-        return typeof QUINK[funcName] === 'function' ? QUINK[funcName] : this.createDefaultPersistFunc(method);
+    PersistenceHandler.prototype.setPageSrc = function (src) {
+        this.origDoc = this.createDoc(src);
     };
 
     PersistenceHandler.prototype.autoSaveExists = function () {
