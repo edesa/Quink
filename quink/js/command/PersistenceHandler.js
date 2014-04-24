@@ -105,7 +105,6 @@ define([
      * To provide callbacks on success or failure, attach to the returned promise object.
      * done and fail are the usual options but there are others.
      */
-    // PersistenceHandler.prototype.persistPage = function (theDoc, method, url, transformFunc, opts, persistFunc) {
     PersistenceHandler.prototype.persistPage = function (persistFunc, theDoc, url, transformFunc) {
         var doc = this.updateBody(document, theDoc),
             docType = this.getDocTypeString(doc);
@@ -183,7 +182,7 @@ define([
      * save was successful.
      */
     PersistenceHandler.prototype.save = function () {
-        var persistFunc = typeof QUINK.save === 'function' ? QUINK.save : this.createDefaultPersistFunc('PUT'),
+        var persistFunc = this.getPersistFunc('save', 'PUT'),
             promise = this.persistPage(persistFunc, this.origDoc, Env.getSaveUrl());
         return promise.then(function () {
             if (this.isAutoSaveLocal()) {
@@ -193,33 +192,11 @@ define([
             console.log('Save failed!');
         });
     };
-    // PersistenceHandler.prototype.save = function () {
-    //     var promise = typeof QUINK.save === 'function' ?
-    //         this.customSave(this.origDoc, QUINK.save, Env.getSaveUrl()) :
-    //         this.persistPage(this.origDoc, 'PUT', Env.getSaveUrl());
-    //     return promise.then(function () {
-    //         if (this.isAutoSaveLocal()) {
-    //             this.removeAutoSaveLocal();
-    //         }
-    //     }.bind(this), function () {
-    //         console.log('Save failed!');
-    //     });
-    // };
 
     PersistenceHandler.prototype.removeAutoSaveLocal = function () {
         var key = this.getLocalStorageKey();
         window.localStorage.removeItem(key);
     };
-
-    /**
-     * Invoke save function provided via the config object. Currently doesn't do any checking of
-     * the return value which should be a jQuery Promise.
-     */
-    // PersistenceHandler.prototype.customSave = function (theDoc, func, url) {
-    //     var doc = this.updateBody(document, theDoc),
-    //         docType = this.getDocTypeString(doc);
-    //     return func.call(null, docType, doc, $, url);
-    // };
 
     /**
      * The submitted document should be read only so the original document is copied
@@ -228,12 +205,21 @@ define([
      * in an editing session.
      */
     PersistenceHandler.prototype.submit = function () {
-        var url = Env.getSubmitUrl(),
-            doc = document.implementation.createHTMLDocument('');
+        var persistFunc = this.getPersistFunc('submit', 'POST'),
+            doc = document.implementation.createHTMLDocument(''),
+            promise;
         doc.documentElement.innerHTML = this.origDoc.documentElement.innerHTML;
-        return this.persistPage(doc, 'POST', url, this.makeReadOnly).done(function () {
-            alert('Submitted');
-        });
+        promise = this.persistPage(persistFunc, doc, Env.getSubmitUrl(), this.makeReadOnly);
+        if (promise && QUINK.submit !== 'function' && promise.then !== undefined) {
+            promise.done(function () {
+                alert('Submitted');
+            });
+        }
+        return promise;
+    };
+
+    PersistenceHandler.prototype.getPersistFunc = function (funcName, method) {
+        return typeof QUINK[funcName] === 'function' ? QUINK[funcName] : this.createDefaultPersistFunc(method);
     };
 
     PersistenceHandler.prototype.autoSaveExists = function () {
@@ -253,7 +239,6 @@ define([
         doc.documentElement.innerHTML = savedState;
         $(document.body).replaceWith(doc.body);
     };
-
 
     var theInstance = new PersistenceHandler();
 
