@@ -90,23 +90,29 @@ define([
         return this.docTypeString;
     };
 
+    PersistenceHandler.prototype.createDefaultPersistFunc = function (method, opts) {
+        return function (docType, doc, url, $) {
+            var options = _.extend({
+                url: url,
+                method: method,
+                data: docType + '\n' + doc.documentElement.outerHTML
+            }, opts);
+            return $.ajax(options);
+        };
+    };
+
     /**
      * To provide callbacks on success or failure, attach to the returned promise object.
      * done and fail are the usual options but there are others.
      */
-    PersistenceHandler.prototype.persistPage = function (theDoc, method, url, func, opts) {
+    // PersistenceHandler.prototype.persistPage = function (theDoc, method, url, transformFunc, opts, persistFunc) {
+    PersistenceHandler.prototype.persistPage = function (persistFunc, theDoc, url, transformFunc) {
         var doc = this.updateBody(document, theDoc),
-            docType = this.getDocTypeString(doc),
-            options;
-        if (_.isFunction(func)) {
-            doc = func.call(this, doc);
+            docType = this.getDocTypeString(doc);
+        if (typeof transformFunc === 'function') {
+            doc = transformFunc.call(this, doc);
         }
-        options = _.extend({
-            url: url,
-            method: method,
-            data: docType + '\n' + doc.documentElement.outerHTML
-        }, opts);
-        return $.ajax(options);
+        return persistFunc(docType, doc, url, $);
     };
 
     /**
@@ -177,9 +183,8 @@ define([
      * save was successful.
      */
     PersistenceHandler.prototype.save = function () {
-        var promise = typeof QUINK.save === 'function' ?
-            this.customSave(this.origDoc, QUINK.save, Env.getSaveUrl()) :
-            this.persistPage(this.origDoc, 'PUT', Env.getSaveUrl());
+        var persistFunc = typeof QUINK.save === 'function' ? QUINK.save : this.createDefaultPersistFunc('PUT'),
+            promise = this.persistPage(persistFunc, this.origDoc, Env.getSaveUrl());
         return promise.then(function () {
             if (this.isAutoSaveLocal()) {
                 this.removeAutoSaveLocal();
@@ -188,6 +193,18 @@ define([
             console.log('Save failed!');
         });
     };
+    // PersistenceHandler.prototype.save = function () {
+    //     var promise = typeof QUINK.save === 'function' ?
+    //         this.customSave(this.origDoc, QUINK.save, Env.getSaveUrl()) :
+    //         this.persistPage(this.origDoc, 'PUT', Env.getSaveUrl());
+    //     return promise.then(function () {
+    //         if (this.isAutoSaveLocal()) {
+    //             this.removeAutoSaveLocal();
+    //         }
+    //     }.bind(this), function () {
+    //         console.log('Save failed!');
+    //     });
+    // };
 
     PersistenceHandler.prototype.removeAutoSaveLocal = function () {
         var key = this.getLocalStorageKey();
@@ -198,11 +215,11 @@ define([
      * Invoke save function provided via the config object. Currently doesn't do any checking of
      * the return value which should be a jQuery Promise.
      */
-    PersistenceHandler.prototype.customSave = function (theDoc, func, url) {
-        var doc = this.updateBody(document, theDoc),
-            docType = this.getDocTypeString(doc);
-        return func.call(null, docType, doc, $, url);
-    };
+    // PersistenceHandler.prototype.customSave = function (theDoc, func, url) {
+    //     var doc = this.updateBody(document, theDoc),
+    //         docType = this.getDocTypeString(doc);
+    //     return func.call(null, docType, doc, $, url);
+    // };
 
     /**
      * The submitted document should be read only so the original document is copied
