@@ -52,8 +52,8 @@ define([
                     }).fail(function () {
                         PubSub.publish('error.persist', {
                             operation: opName
-                    });
                         });
+                    });
                 }
             } else {
                 console.log('No persistence function: ' + op);
