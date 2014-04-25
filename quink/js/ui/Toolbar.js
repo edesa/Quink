@@ -361,6 +361,7 @@ define([
         if (event.hitType === 'double') {
             hit = Event.isTouch ? event.event.originalEvent.changedTouches[0] : event.event;
             this.showToolbarAt(hit.pageX, hit.pageY);
+            this.vpToolbar.adjust();
             handled = true;
         }
         return handled;
@@ -450,14 +451,16 @@ define([
             'left': x,
             'top': y
         });
-        this.vpToolbar.adjust();
     };
 
     Toolbar.prototype.showToolbar = function () {
-        var y = $(document).innerHeight() / 5,
+        var y = $(window).innerHeight() / 5,
             x;
         this.toolbar.removeClass('qk_hidden');
         x = Math.floor(($(document).innerWidth() - this.toolbar.width()) / 2);
+        this.vpToolbar = ViewportRelative.create(this.toolbar, {
+            top: y
+        });
         this.showToolbarAt(x, y);
     };
 
@@ -493,7 +496,6 @@ define([
         this.addToolbarButtonListeners();
         this.checkShowSubmit();
         Draggable.create('.qk_toolbar_container');
-        this.vpToolbar = ViewportRelative.create(this.toolbar);
         this.processHeldPubs();
         if (Env.getParam('toolbar', 'off') === 'on') {
             this.showToolbar();
