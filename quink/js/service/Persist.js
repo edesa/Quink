@@ -42,17 +42,15 @@ define([
 
     /**
      * Auto save and persistence through submit both need the original page source, so download
-     * it up front.
+     * it up front unless it has already been retrieved as a result of applying a previous auto save.
      */
     Persist.prototype.init = function () {
-        var url = window.location.href,
-            me = this;
-        $.get(url, function (data) {
-            PersistenceHandler.setPageSrc(data);
-            me.initPersistMonitors();
-            me.initAutoSave();
-        });
         this.boundChangeMonitorCallback = this.changeMonitorCallback.bind(this);
+        if (this.autoSavePageSrc) {
+            this.initAutoSave(this.autoSavePageSrc);
+        } else {
+            $.get(window.location.href, this.initAutoSave.bind(this));
+        }
     };
 
     Persist.prototype.initPersistMonitors = function () {
@@ -161,13 +159,17 @@ define([
         PubSub.subscribe('info.closed', onStartNoSave);
     };
 
-    Persist.prototype.initAutoSave = function () {
-        var asi = parseInt(Env.getParam('autosaveinterval', this.AUTOSAVE_INTERVAL), 10);
+    Persist.prototype.initAutoSave = function (downloadPageSrc) {
+        var asi = parseInt(Env.getParam('autosaveinterval', this.AUTOSAVE_INTERVAL), 10),
+            pageSrc = downloadPageSrc || this.autoSavePageSrc;
         if (asi > 0) {
+            PersistenceHandler.setPageSrc(pageSrc);
+            this.initPersistMonitors();
             this.initUnloadListeners();
             this.initPluginListeners();
             this.autoSaveInterval = asi * 1000;
             this.startAutoSave();
+            this.autoSavePageSrc = null;
         } else {
             console.log('Autosave switched off via autosaveinterval query parameter.');
         }
@@ -250,7 +252,7 @@ define([
 
     Persist.prototype.initFromAutoSave = function () {
         if (PersistenceHandler.autoSaveExists() && window.confirm('Do you want to use the last auto save?')) {
-            PersistenceHandler.applyAutoSave();
+            this.autoSavePageSrc = PersistenceHandler.applyAutoSave();
         }
     };
 

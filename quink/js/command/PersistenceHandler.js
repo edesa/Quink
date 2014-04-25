@@ -237,6 +237,7 @@ define([
             doc = document.implementation.createHTMLDocument();
         doc.documentElement.innerHTML = savedState;
         $(document.body).replaceWith(doc.body);
+        return savedState;
     };
 
     var theInstance = new PersistenceHandler();
