@@ -38,8 +38,7 @@ define([
             'qk_popup',
             'qk_toolbar_container',
             'qk_plugin_close_button',
-            'qk_caret',
-            'qk_command_mode'
+            'qk_caret'
         ];
 
     function popEl(tag) {

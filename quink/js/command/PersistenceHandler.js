@@ -227,16 +227,15 @@ define([
     };
 
     /**
-     * This isn't right as it only replaces the body and not the header. Replacing the header doesn't re-apply
-     * the sylesheets to the new content to the resulting display is wrong.
-     * TODO replace the full document and evaluate scripts.
+     * Inefficient but should always get the right result and will execute any scripts in the saved state.
      */
     PersistenceHandler.prototype.applyAutoSave = function () {
         var key = this.getLocalStorageKey(),
             savedState = window.localStorage.getItem(key),
             doc = document.implementation.createHTMLDocument();
         doc.documentElement.innerHTML = savedState;
-        $(document.body).replaceWith(doc.body);
+        $(document.head).empty().append(doc.head.innerHTML);
+        $(document.body).empty().append(doc.body.innerHTML);
         return savedState;
     };
 
