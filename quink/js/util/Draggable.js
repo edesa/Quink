@@ -52,15 +52,13 @@ define([
         document.addEventListener(Event.eventName('end'), this.onDragEndProxy, false);
     };
 
-    Draggable.prototype.TOUCH_THRESHOLD = 10;
-
     /**
      * Always preventDefault to stop the whole page from scrolling on the device.
      */
     Draggable.prototype.onDrag = function (event) {
         var locEvent = Event.getLocEvent(event);
         event.preventDefault();
-        if (!Event.inThreshold(locEvent, this.startCoords)) {
+        if (this.dragging || !Event.inThreshold(locEvent, this.startCoords)) {
             this.dragging = true;
             this.draggable.css({
                 'left': locEvent.pageX - this.offX,
