@@ -475,9 +475,9 @@ define([
     Toolbar.prototype.showToolbarAt = function (x, y) {
         this.toolbar.removeClass('qk_hidden');
         if (this.widestTabName) {
-            // Ensures that the toolbar is sized to the tab with the most buttons.
+            // Ensures that the toolbar is sized to the tab with the most buttons. Hacky +5 needed on FF.
             this.showTabPanel(this.widestTabName);
-            this.toolbar.width(this.toolbar.width());
+            this.toolbar.width(this.toolbar.width() + 5);
             this.widestTabName = null;
             this.showTabPanel('misc');
         }
