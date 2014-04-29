@@ -419,6 +419,10 @@ button {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
 }
+/* This seems to do nothing on iOS7 */
+.qk_no_scroll {
+    overflow: hidden;
+}
 .qk_mask {
     position: fixed;
     left: 0px;

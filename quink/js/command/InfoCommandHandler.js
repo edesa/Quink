@@ -47,6 +47,7 @@ define([
             event.preventDefault();
             me.infoContainer.detach();
             me.mask.detach();
+            $(document.body).removeClass('qk_no_scroll');
             FocusTracker.restoreFocus();
             PubSub.publish('info.closed');
         });
@@ -98,6 +99,7 @@ define([
         PubSub.publish('info.open', id);
         FocusTracker.removeFocus();
         this.mask.appendTo('body');
+        $(document.body).addClass('qk_no_scroll');
         infoContainer = this.infoContainer.find('.qk_info_content');
         infoContainer.html(this.getContent(id));
         DomUtil.makeQuinkRelative(infoContainer[0]);
