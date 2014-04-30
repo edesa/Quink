@@ -419,7 +419,7 @@ button {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
 }
-/* This seems to do nothing on iOS7 */
+/* This seems to do nothing on iOS7 when applied to the body */
 .qk_no_scroll {
     overflow: hidden;
 }
