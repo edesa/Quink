@@ -1,4 +1,4 @@
-/*global define, imageUploader*/
+/*global imageUploader, EXIF*/
 (function ($) {
     'use strict';
     var REGEXP_TRAILING_TEXT = /[^\d]+$/,
@@ -11,7 +11,6 @@
             curConfig = {example_config_key: "example config value"};
             //*** return function ***
 
-
             retFunc = (function () {
                 var curConfig = curConfig,
                     self = {},
@@ -19,6 +18,7 @@
 
                 //I'm not currently setting any config for image upload, so this isn't being called
                 self.setConfig = function (newConfig) {
+                    throw new Error("error: ImageUploader.setConfig not implemented yet;newConfig=" + newConfig);
                     //a.extend(true, curConfig, newConfig);
                     //if (newConfig.extensions)curConfig.extensions = newConfig.extensions
                 };
@@ -34,6 +34,7 @@
                         isNumber(extractNumericText($element));
                     return returnValue;
                 }
+
                 function isValueKeyed(Selement) {
                     return Selement.val().trim().length > 0;
                 }
@@ -124,7 +125,7 @@
                     }
                 }
 
-                self.setImage = function(newImageHTML) {
+                self.setImage = function (newImageHTML) {
                     var returnValue = false,
                         $newImageHTML,
                         existingWidth,
@@ -168,11 +169,48 @@
                     return returnValue;
                 };
                 self.getImageElementAsString = function () {
-                    var $imageElement, $widthInput, $widthUnitSelect, $heightInput, $heightUnitSelect, returnValue;
+                    var $imageElement, $widthInput, $widthUnitSelect, $heightInput, $heightUnitSelect, returnValue, exifOrientation, requiredRotationRadians;
 
                     isScreenValid = true;
 
-                    $imageElement = $('#image-uploader .fileinput .fileinput-preview');
+                    $imageElement = $('#image-uploader .fileinput .fileinput-preview img');
+
+                    EXIF.getData($imageElement[0], function () {
+                        console.log('[' + new Date().toISOString() + ']' + 'ImageUploader.getImageElementAsString() exifdata=' + JSON.stringify(this.exifdata));
+                        exifOrientation = this.exifdata.Orientation;
+                    });
+
+                    //Remove EXIF data from image by pushing into a canvas then getting the image back out
+                    var $canvas = $('<canvas></canvas>');
+                    //have to add it to document otherwise drawImage doesn't work
+                    $canvas.appendTo("body");
+                    $canvas[0].height = $imageElement[0].naturalHeight;
+                    $canvas[0].width = $imageElement[0].naturalWidth;
+                    var ctx = $canvas[0].getContext("2d");
+                    console.log('[' + new Date().toISOString() + ']' + 'ImageUploader.getImageElementAsString() exifOrientation=' + exifOrientation);
+                    if (exifOrientation === 3 || exifOrientation === 6 || exifOrientation === 8) {
+                        switch (exifOrientation) {
+                            case 3:
+                                requiredRotationRadians = Math.PI;
+                                break;
+                            case 6:
+                                requiredRotationRadians = Math.PI / 2;
+                                break;
+                            case 8:
+                                requiredRotationRadians = -Math.PI / 2;
+                                break;
+                            default :
+                                //shouldn't be a default as we've already excluded the other possibilities
+                        }
+                        /// translate so rotation happens at center of image
+                        ctx.translate($imageElement[0].width * 0.5, $imageElement[0].height * 0.5);
+                        console.log('[' + new Date().toISOString() + ']' + 'ImageUploader.getImageElementAsString() rotating image by radians:' + requiredRotationRadians);
+                        ctx.rotate(requiredRotationRadians);
+                        ctx.translate(-$imageElement[0].width * 0.5, -$imageElement[0].width * 0.5);
+                    }
+                    ctx.drawImage($imageElement[0], 0, 0);
+                    $imageElement.attr("src", $canvas[0].toDataURL());
+
                     $heightInput = $('#height-input');
                     $heightUnitSelect = $('#height-unit-select');
                     $widthInput = $('#width-input');
@@ -186,7 +224,7 @@
                         }
                         handleKeyedInputs($imageElement, $heightInput, $heightUnitSelect, $widthInput, $widthUnitSelect);
                     }
-                    returnValue = $imageElement.html();
+                    returnValue = $imageElement[0].outerHTML;
                     return returnValue;
                 };
                 self.init = function () {
