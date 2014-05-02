@@ -385,7 +385,7 @@ define([
         $('.qk_toolbar_tab_button').each(function () {
             var tabName = this.getAttribute('data-tab');
             if (tabName) {
-                FastTap.fastTap(this, toolbar.showTabPanel.bind(toolbar, tabName));
+                FastTap.fastTapNoFocus(this, toolbar.showTabPanel.bind(toolbar, tabName));
             }
         });
     };

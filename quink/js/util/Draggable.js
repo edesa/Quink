@@ -71,15 +71,12 @@ define([
         if (this.dragging) {
             event.preventDefault();
             this.dragging = false;
-            _.delay(function () {
-                FocusTracker.restoreFocus();
-            }, 0);
+            PubSub.publish('draggable.dragend', this.draggable[0]);
         }
         this.offX = this.offY = 0;
         this.startCoords = null;
         document.removeEventListener(Event.eventName('move'), this.onDragProxy);
         document.removeEventListener(Event.eventName('end'), this.onDragEndProxy);
-        PubSub.publish('draggable.dragend', this.draggable[0]);
     };
 
     function create(selector) {
