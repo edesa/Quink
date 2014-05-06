@@ -20,9 +20,8 @@
 /*global Node */
 define([
     'jquery',
-    'util/Env',
-    'util/Event'
-], function ($, Env, Event) {
+    'util/Env'
+], function ($, Env) {
     'use strict';
 
     /**
@@ -38,7 +37,8 @@ define([
             'qk_state_bar',
             'qk_popup',
             'qk_toolbar_container',
-            'qk_plugin_close_button'
+            'qk_plugin_close_button',
+            'qk_caret'
         ];
 
     function popEl(tag) {
@@ -60,12 +60,12 @@ define([
      * SVG nodes don't appear to follow many (any?) of the usual element conventions.
      */
     function nodeHasQuinkClass(node) {
-        var className = node.tagName.toLowerCase() !== 'svg' && node.className,
+        var classList = node.tagName.toLowerCase() !== 'svg' && node.classList,
             result = false,
             i, length;
-        if (className) {
+        if (classList) {
             for (i = 0, length = quinkCssClasses.length; i < length; i++) {
-                if (className.indexOf(quinkCssClasses[i]) >= 0) {
+                if (classList.contains(quinkCssClasses[i])) {
                     result = true;
                     break;
                 }

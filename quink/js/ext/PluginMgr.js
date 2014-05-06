@@ -163,6 +163,15 @@ define([
         }
     };
 
+    /**
+     * The plugin is closing via exit or save.
+     */
+    PluginMgr.prototype.onPluginClose = function (topic, msg) {
+        $('.qk_plugin_close_button').addClass('qk_hidden');
+        $(document.body).removeClass('qk_no_scroll');
+        PubSub.publish(topic, msg);
+    };
+
     PluginMgr.prototype.onPluginEvent = function (def, msg, topic) {
         var event = topic.split('.')[2];
         switch (event) {
@@ -175,12 +184,10 @@ define([
             this.showPluginMenuButton(def);
             break;
         case 'exited':
-            $('.qk_plugin_close_button').addClass('qk_hidden');
-            PubSub.publish('plugin.exited');
+            this.onPluginClose('plugin.exited');
             break;
         case 'saved':
-            $('.qk_plugin_close_button').addClass('qk_hidden');
-            PubSub.publish('plugin.saved', msg);
+            this.onPluginClose('plugin.saved', msg);
             break;
         }
     };
@@ -288,6 +295,7 @@ define([
     PluginMgr.prototype.openPlugin = function (def) {
         if (def.callbacks && def.callbacks.open) {
             PubSub.publish('plugin.open');
+            $(document.body).addClass('qk_no_scroll');
             def.callbacks.open(Context.getData());
         } else {
             this.fetchPluginBootstrap(def);

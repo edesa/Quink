@@ -307,10 +307,15 @@ define([
                 // end of line, no vis space eol above: extend START
                 rect = this.extendStart();
             } else {
-                // extension possible at both start and end
+                // extension possible at both start and end.
+                // On Android Chrome you have to pick the one with the larger top. This also works
+                // for other platforms.
                 if (start.bottom === end.bottom) {
-                    // middle of line: extend EITHER
-                    rect = this.extendStart();
+                    if (start.top > end.top) {
+                        rect = this.extendStart();
+                    } else {
+                        rect = this.extendEnd();
+                    }
                 } else if (start.bottom < end.bottom) {
                     rect = this.extendEnd();
                 } else {

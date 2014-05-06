@@ -40,7 +40,7 @@ define([
 
         isTouch: window.ontouchstart !== undefined,
 
-        TOUCH_THRESHOLD: 5,
+        TOUCH_THRESHOLD: 10,
 
         eventName: function (eventType) {
             if (!this.events) {

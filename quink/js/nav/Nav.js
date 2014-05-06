@@ -294,13 +294,9 @@ define([
     };
 
     /**
-     * Checks that vertical navigation anchors are set correctly. A selection can be set outside
+     * Checks that the navigation anchors are set correctly. A selection can be set outside
      * Quink or the Quink selection can be changed. If either of these things has happened, use
      * the current selection as the new anchor points.
-     * On the iPad the x-anchor isn't changed if the user adjusts the active end. This is
-     * because there's no event (that I can see) for this and trying to test ranges against
-     * each other proved unreliable due to the same selection being represented by different
-     * ranges.
      */
     Nav.prototype.checkAnchors = function (isDown, select) {
         var sel, range;
@@ -482,9 +478,10 @@ define([
 
     Nav.prototype.acrossAndSelect = function (unit, amount, select) {
         var isDown = amount >= 0,
-            origin = this.getStartRange(isDown, select),
-            result = this.across(origin.cloneRange(), unit, amount),
-            dr;
+            origin, result, dr;
+        this.checkAnchors(isDown, select);
+        origin = this.getStartRange(isDown, select);
+        result = this.across(origin.cloneRange(), unit, amount);
         if (result) {
             if (select) {
                 this.selectAfterNav(isDown, origin, result);

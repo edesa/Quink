@@ -88,26 +88,54 @@ define([
         }
     };
 
+    Toolbar.prototype.LINK_URL_SCHEME_BLACKLIST = [
+        'javascript'
+    ];
+
+    Toolbar.prototype.LINK_URL_PREFIX = 'http://';
+
+    /**
+     * A link url must have a scheme that isn't in the black list and can't just be the default prefix.
+     */
+    Toolbar.prototype.getValidLinkUrl = function (userUrl) {
+        var url = userUrl.trim(),
+            scheme, validUrl, index;
+        if (url && url.indexOf(':') > 0) {
+            index = url.indexOf(this.LINK_URL_PREFIX);
+            if (index < 0 || url.length > this.LINK_URL_PREFIX.length) {
+                scheme = url.split(':')[0];
+                if (this.LINK_URL_SCHEME_BLACKLIST.indexOf(scheme.toLowerCase()) < 0) {
+                    validUrl = url;
+                }
+            }
+        }
+        return validUrl;
+    };
+
     /**
      * Creates the link from the data entered by the user. The range passed in is the one that was
      * current when the create link dialog was initially shown.
      */
     Toolbar.prototype.onCreateLink = function (range) {
-        var url = document.querySelector('#qk_edit_createlink').value,
+        var urlEdit = document.querySelector('#qk_edit_createlink'),
+            url = this.getValidLinkUrl(urlEdit.value),
             textNode;
-        if (range) {
-            if (range.collapsed) {
-                // No selected text - insert the url text and use that.
-                // WebKit does that anyway, FireFox doesn't.
-                range = range.cloneRange();
-                textNode = document.createTextNode(url);
-                range.insertNode(textNode);
-                range.setEndAfter(textNode);
+        if (url) {
+            urlEdit.value = url;
+            if (range) {
+                if (range.collapsed) {
+                    // No selected text - insert the url text and use that.
+                    // WebKit does that anyway, FireFox doesn't.
+                    range = range.cloneRange();
+                    textNode = document.createTextNode(url);
+                    range.insertNode(textNode);
+                    range.setEndAfter(textNode);
+                }
+                rangy.getSelection().setSingleRange(range);
             }
-            rangy.getSelection().setSingleRange(range);
+            document.execCommand('createlink', false, url);
+            this.hideCurrentDialog();
         }
-        document.execCommand('createlink', false, url);
-        this.hideCurrentDialog();
     };
 
     /**
@@ -118,6 +146,7 @@ define([
         this.hideCurrentDialog();
         if (range) {
             rangy.getSelection().setSingleRange(range);
+            document.querySelector('#qk_edit_createlink').value = '';
         }
     };
 
@@ -135,7 +164,11 @@ define([
             btnCreate = dialog.querySelector('#qk_button_createlink'),
             btnCancel = dialog.querySelector('#qk_button_cancel'),
             sel = rangy.getSelection(),
-            range = sel.rangeCount > 0 && sel.getRangeAt(0);
+            range = sel.rangeCount > 0 && sel.getRangeAt(0),
+            urlEdit = document.querySelector('#qk_edit_createlink');
+        if (!urlEdit.value) {
+            urlEdit.value = this.LINK_URL_PREFIX;
+        }
         FastTap.fastTap(btnCreate, function () {
             this.onCreateLink(range);
         }, this, true);
@@ -143,6 +176,7 @@ define([
             this.onCancelLink(range);
         }, this, true);
         $(dialog).removeClass('qk_hidden');
+        urlEdit.focus();
         this.activeDialogEl = dialog;
     };
 
@@ -361,6 +395,7 @@ define([
         if (event.hitType === 'double') {
             hit = Event.isTouch ? event.event.originalEvent.changedTouches[0] : event.event;
             this.showToolbarAt(hit.pageX, hit.pageY);
+            this.vpToolbar.adjust();
             handled = true;
         }
         return handled;
@@ -440,9 +475,9 @@ define([
     Toolbar.prototype.showToolbarAt = function (x, y) {
         this.toolbar.removeClass('qk_hidden');
         if (this.widestTabName) {
-            // Ensures that the toolbar is sized to the tab with the most buttons.
+            // Ensures that the toolbar is sized to the tab with the most buttons. Hacky +5 needed on FF.
             this.showTabPanel(this.widestTabName);
-            this.toolbar.width(this.toolbar.width());
+            this.toolbar.width(this.toolbar.width() + 5);
             this.widestTabName = null;
             this.showTabPanel('misc');
         }
@@ -450,14 +485,16 @@ define([
             'left': x,
             'top': y
         });
-        this.vpToolbar.adjust();
     };
 
     Toolbar.prototype.showToolbar = function () {
-        var y = $(document).innerHeight() / 5,
+        var y = $(window).innerHeight() / 5,
             x;
         this.toolbar.removeClass('qk_hidden');
         x = Math.floor(($(document).innerWidth() - this.toolbar.width()) / 2);
+        this.vpToolbar = ViewportRelative.create(this.toolbar, {
+            top: y
+        });
         this.showToolbarAt(x, y);
     };
 
@@ -493,7 +530,6 @@ define([
         this.addToolbarButtonListeners();
         this.checkShowSubmit();
         Draggable.create('.qk_toolbar_container');
-        this.vpToolbar = ViewportRelative.create(this.toolbar);
         this.processHeldPubs();
         if (Env.getParam('toolbar', 'off') === 'on') {
             this.showToolbar();

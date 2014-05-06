@@ -17,7 +17,7 @@
  * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global alert */
+/*global alert, QUINK */
 define([
     'Underscore',
     'jquery',
@@ -27,6 +27,7 @@ define([
     'use strict';
 
     var PersistenceHandler = function () {
+        this.autoSaveLocalStorageBound = this.autoSaveLocalStorage.bind(this);
     };
 
     PersistenceHandler.prototype.emptyNode = function (node) {
@@ -42,20 +43,20 @@ define([
         return doc;
     };
 
-    PersistenceHandler.prototype.setPageSrc = function (src) {
-        this.origDoc = this.createDoc(src);
-    };
-
     PersistenceHandler.prototype.copyBody = function (srcDoc, destDoc) {
         var srcBody = srcDoc.body,
             destBody = destDoc.body,
-            srcNodes, i, length, node;
+            srcNodes, i, length, node, iNode;
         if (srcBody.hasChildNodes()) {
             srcNodes = srcBody.childNodes;
             for (i = 0, length = srcNodes.length; i < length; i++) {
                 node = srcNodes[i];
                 if (DomUtil.isWithinDocument(node)) {
-                    destBody.appendChild(destDoc.importNode(node, true));
+                    iNode = destDoc.importNode(node, true);
+                    if (iNode.nodeType === 1) {
+                        iNode.classList.remove('qk_command_mode');
+                    }
+                    destBody.appendChild(iNode);
                 }
             }
         }
@@ -87,38 +88,80 @@ define([
     };
 
     /**
-     * To provide callbacks on success or failure, attach to the returned promise object.
-     * done and fail are the usual options but there are others.
-     */
-    PersistenceHandler.prototype.persistPage = function (theDoc, method, url, func, opts) {
-        var doc = this.updateBody(document, theDoc),
-            docType = this.getDocTypeString(doc),
-            options;
-        if (_.isFunction(func)) {
-            doc = func.call(this, doc);
-        }
-        options = _.extend({
-            url: url,
-            method: method,
-            data: docType + '\n' + doc.documentElement.outerHTML
-        }, opts);
-        return $.ajax(options);
-    };
-
-    /**
      * Removes the Quink script tag and any contenteditable attributes from the page.
      */
     PersistenceHandler.prototype.makeReadOnly = function (doc) {
         var scriptTag = doc.querySelector('script[src*="quink.js"]'),
             editables = doc.querySelectorAll('[contenteditable="true"]'),
-            i, length;
+            i, length, ed;
         if (scriptTag) {
             scriptTag.parentNode.removeChild(scriptTag);
         }
         for (i = 0, length = editables.length; i < length; i++) {
-            editables[i].removeAttribute('contenteditable');
+            ed = editables[i];
+            ed.removeAttribute('contenteditable');
+            ed.classList.remove('qk_command_mode');
         }
         return doc;
+    };
+
+    PersistenceHandler.prototype.createDefaultPersistFunc = function (method, opts) {
+        return function (docType, doc, url, $) {
+            var options = _.extend({
+                url: url,
+                method: method,
+                data: docType + '\n' + doc.documentElement.outerHTML
+            }, opts);
+            return $.ajax(options);
+        };
+    };
+
+    PersistenceHandler.prototype.getPersistFunc = function (funcName, method) {
+        return typeof QUINK[funcName] === 'function' ? QUINK[funcName] : this.createDefaultPersistFunc(method);
+    };
+
+    PersistenceHandler.prototype.removeAutoSaveLocal = function () {
+        var key = this.getLocalStorageKey();
+        window.localStorage.removeItem(key);
+    };
+
+    PersistenceHandler.prototype.getLocalStorageKey = function () {
+        return window.location.pathname.toLowerCase();
+    };
+
+    PersistenceHandler.prototype.autoSaveLocalStorage = function (docType, doc) {
+        var key = this.getLocalStorageKey(),
+            deferred = $.Deferred();
+        try {
+            window.localStorage.setItem(key, docType + '\n' + doc.documentElement.outerHTML);
+            deferred.resolve();
+        } catch (e) {
+            deferred.reject(e);
+        }
+        return deferred.promise();
+    };
+
+    PersistenceHandler.prototype.isAutoSaveLocal = function () {
+        return Env.getParam('autosaveto') === 'browser' && window.localStorage !== undefined;
+    };
+
+    /**
+     * To provide callbacks on success or failure, attach to the returned promise object.
+     * done and fail are the usual options but there are others.
+     */
+    PersistenceHandler.prototype.persistPage = function (persistFunc, theDoc, url, transformFunc) {
+        var doc = this.updateBody(document, theDoc),
+            docType = this.getDocTypeString(doc);
+        if (typeof transformFunc === 'function') {
+            doc = transformFunc.call(this, doc);
+        }
+        return persistFunc(docType, doc, url, $);
+    };
+
+    PersistenceHandler.prototype.doAutoSave = function (opts) {
+        var persistFunc = this.isAutoSaveLocal() ?
+                this.autoSaveLocalStorageBound : this.getPersistFunc('autosave', 'PUT');
+        return this.persistPage(persistFunc, this.origDoc, Env.getAutoSaveUrl(), opts);
     };
 
     /**
@@ -126,8 +169,7 @@ define([
      * process to succeed in that scenario.
      */
     PersistenceHandler.prototype.unloadSave = function () {
-        var url = Env.getAutoSaveUrl();
-        return this.persistPage(this.origDoc, 'PUT', url, null, {
+        return this.doAutoSave({
             async: false
         });
     };
@@ -136,16 +178,23 @@ define([
      * Used by auto save for all cases other than page unload.
      */
     PersistenceHandler.prototype.autoSave = function () {
-        var url = Env.getAutoSaveUrl();
-        return this.persistPage(this.origDoc, 'PUT', url);
+        return this.doAutoSave();
     };
 
     /**
-     * User initiated save.
+     * User initiated save. Delete the auto save if local storage is being used and if the user initiated
+     * save was successful.
      */
     PersistenceHandler.prototype.save = function () {
-        var url = Env.getSaveUrl();
-        return this.persistPage(this.origDoc, 'PUT', url);
+        var persistFunc = this.getPersistFunc('save', 'PUT'),
+            promise = this.persistPage(persistFunc, this.origDoc, Env.getSaveUrl());
+        return promise.then(function () {
+            if (this.isAutoSaveLocal()) {
+                this.removeAutoSaveLocal();
+            }
+        }.bind(this), function () {
+            console.log('Save failed!');
+        });
     };
 
     /**
@@ -155,13 +204,50 @@ define([
      * in an editing session.
      */
     PersistenceHandler.prototype.submit = function () {
-        var url = Env.getSubmitUrl(),
-            doc = document.implementation.createHTMLDocument('');
+        var persistFunc = this.getPersistFunc('submit', 'POST'),
+            doc = document.implementation.createHTMLDocument(''),
+            promise;
         doc.documentElement.innerHTML = this.origDoc.documentElement.innerHTML;
-        return this.persistPage(doc, 'POST', url, this.makeReadOnly).done(function () {
-            alert('Submitted');
-        });
+        promise = this.persistPage(persistFunc, doc, Env.getSubmitUrl(), this.makeReadOnly);
+        if (promise && QUINK.submit !== 'function' && promise.then !== undefined) {
+            promise.done(function () {
+                alert('Submitted');
+            });
+        }
+        return promise;
     };
 
-    return PersistenceHandler;
+    PersistenceHandler.prototype.setPageSrc = function (src) {
+        this.origDoc = this.createDoc(src);
+    };
+
+    PersistenceHandler.prototype.autoSaveExists = function () {
+        var key = this.getLocalStorageKey();
+        return window.localStorage !== undefined && !!window.localStorage.getItem(key);
+    };
+
+    /**
+     * Inefficient but should always get the right result and will execute any scripts in the saved state.
+     */
+    PersistenceHandler.prototype.applyAutoSave = function () {
+        var key = this.getLocalStorageKey(),
+            savedState = window.localStorage.getItem(key),
+            doc = document.implementation.createHTMLDocument();
+        doc.documentElement.innerHTML = savedState;
+        $(document.head).empty().append(doc.head.innerHTML);
+        $(document.body).empty().append(doc.body.innerHTML);
+        return savedState;
+    };
+
+    var theInstance = new PersistenceHandler();
+
+    return {
+        setPageSrc: theInstance.setPageSrc.bind(theInstance),
+        autoSaveExists: theInstance.autoSaveExists.bind(theInstance),
+        applyAutoSave:  theInstance.applyAutoSave.bind(theInstance),
+        submit: theInstance.submit.bind(theInstance),
+        save: theInstance.save.bind(theInstance),
+        unloadSave: theInstance.unloadSave.bind(theInstance),
+        autoSave: theInstance.autoSave.bind(theInstance)
+    };
 });

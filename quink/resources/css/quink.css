@@ -33,7 +33,6 @@
     background-color: #EBEBEB;
 }
 .qk_dialog {
-    width: 100%;
 }
 .qk_container {
     height: 100%;
@@ -419,6 +418,10 @@ button {
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+}
+/* This seems to do nothing on iOS7 when applied to the body */
+.qk_no_scroll {
+    overflow: hidden;
 }
 .qk_mask {
     position: fixed;

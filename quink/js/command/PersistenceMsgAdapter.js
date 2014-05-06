@@ -24,8 +24,6 @@ define([
     'use strict';
 
     var PersistenceMsgAdapter = function () {
-        this.handler = new PersistenceHandler();
-        PubSub.subscribe('persist.init.pagesrc', this.onPersistInit.bind(this));
     };
 
     /**
@@ -34,30 +32,29 @@ define([
     PersistenceMsgAdapter.prototype.cmdMap = {
         'autosave': 'autoSave',
         'unloadsave': 'unloadSave',
-        'save': 'save'
-    };
-
-    PersistenceMsgAdapter.prototype.onPersistInit = function (msg) {
-        this.handler.setPageSrc(msg);
+        'save': 'save',
+        'submit': 'submit'
     };
 
     PersistenceMsgAdapter.prototype.handle = function (opId) {
         var ar = opId.split('.'),
-            opName, op, func, handled;
+            opName, op, func, handled, result;
         if (ar[0] === 'persist') {
             opName = ar[1];
             op = this.cmdMap[opName];
-            func = (typeof this.handler[op] === 'function') && this.handler[op];
+            func = (typeof PersistenceHandler[op] === 'function') && PersistenceHandler[op];
             if (func) {
-                func.call(this.handler).done(function () {
-                    PubSub.publish('command.executed', opId);
-                }).fail(function (jqXhr) {
-                    PubSub.publish('error.persist', {
-                        operation: opName,
-                        status: jqXhr.status,
-                        text: jqXhr.statusText
+                result = func.call(this.handler);
+                if (result && typeof result.then === 'function') {
+                    // Assume it's a Promise
+                    result.done(function () {
+                        PubSub.publish('command.executed', opId);
+                    }).fail(function () {
+                        PubSub.publish('error.persist', {
+                            operation: opName
+                        });
                     });
-                });
+                }
             } else {
                 console.log('No persistence function: ' + op);
             }

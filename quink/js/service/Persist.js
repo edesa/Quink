@@ -19,15 +19,15 @@
 
 define([
     'jquery',
+    'command/PersistenceHandler',
     'util/Env',
     'util/PubSub',
     'util/DomUtil',
     'util/ChangeMonitor'
-], function ($, Env, PubSub, DomUtil, ChangeMonitor) {
+], function ($, PersistenceHandler, Env, PubSub, DomUtil, ChangeMonitor) {
     'use strict';
 
     var Persist = function () {
-        this.init();
     };
 
     /**
@@ -42,17 +42,15 @@ define([
 
     /**
      * Auto save and persistence through submit both need the original page source, so download
-     * it up front.
+     * it up front unless it has already been retrieved as a result of applying a previous auto save.
      */
     Persist.prototype.init = function () {
-        var url = window.location.href,
-            me = this;
-        $.get(url, function (data) {
-            PubSub.publish('persist.init.pagesrc', data);
-            me.initPersistMonitors();
-            me.initAutoSave();
-        });
         this.boundChangeMonitorCallback = this.changeMonitorCallback.bind(this);
+        if (this.autoSavePageSrc) {
+            this.initAutoSave(this.autoSavePageSrc);
+        } else {
+            $.get(window.location.href, this.initAutoSave.bind(this));
+        }
     };
 
     Persist.prototype.initPersistMonitors = function () {
@@ -133,10 +131,10 @@ define([
     Persist.prototype.onStartEditing = function (andSave) {
         if (andSave) {
             PubSub.publish('command.exec', 'persist.autosave');
-            this.startChangeMonitor();
         } else {
             this.autoSave();
         }
+        this.startChangeMonitor();
     };
 
     /**
@@ -161,13 +159,17 @@ define([
         PubSub.subscribe('info.closed', onStartNoSave);
     };
 
-    Persist.prototype.initAutoSave = function () {
-        var asi = parseInt(Env.getParam('autosaveinterval', this.AUTOSAVE_INTERVAL), 10);
+    Persist.prototype.initAutoSave = function (downloadPageSrc) {
+        var asi = parseInt(Env.getParam('autosaveinterval', this.AUTOSAVE_INTERVAL), 10),
+            pageSrc = downloadPageSrc || this.autoSavePageSrc;
         if (asi > 0) {
+            PersistenceHandler.setPageSrc(pageSrc);
+            this.initPersistMonitors();
             this.initUnloadListeners();
             this.initPluginListeners();
             this.autoSaveInterval = asi * 1000;
             this.startAutoSave();
+            this.autoSavePageSrc = null;
         } else {
             console.log('Autosave switched off via autosaveinterval query parameter.');
         }
@@ -248,16 +250,16 @@ define([
         }
     };
 
-    var theInstance;
-
-    function create() {
-        if (!theInstance) {
-            theInstance = new Persist();
+    Persist.prototype.initFromAutoSave = function () {
+        if (PersistenceHandler.autoSaveExists() && window.confirm('Do you want to use the last auto save?')) {
+            this.autoSavePageSrc = PersistenceHandler.applyAutoSave();
         }
-        return theInstance;
-    }
+    };
+
+    var theInstance = new Persist();
 
     return {
-        create: create
+        init: theInstance.init.bind(theInstance),
+        initFromAutoSave: theInstance.initFromAutoSave.bind(theInstance)
     };
 });

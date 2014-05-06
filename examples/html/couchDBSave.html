@@ -3,7 +3,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
         <title>Empty template</title>
-        <script src="../../quink.js"></script>
+        <script src="/quink/_design/quink/quink.js"></script>
         <style>
             * {
                 box-sizing: border-box;
@@ -23,46 +23,38 @@
         </style>
     </head>
     <body>
-        <div class="qk_scroll" contenteditable="true" id="editable-content">Add text in here then hit save on the toolbar... which creates a saved file</div>
+        <div class="qk_scroll" contenteditable="true" id="editable-content">Add text in here then hit save on the toolbar... which overwites this file!</div>
         <script type="text/javascript">
             QUINK.save = function (docType, doc, url, jQuery) {
                 console.log('GET before save...');
+                console.log("url is '" + url + "'");
+
+                var docUrl = url.substr(0, url.lastIndexOf('/'));
+                var theRev;
                 return jQuery.ajax({
-                    url: url,
+                    url: docUrl,
                     method: 'HEAD'
                 }).done(function (d, s, xhr) {
-                    console.log('GET done...');
-                    console.log('last modified: ' + xhr.getResponseHeader('last-modified'));
-                    console.log(xhr.getAllResponseHeaders());
+                    //console.log('GET done...');
+                    theRev = xhr.getResponseHeader('ETag');
+                    theRev=theRev.replace(/^"(.+(?="$))"$/, '$1');
+                    //console.log("rev is: '"+ theRev +"'");
+                    //console.log('last modified: ' + xhr.getResponseHeader('last-modified'));
+                    //console.log(xhr.getAllResponseHeaders());
                 }).fail(function () {
-                    console.log('GET failed...');
+                    console.log('CouchDB HEAD failed...');
                 }).then(function () {
-                    var newUrl = url + '-saved';
-                    console.log('Saving...');
+                    if (theRev) {
+                        url = url + "?rev=" + theRev;
+                    }
+                    console.log('Saving to...' + url );
                     return jQuery.ajax({
-                        url: newUrl,
+                        url: url,
                         method: 'PUT',
+                        contentType: "text/html",
                         data: docType + '\n' + doc.documentElement.outerHTML
                     });
                 })
-            };
-
-            QUINK.submit = function (docType, doc, url) {
-                console.log('submitting...');
-                return jQuery.ajax({
-                    url: url,
-                    method: 'PUT',
-                    data: docType + '\n' + doc.documentElement.outerHTML
-                });
-            };
-
-            QUINK.autosave = function (docType, doc, url, jQuery) {
-                console.log('autosaving...');
-                return jQuery.ajax({
-                    url: url + '-autosaved',
-                    method: 'PUT',
-                    data: docType + '\n' + doc.documentElement.outerHTML
-                });
             };
         </script>
     </body>

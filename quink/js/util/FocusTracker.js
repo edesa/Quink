@@ -189,9 +189,10 @@ define([
     FocusTracker.prototype.addSelectionChangeListener = function () {
         if (this.sclCount) {
             console.log('addSelectionChangeListener for non zero count');
+        } else {
+            this.sclCount++;
+            $(document).on('selectionchange.focustracker', this.onSelectionChangeThrottled);
         }
-        this.sclCount++;
-        $(document).on('selectionchange.focustracker', this.onSelectionChangeThrottled);
     };
 
     FocusTracker.prototype.removeSelectionChangeListener = function () {
