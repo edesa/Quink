@@ -168,6 +168,68 @@
                     }
                     return returnValue;
                 };
+                function selectRequiredRotationAngle(exifOrientation, requiredRotationRadians) {
+                    switch (exifOrientation) {
+                        case 3:
+                            requiredRotationRadians = Math.PI;
+                            break;
+                        case 6:
+                            requiredRotationRadians = Math.PI / 2;
+                            break;
+                        case 8:
+                            requiredRotationRadians = -Math.PI / 2;
+                            break;
+                        default :
+                        //shouldn't be a default as we've covered all cases of interest
+                    }
+                    return requiredRotationRadians;
+                }
+
+                /**
+                 *
+                 * rotate an image about its centre
+                 * The image is translated appropriately so it rotates about the centre
+                 *
+                 * @param ctx - the canvas context
+                 * @param $imageElement - jQuery wrapped image element
+                 * @param requiredRotationRadians - angle by which the image should be rotated
+                 */
+                function rotateImage(ctx, $imageElement, requiredRotationRadians) {
+                    //move diagonally down
+                    ctx.translate($imageElement[0].naturalWidth * 0.5, $imageElement[0].naturalHeight * 0.5);
+                    ctx.rotate(requiredRotationRadians);
+                    //move diagonally back
+                    ctx.translate(-$imageElement[0].naturalWidth * 0.5, -$imageElement[0].naturalHeight * 0.5);
+                }
+
+                function isRotatedByQuarterHalfOrThreeQuarterTurn(exifOrientation) {
+                    return exifOrientation === 3 || exifOrientation === 6 || exifOrientation === 8;
+                }
+
+                /***
+                 * Rotate the natural image correctly and remove Exif data from image by drawing on a canvas that has
+                 * been rotated to the appropriate angle
+                 *
+                 * @param $imageElement
+                 * @param exifOrientation
+                 * @param requiredRotationRadians
+                 */
+
+
+                function orientImageCorrectlyAndRemoveExifData($imageElement, exifOrientation, requiredRotationRadians) {
+                    var $canvas = $('<canvas></canvas>');
+                    $canvas[0].height = $imageElement[0].naturalHeight;
+                    $canvas[0].width = $imageElement[0].naturalWidth;
+                    var ctx = $canvas[0].getContext("2d");
+                    //check for the three orientation values that indicate camera not upright (we're ignoring the "flip" orientation values as these can't happen with the camera)
+                    if (isRotatedByQuarterHalfOrThreeQuarterTurn(exifOrientation)) {
+                        requiredRotationRadians = selectRequiredRotationAngle(exifOrientation, requiredRotationRadians);
+                        rotateImage(ctx, $imageElement, requiredRotationRadians);
+                    }
+                    ctx.drawImage($imageElement[0], 0, 0);
+                    $imageElement.attr("src", $canvas[0].toDataURL());
+                }
+
                 self.getImageElementAsString = function () {
                     var $imageElement, $widthInput, $widthUnitSelect, $heightInput, $heightUnitSelect, returnValue, exifOrientation, requiredRotationRadians;
 
@@ -180,36 +242,7 @@
                         exifOrientation = this.exifdata.Orientation;
                     });
 
-                    //Remove EXIF data from image by pushing into a canvas then getting the image back out
-                    var $canvas = $('<canvas></canvas>');
-                    //have to add it to document otherwise drawImage doesn't work
-                    $canvas.appendTo("body");
-                    $canvas[0].height = $imageElement[0].naturalHeight;
-                    $canvas[0].width = $imageElement[0].naturalWidth;
-                    var ctx = $canvas[0].getContext("2d");
-                    console.log('[' + new Date().toISOString() + ']' + 'ImageUploader.getImageElementAsString() exifOrientation=' + exifOrientation);
-                    if (exifOrientation === 3 || exifOrientation === 6 || exifOrientation === 8) {
-                        switch (exifOrientation) {
-                            case 3:
-                                requiredRotationRadians = Math.PI;
-                                break;
-                            case 6:
-                                requiredRotationRadians = Math.PI / 2;
-                                break;
-                            case 8:
-                                requiredRotationRadians = -Math.PI / 2;
-                                break;
-                            default :
-                                //shouldn't be a default as we've already excluded the other possibilities
-                        }
-                        /// translate so rotation happens at center of image
-                        ctx.translate($imageElement[0].naturalWidth * 0.5, $imageElement[0].naturalHeight * 0.5);
-                        console.log('[' + new Date().toISOString() + ']' + 'ImageUploader.getImageElementAsString() rotating image by radians:' + requiredRotationRadians);
-                        ctx.rotate(requiredRotationRadians);
-                        ctx.translate(-$imageElement[0].naturalWidth * 0.5, -$imageElement[0].naturalHeight * 0.5);
-                    }
-                    ctx.drawImage($imageElement[0], 0, 0);
-                    $imageElement.attr("src", $canvas[0].toDataURL());
+                    orientImageCorrectlyAndRemoveExifData($imageElement, exifOrientation, requiredRotationRadians);
 
                     $heightInput = $('#height-input');
                     $heightUnitSelect = $('#height-unit-select');
