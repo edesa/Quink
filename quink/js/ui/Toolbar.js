@@ -385,7 +385,7 @@ define([
         $('.qk_toolbar_tab_button').each(function () {
             var tabName = this.getAttribute('data-tab');
             if (tabName) {
-                FastTap.fastTap(this, toolbar.showTabPanel.bind(toolbar, tabName));
+                FastTap.fastTapNoFocus(this, toolbar.showTabPanel.bind(toolbar, tabName));
             }
         });
     };
@@ -473,6 +473,11 @@ define([
     };
 
     Toolbar.prototype.showToolbarAt = function (x, y) {
+        if (!this.vpToolbar) {
+            this.vpToolbar = ViewportRelative.create(this.toolbar, {
+                top: y
+            });
+        }
         this.toolbar.removeClass('qk_hidden');
         if (this.widestTabName) {
             // Ensures that the toolbar is sized to the tab with the most buttons. Hacky +5 needed on FF.
@@ -492,9 +497,6 @@ define([
             x;
         this.toolbar.removeClass('qk_hidden');
         x = Math.floor(($(document).innerWidth() - this.toolbar.width()) / 2);
-        this.vpToolbar = ViewportRelative.create(this.toolbar, {
-            top: y
-        });
         this.showToolbarAt(x, y);
     };
 
