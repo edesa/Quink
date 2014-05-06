@@ -70,7 +70,7 @@
                 }
 
                 function isImageSelected($image) {
-                    return $image && $image.html().trim().length > 0;
+                    return $image[0] && $image[0].outerHTML.trim().length > 0;
                 }
 
                 function extractNumericText($screenItem) {
@@ -203,10 +203,10 @@
                                 //shouldn't be a default as we've already excluded the other possibilities
                         }
                         /// translate so rotation happens at center of image
-                        ctx.translate($imageElement[0].width * 0.5, $imageElement[0].height * 0.5);
+                        ctx.translate($imageElement[0].naturalWidth * 0.5, $imageElement[0].naturalHeight * 0.5);
                         console.log('[' + new Date().toISOString() + ']' + 'ImageUploader.getImageElementAsString() rotating image by radians:' + requiredRotationRadians);
                         ctx.rotate(requiredRotationRadians);
-                        ctx.translate(-$imageElement[0].width * 0.5, -$imageElement[0].width * 0.5);
+                        ctx.translate(-$imageElement[0].naturalWidth * 0.5, -$imageElement[0].naturalHeight * 0.5);
                     }
                     ctx.drawImage($imageElement[0], 0, 0);
                     $imageElement.attr("src", $canvas[0].toDataURL());
