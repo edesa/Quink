@@ -19,6 +19,7 @@
 
 /*global QUINK */
 define([
+    'jquery',
     'rangy',
     'command/Command',
     'hithandler/HitHandler',
@@ -28,15 +29,16 @@ define([
     'ui/Caret',
     'ui/CommandStateBar',
     'ui/Toolbar',
+    'ui/ToolbarMgr',
     'util/Env',
     'util/FocusTracker',
     'util/PubSub'
-], function (rangy, Command, HitHandler, KeyHandlerMgr, DownloadMgr, Persist, Caret, CommandStateBar, Toolbar, Env, FocusTracker, PubSub) {
+], function ($, rangy, Command, HitHandler, KeyHandlerMgr, DownloadMgr, Persist, Caret, CommandStateBar, Toolbar, ToolbarMgr, Env, FocusTracker, PubSub) {
     'use strict';
 
     function init() {
         var selector = '[contenteditable=true]',
-            downloadPromise;
+            tbDownloads, downloadPromise;
         Persist.initFromAutoSave();
         rangy.init();
         Env.init();
@@ -45,16 +47,18 @@ define([
         Command.init();
         CommandStateBar.create();
         HitHandler.init(selector);
-        Toolbar.init();
+        // ToolbarMgr.init();
+        tbDownloads = Toolbar.init();
         downloadPromise = DownloadMgr.download('keymap.json', 'commandstatebar.html',
-            'plugins.json', 'pluginmenu.html',
-            'toolbar.html', 'insertmenu.html');
+            'plugins.json', 'pluginmenu.html');
         Caret.init();
         Persist.init();
-        downloadPromise.then(function () {
+        $.when(tbDownloads, downloadPromise).done(function () {
             if (typeof QUINK.ready === 'function') {
                 QUINK.ready(PubSub);
             }
+        }).fail(function () {
+            console.log('downloads failed...');
         });
     }
 

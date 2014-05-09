@@ -34,7 +34,7 @@ define([
     var Toolbar = function () {
         var onPubBeforeToolbar = this.onPubBeforeToolbar.bind(this);
         HitHandler.register(this, true);
-        PubSub.subscribe('download.toolbar', this.onDownload.bind(this));
+        // PubSub.subscribe('download.toolbar', this.onDownload.bind(this));
         PubSub.subscribe('download.insertmenu', this.onDownload.bind(this));
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
         this.cmdExecSub = PubSub.subscribe('command.executed', onPubBeforeToolbar);
@@ -363,6 +363,11 @@ define([
         });
     };
 
+    Toolbar.prototype.hideToolbar = function () {
+        this.hideCurrentDialog();
+        this.toolbar.addClass('qk_hidden');
+    };
+
     Toolbar.prototype.hideCurrentTabPanel = function () {
         this.hideCurrentDialog();
         this.toolbar.find('.qk_tab').not('.qk_hidden').addClass('qk_hidden');
@@ -372,21 +377,27 @@ define([
         this.hideCurrentTabPanel();
         this.toolbar.find('#' + this.TAB_NAME_PREFIX + tabName).removeClass('qk_hidden');
         this.toolbar.find('.qk_tab_active').removeClass('qk_tab_active');
-        this.toolbar.find('[data-tab=' + tabName + ']').closest('.qk_toolbar_tab').addClass('qk_tab_active');
+        this.toolbar.find('[data-command-args=' + tabName + ']').closest('.qk_toolbar_tab').addClass('qk_tab_active');
+        // this.toolbar.find('[data-tab=' + tabName + ']').closest('.qk_toolbar_tab').addClass('qk_tab_active');
+    };
+
+    Toolbar.prototype.showTab = function (event, tabName) {
+        this.showTabPanel(tabName);
     };
 
     Toolbar.prototype.addToolbarTabListeners = function (document) {
         var closeTab = document.querySelector('#qk_button_close'),
             toolbar = this;
-        FastTap.fastTap(closeTab, function () {
-            this.hideCurrentDialog();
-            this.toolbar.addClass('qk_hidden');
-        }, this);
+        // FastTap.fastTap(closeTab, function () {
+        //     this.hideCurrentDialog();
+        //     this.toolbar.addClass('qk_hidden');
+        // }, this);
         $('.qk_toolbar_tab_button').each(function () {
-            var tabName = this.getAttribute('data-tab');
-            if (tabName) {
-                FastTap.fastTapNoFocus(this, toolbar.showTabPanel.bind(toolbar, tabName));
-            }
+            FastTap.fastTapNoFocus(this, toolbar.cmdHandler.bind(toolbar));
+            // var tabName = this.getAttribute('data-tab');
+            // if (tabName) {
+                // FastTap.fastTapNoFocus(this, toolbar.showTabPanel.bind(toolbar, tabName));
+            // }
         });
     };
 
@@ -430,16 +441,18 @@ define([
     Toolbar.prototype.addPluginsToToolbar = function (plugins) {
         var toolbar = this,
             pluginMenuBtn = this.toolbar.find('#qk_button_plugin_menu');
-        plugins.forEach(function (plugin) {
-            var iconUrl = 'url(' + Env.pluginAdapter(plugin.icon) + ')',
-                span = $('<span>').addClass('qk_button_bg').css('background-image', iconUrl),
-                btn = $('<button>').addClass('qk_button')
-                        .attr('data-cmd-id', 'openPluginFromToolbar')
-                        .attr('data-cmd-args', plugin.id)
-                        .append(span)
-                        .insertBefore(pluginMenuBtn);
-            FastTap.fastTap(btn[0], toolbar.cmdHandler, toolbar, true);
-        });
+        if (pluginMenuBtn.length) {
+            plugins.forEach(function (plugin) {
+                var iconUrl = 'url(' + Env.pluginAdapter(plugin.icon) + ')',
+                    span = $('<span>').addClass('qk_button_bg').css('background-image', iconUrl),
+                    btn = $('<button>').addClass('qk_button')
+                            .attr('data-cmd-id', 'openPluginFromToolbar')
+                            .attr('data-cmd-args', plugin.id)
+                            .append(span)
+                            .insertBefore(pluginMenuBtn);
+                FastTap.fastTap(btn[0], toolbar.cmdHandler, toolbar, true);
+            });
+        }
     };
 
     /**
@@ -554,24 +567,46 @@ define([
     /**
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
-    Toolbar.prototype.onDownload = function (data, topic) {
-        if (topic === 'download.toolbar') {
-            this.onDownloadToolbar(data);
-            if (this.insertMenuData) {
-                this.onDownloadInsertMenu(this.insertMenuData);
-                this.insertMenuData = null;
-            }
-        } else if (this.toolbar) {
-            this.onDownloadInsertMenu(data);
-        } else {
-            this.insertMenuData = data;
-        }
+    Toolbar.prototype.onDownload = function (a1, a2, a3) {
+        var toolbarDefs = a1[0],
+            toolbarTpl = a2[0],
+            insertMenuHtml = a3[0],
+            html;
+        console.log('here...');
+        html = _.template(toolbarTpl, toolbarDefs, {
+            variable: 'data'
+        });
+        this.onDownloadToolbar(html);
+        this.onDownloadInsertMenu(insertMenuHtml);
+        // this.onDownloadToolbarDef(data);
+            // this.onDownloadToolbar(data);
+            // if (this.insertMenuData) {
+            //     this.onDownloadInsertMenu(this.insertMenuData);
+            //     this.insertMenuData = null;
+            // }
+        // } else if (this.toolbar) {
+        //     this.onDownloadInsertMenu(data);
+        // } else {
+        //     this.insertMenuData = data;
+        // }
+    };
+
+    Toolbar.prototype.downloadResources = function () {
+        var downloads = $.when($.get(Env.resource('toolbarDef.json')),
+                            $.get(Env.resource('toolbarTpl.tpl')),
+                            $.get(Env.resource('insertmenu.html')));
+        downloads.done(this.onDownload.bind(this));
+        downloads.fail(function () {
+            console.log('toolbar download failed...');
+        });
+        return downloads;
     };
 
     var toolbar;
 
     function init() {
         toolbar = new Toolbar();
+        return toolbar.downloadResources();
     }
 
     return {

@@ -33,18 +33,58 @@ define([
      * Returns a Promise object.
      */
     function download() {
-        var jqXhrArray = Array.prototype.slice.call(arguments, 0).map(function (name) {
-                var fullName = name.indexOf('/') < 0 ? Env.resource(name) : name;
+        var jqXhrArray = Array.prototype.slice.call(arguments, 0).map(function (obj) {
+                var isConfig = typeof obj !== 'string',
+                    name = isConfig ? obj.name : obj,
+                    fullName = name.indexOf('/') < 0 ? Env.resource(name) : name;
                 return $.get(fullName).done(function (data) {
                     var index = name.indexOf('.'),
                         id;
                     index = index < 0 ? 0 : index;
                     id = name.substr(0, index);
-                    PubSub.publish('download.' + id, data);
+                    if (isConfig) {
+                        obj.callback(data, id);
+                    } else {
+                        PubSub.publish('download.' + id, data);
+                    }
                 });
+                // if (typeof obj === 'string') {
+                //     var fullName = getResourceName(obj);
+                //     return $.get(fullName).done(function (data) {
+                //         var index = name.indexOf('.'),
+                //             id;
+                //         index = index < 0 ? 0 : index;
+                //         id = name.substr(0, index);
+                //         PubSub.publish('download.' + id, data);
+                //     });
+                // } else {
+                //     var fullName = getResourceName(obj.name),
+                //         callback = obj.callback;
+                //     return $.get(fullName).done(function (data) {
+                //         var index = name.indexOf('.'),
+                //             id;
+                //         index = index < 0 ? 0 : index;
+                //         id = name.substr(0, index);
+                //         callback(data, id);
+                //     });
+                // }
             });
         return $.when.apply(null, jqXhrArray);
     }
+
+    // function download() {
+    //     var jqXhrArray = Array.prototype.slice.call(arguments, 0).map(function (name) {
+    //             var fullName = name.indexOf('/') < 0 ? Env.resource(name) : name;
+    //             return $.get(fullName).done(function (data) {
+    //                 var index = name.indexOf('.'),
+    //                     id;
+    //                 index = index < 0 ? 0 : index;
+    //                 id = name.substr(0, index);
+    //                 PubSub.publish('download.' + id, data);
+    //             });
+    //         });
+    //     return $.when.apply(null, jqXhrArray);
+    // }
 
     return {
         download: download
