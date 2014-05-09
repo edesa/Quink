@@ -19,13 +19,11 @@
 
 define([
     'jquery',
-    'Underscore',
     'util/Env',
     'util/PubSub',
     'keyhandler/InsertKeyHandler',
-    'keyhandler/CommandKeyHandler',
-    'hithandler/HitHandler'
-], function ($, _, Env, PubSub, InsertKeyHandler, CommandKeyHandler, HitHandler) {
+    'keyhandler/CommandKeyHandler'
+], function ($, Env, PubSub, InsertKeyHandler, CommandKeyHandler) {
     'use strict';
 
     var KeyHandlerMgr = function () {
@@ -34,7 +32,6 @@ define([
         this.insertKeyHandler = null;
         this.commandKeyHandler = null;
         this.keyHandler = null;
-        // PubSub.subscribe('download.keymap', this.onDownload.bind(this));
         PubSub.subscribe('plugin.open', onStopKeyHandler);
         PubSub.subscribe('plugin.saved', onStartKeyHandler);
         PubSub.subscribe('plugin.exited', onStartKeyHandler);
@@ -119,18 +116,6 @@ define([
         return $.get(Env.resource('keymap.json')).done(onDownloadKeyMap);
     }
 
-    function getActiveMgr() {
-        var editable = HitHandler.getCurrentEditable();
-        return _.find(managers, function (mgr) {
-            return mgr.editable[0] === editable;
-        });
-    }
-
-    function isCommandMode() {
-        var mgr = getActiveMgr();
-        return mgr ? mgr.isCommandMode() : false;
-    }
-
     function create(selector) {
         $(selector).each(function () {
             var mgr = new KeyHandlerMgr();
@@ -148,7 +133,6 @@ define([
     }
 
     return {
-        init: init,
-        isCommandMode: isCommandMode
+        init: init
     };
 });

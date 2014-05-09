@@ -34,8 +34,6 @@ define([
     var Toolbar = function () {
         var onPubBeforeToolbar = this.onPubBeforeToolbar.bind(this);
         HitHandler.register(this, true);
-        // PubSub.subscribe('download.toolbar', this.onDownload.bind(this));
-        // PubSub.subscribe('download.insertmenu', this.onDownload.bind(this));
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
         this.cmdExecSub = PubSub.subscribe('command.executed', onPubBeforeToolbar);
         this.cmdStateSub = PubSub.subscribe('command.state', onPubBeforeToolbar);
@@ -378,7 +376,6 @@ define([
         this.toolbar.find('#' + this.TAB_NAME_PREFIX + tabName).removeClass('qk_hidden');
         this.toolbar.find('.qk_tab_active').removeClass('qk_tab_active');
         this.toolbar.find('[data-tab=' + tabName + ']').addClass('qk_tab_active');
-        // this.toolbar.find('[data-tab=' + tabName + ']').closest('.qk_toolbar_tab').addClass('qk_tab_active');
     };
 
     Toolbar.prototype.showTab = function (event, tabName) {
@@ -391,10 +388,6 @@ define([
         FastTap.fastTap(closeTab, this.hideToolbar, this);
         $('.qk_toolbar_tab_button').each(function () {
             FastTap.fastTapNoFocus(this, toolbar.cmdHandler.bind(toolbar));
-            // var tabName = this.getAttribute('data-tab');
-            // if (tabName) {
-                // FastTap.fastTapNoFocus(this, toolbar.showTabPanel.bind(toolbar, tabName));
-            // }
         });
     };
 
@@ -564,28 +557,16 @@ define([
     /**
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
-    Toolbar.prototype.onDownload = function (a1, a2, a3) {
-        var toolbarDefs = a1[0],
-            toolbarTpl = a2[0],
-            insertMenuHtml = a3[0],
+    Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml) {
+        var toolbarDefs = tbDef[0],
+            toolbarTpl = tbTpl[0],
+            insertMenuHtml = imHtml[0],
             html;
-        console.log('here...');
         html = _.template(toolbarTpl, toolbarDefs, {
             variable: 'data'
         });
         this.onDownloadToolbar(html);
         this.onDownloadInsertMenu(insertMenuHtml);
-        // this.onDownloadToolbarDef(data);
-            // this.onDownloadToolbar(data);
-            // if (this.insertMenuData) {
-            //     this.onDownloadInsertMenu(this.insertMenuData);
-            //     this.insertMenuData = null;
-            // }
-        // } else if (this.toolbar) {
-        //     this.onDownloadInsertMenu(data);
-        // } else {
-        //     this.insertMenuData = data;
-        // }
     };
 
     Toolbar.prototype.downloadResources = function () {

@@ -29,7 +29,6 @@ define([
 
     var CommandStateBar = function () {
         CommandSubscriber.register(this);
-        // PubSub.subscribe('download.commandstatebar', this.onDownload.bind(this));
         PubSub.subscribe('command.state', this.onStateChange.bind(this));
     };
 
