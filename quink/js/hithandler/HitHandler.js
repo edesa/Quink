@@ -101,16 +101,11 @@ define([
         this.manageListeners(listener, isDefault, 'deregister');
     };
 
-    HitHandler.prototype.getCurrentEditable = function () {
-        return this.currentEditable;
-    };
-
     var theInstance = new HitHandler();
 
     return {
         init: _.bind(theInstance.init, theInstance),
         register: _.bind(theInstance.register, theInstance),
-        deregister: _.bind(theInstance.deregister, theInstance),
-        getCurrentEditable: _.bind(theInstance.getCurrentEditable, theInstance)
+        deregister: _.bind(theInstance.deregister, theInstance)
     };
 });

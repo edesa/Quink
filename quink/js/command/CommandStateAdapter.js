@@ -19,9 +19,10 @@
 
 define([
     'Underscore',
-    'util/PubSub',
-    'hithandler/HitHandler'
-], function (_, PubSub, HitHandler) {
+    'hithandler/HitHandler',
+    'keyhandler/KeyHandlerMgr',
+    'util/PubSub'
+], function (_, HitHandler, KeyHandlerMgr, PubSub) {
     'use strict';
 
     var CommandStateAdapter = function () {
@@ -98,6 +99,10 @@ define([
         }
     };
 
+    CommandStateAdapter.prototype.updateMode = function () {
+        this.isCommandMode = KeyHandlerMgr.isEditableInCommandMode();
+    };
+
     CommandStateAdapter.prototype.onModeChange = function (isCommandMode) {
         this.isCommandMode = isCommandMode;
         this.onStateChange();
@@ -140,6 +145,7 @@ define([
     CommandStateAdapter.prototype.handle = function (hit) {
         var handled = false;
         if (hit.hitType === 'single') {
+            this.updateMode();
             this.onDelayStateChange(200);
             handled = true;
         }

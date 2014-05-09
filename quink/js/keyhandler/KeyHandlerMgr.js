@@ -18,12 +18,14 @@
  */
 
 define([
+    'Underscore',
     'jquery',
     'util/Env',
+    'util/FocusTracker',
     'util/PubSub',
     'keyhandler/InsertKeyHandler',
     'keyhandler/CommandKeyHandler'
-], function ($, Env, PubSub, InsertKeyHandler, CommandKeyHandler) {
+], function (_, $, Env, FocusTracker, PubSub, InsertKeyHandler, CommandKeyHandler) {
     'use strict';
 
     var KeyHandlerMgr = function () {
@@ -112,6 +114,21 @@ define([
 
     var managers = [];
 
+    function getActiveMgr() {
+        var editable = FocusTracker.getCurrentEditable();
+        return _.find(managers, function (mgr) {
+            return mgr.editable[0] === editable;
+        });
+    }
+
+    /**
+     * Determines whether the current editable is in command mode.
+     */
+    function isEditableInCommandMode() {
+        var mgr = getActiveMgr();
+        return mgr ? mgr.isCommandMode() : false;
+    }
+
     function downloadKeyMap() {
         return $.get(Env.resource('keymap.json')).done(onDownloadKeyMap);
     }
@@ -133,6 +150,7 @@ define([
     }
 
     return {
-        init: init
+        init: init,
+        isEditableInCommandMode: isEditableInCommandMode
     };
 });

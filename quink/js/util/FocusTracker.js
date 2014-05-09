@@ -276,11 +276,16 @@ define([
         return false;
     };
 
+    FocusTracker.prototype.getCurrentEditable = function () {
+        return this.editable;
+    };
+
     var theInstance = new FocusTracker();
 
     return {
         init: theInstance.init.bind(theInstance),
         restoreFocus: theInstance.restoreFocus.bind(theInstance),
-        removeFocus: theInstance.removeFocus.bind(theInstance)
+        removeFocus: theInstance.removeFocus.bind(theInstance),
+        getCurrentEditable: theInstance.getCurrentEditable.bind(theInstance)
     };
 });
