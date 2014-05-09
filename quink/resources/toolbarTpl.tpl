@@ -2,7 +2,7 @@
     <div class="qk_toolbar_top_container qk_clearfix">
         <div class="qk_toolbar_tab_container qk_clearfix">
             <% data.forEach(function(grp) { %>
-            <div class="qk_toolbar_item qk_toolbar_tab">
+            <div class="qk_toolbar_item qk_toolbar_tab" data-tab=<%= grp.id %>>
                 <button class="qk_toolbar_tab_button" <% if (grp.commandId) { %> data-cmd-id="<%= grp.commandId %>" <% } %>
                                     <% if (grp.commandArgs) { %> data-cmd-args="<%= grp.commandArgs %>" <% } %>
                                     >
@@ -10,6 +10,11 @@
                 </button>
             </div>
             <% }); %>
+        </div>
+        <div class="qk_toolbar_item qk_toolbar_close">
+            <button class="qk_toolbar_tab_button" id="qk_button_close">
+                <span><b>x</b></span>
+            </button>
         </div>
     </div>
     <div class="qk_toolbar_group_container">
@@ -21,9 +26,10 @@
                                     <% } %>
                                     <% if (item.commandArgs) { %> data-cmd-args="<%= item.commandArgs %>" <% } %>
                                     <% if (item.repeat) { %> data-btn-repeat="true" <% } %>
+                                    <% if (item.elId) { %> id="<%= item.elId %>" <% } %>
                                     >
                 <% if (item.type === 'select') { %>
-                <input class="qk_input_checkbox" type="checkbox" id="<%= item.elId %>" value="<%= item.value %>"/>
+                <input class="qk_input_checkbox" type="checkbox" id="<%= item.selectId %>" value="<%= item.value %>"/>
                 <label class="qk_input_label"><%= item.label %></label>
                 <% } else { %>
                 <span class="qk_button_bg <% if (item.cssClass) { %> <%= item.cssClass %> <% } %>"></span>

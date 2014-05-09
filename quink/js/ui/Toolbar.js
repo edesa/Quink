@@ -377,7 +377,7 @@ define([
         this.hideCurrentTabPanel();
         this.toolbar.find('#' + this.TAB_NAME_PREFIX + tabName).removeClass('qk_hidden');
         this.toolbar.find('.qk_tab_active').removeClass('qk_tab_active');
-        this.toolbar.find('[data-command-args=' + tabName + ']').closest('.qk_toolbar_tab').addClass('qk_tab_active');
+        this.toolbar.find('[data-tab=' + tabName + ']').addClass('qk_tab_active');
         // this.toolbar.find('[data-tab=' + tabName + ']').closest('.qk_toolbar_tab').addClass('qk_tab_active');
     };
 
@@ -388,10 +388,7 @@ define([
     Toolbar.prototype.addToolbarTabListeners = function (document) {
         var closeTab = document.querySelector('#qk_button_close'),
             toolbar = this;
-        // FastTap.fastTap(closeTab, function () {
-        //     this.hideCurrentDialog();
-        //     this.toolbar.addClass('qk_hidden');
-        // }, this);
+        FastTap.fastTap(closeTab, this.hideToolbar, this);
         $('.qk_toolbar_tab_button').each(function () {
             FastTap.fastTapNoFocus(this, toolbar.cmdHandler.bind(toolbar));
             // var tabName = this.getAttribute('data-tab');

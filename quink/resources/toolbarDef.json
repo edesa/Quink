@@ -62,6 +62,7 @@
                 "commandId": "showCreateLinkDialog"
             }, {
                 "id": "showinsertmenu",
+                "elId": "qk_button_plugin_menu",
                 "cssClass": "qk_button_bg_insertmenu",
                 "commandId": "showInsertMenu"
             }
@@ -268,7 +269,7 @@
                 "id": "navandselect",
                 "type": "select",
                 "label": "Select",
-                "elId": "nav_and_select",
+                "selectId": "nav_and_select",
                 "commandId": "navAndSelect",
                 "value": false
             }
@@ -295,15 +296,10 @@
                 "id": "statusbar",
                 "type": "select",
                 "label": "Status",
-                "elId": "toggle_status_bar",
+                "selectId": "toggle_status_bar",
                 "commandId": "toggleStatusBar",
                 "value": "false"
             }
         ]
-    }, {
-        "id": "close",
-        "label": "x",
-        "commandId": "hideToolbar",
-        "items": []
     }
 ]
