@@ -29,8 +29,6 @@ define([
     'use strict';
 
     var PluginMgr = function () {
-        PubSub.subscribe('download.plugins', this.onDownloadDefs.bind(this));
-        PubSub.subscribe('download.pluginmenu', this.onDownloadMenu.bind(this));
     };
 
     PluginMgr.prototype.getDefs = function () {
@@ -126,19 +124,6 @@ define([
     PluginMgr.prototype.PLUGIN_MENU_CONFIG_DEFAULT = {
         lateral: 'right',
         vertical: 'top'
-    };
-
-    PluginMgr.prototype.onDownloadMenu = function (data) {
-        var menu = $(data);
-        menu.appendTo('body').on(Event.eventName('end'), this.onPluginCloseMenuHit);
-    };
-
-    PluginMgr.prototype.onDownloadDefs = function (data) {
-        this.pluginDefs = data.plugins;
-        this.ui = data.ui;
-        this.editIdentifiers();
-        this.publishKeyBindings();
-        this.publishNames();
     };
 
     /**
@@ -306,6 +291,19 @@ define([
         return this.getDefs()[id];
     };
 
+    PluginMgr.prototype.onDownloadMenu = function (data) {
+        var menu = $(data);
+        menu.appendTo('body').on(Event.eventName('end'), this.onPluginCloseMenuHit);
+    };
+
+    PluginMgr.prototype.onDownloadDefs = function (data) {
+        this.pluginDefs = data.plugins;
+        this.ui = data.ui;
+        this.editIdentifiers();
+        this.publishKeyBindings();
+        this.publishNames();
+    };
+
     /**
      * Identifies which plugin will handle the hit event. Returns an object with the plugin's
      * definition plus a jQuery object for the container that contains the hit (which will be
@@ -358,9 +356,17 @@ define([
         this.openPlugin(def);
     };
 
+    PluginMgr.prototype.init = function () {
+        return $.when(
+            $.get(Env.resource('plugins.json')).done(this.onDownloadDefs.bind(this)),
+            $.get(Env.resource('pluginmenu.html')).done(this.onDownloadMenu.bind(this))
+        );
+    };
+
     var theInstance = new PluginMgr();
 
     return {
+        init: theInstance.init.bind(theInstance),
         loadPlugin: theInstance.loadPlugin.bind(theInstance),
         identifyPlugin: theInstance.identifyPlugin.bind(theInstance)
     };

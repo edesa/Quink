@@ -29,7 +29,7 @@ define([
 
     var CommandStateBar = function () {
         CommandSubscriber.register(this);
-        PubSub.subscribe('download.commandstatebar', this.onDownload.bind(this));
+        // PubSub.subscribe('download.commandstatebar', this.onDownload.bind(this));
         PubSub.subscribe('command.state', this.onStateChange.bind(this));
     };
 
@@ -92,8 +92,13 @@ define([
         }
     };
 
+    CommandStateBar.prototype.init = function () {
+        return $.get(Env.resource('commandstatebar.html')).done(this.onDownload.bind(this));
+    };
+
     function create() {
-        return new CommandStateBar();
+        var stateBar = new CommandStateBar();
+        return stateBar.init();
     }
 
     return {

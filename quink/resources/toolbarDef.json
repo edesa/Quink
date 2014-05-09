@@ -43,7 +43,8 @@
             }, {
                 "id": "submit",
                 "cssClass": "qk_button_bg_submit",
-                "commandId": "submit"
+                "commandId": "submitDocument",
+                "hidden": true
             }
         ]
     }, {

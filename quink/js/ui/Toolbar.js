@@ -35,7 +35,7 @@ define([
         var onPubBeforeToolbar = this.onPubBeforeToolbar.bind(this);
         HitHandler.register(this, true);
         // PubSub.subscribe('download.toolbar', this.onDownload.bind(this));
-        PubSub.subscribe('download.insertmenu', this.onDownload.bind(this));
+        // PubSub.subscribe('download.insertmenu', this.onDownload.bind(this));
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
         this.cmdExecSub = PubSub.subscribe('command.executed', onPubBeforeToolbar);
         this.cmdStateSub = PubSub.subscribe('command.state', onPubBeforeToolbar);

@@ -22,38 +22,35 @@ define([
     'jquery',
     'rangy',
     'command/Command',
+    'ext/PluginMgr',
     'hithandler/HitHandler',
     'keyhandler/KeyHandlerMgr',
-    'service/DownloadMgr',
     'service/Persist',
     'ui/Caret',
     'ui/CommandStateBar',
     'ui/Toolbar',
-    'ui/ToolbarMgr',
     'util/Env',
     'util/FocusTracker',
     'util/PubSub'
-], function ($, rangy, Command, HitHandler, KeyHandlerMgr, DownloadMgr, Persist, Caret, CommandStateBar, Toolbar, ToolbarMgr, Env, FocusTracker, PubSub) {
+], function ($, rangy, Command, PluginMgr, HitHandler, KeyHandlerMgr, Persist, Caret, CommandStateBar, Toolbar, Env, FocusTracker, PubSub) {
     'use strict';
 
     function init() {
         var selector = '[contenteditable=true]',
-            tbDownloads, downloadPromise;
+            tbDownloads, csbDownloads, pmDownloads, khmDownloads;
         Persist.initFromAutoSave();
         rangy.init();
         Env.init();
-        KeyHandlerMgr.init(selector);
+        khmDownloads = KeyHandlerMgr.init(selector);
         FocusTracker.init(selector);
         Command.init();
-        CommandStateBar.create();
+        csbDownloads = CommandStateBar.create();
         HitHandler.init(selector);
-        // ToolbarMgr.init();
         tbDownloads = Toolbar.init();
-        downloadPromise = DownloadMgr.download('keymap.json', 'commandstatebar.html',
-            'plugins.json', 'pluginmenu.html');
+        pmDownloads = PluginMgr.init();
         Caret.init();
         Persist.init();
-        $.when(tbDownloads, downloadPromise).done(function () {
+        $.when(tbDownloads, csbDownloads, pmDownloads, khmDownloads).done(function () {
             if (typeof QUINK.ready === 'function') {
                 QUINK.ready(PubSub);
             }

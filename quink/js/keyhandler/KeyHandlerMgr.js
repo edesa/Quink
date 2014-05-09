@@ -20,11 +20,12 @@
 define([
     'jquery',
     'Underscore',
+    'util/Env',
     'util/PubSub',
     'keyhandler/InsertKeyHandler',
     'keyhandler/CommandKeyHandler',
     'hithandler/HitHandler'
-], function ($, _, PubSub, InsertKeyHandler, CommandKeyHandler, HitHandler) {
+], function ($, _, Env, PubSub, InsertKeyHandler, CommandKeyHandler, HitHandler) {
     'use strict';
 
     var KeyHandlerMgr = function () {
@@ -33,7 +34,7 @@ define([
         this.insertKeyHandler = null;
         this.commandKeyHandler = null;
         this.keyHandler = null;
-        PubSub.subscribe('download.keymap', this.onDownload.bind(this));
+        // PubSub.subscribe('download.keymap', this.onDownload.bind(this));
         PubSub.subscribe('plugin.open', onStopKeyHandler);
         PubSub.subscribe('plugin.saved', onStartKeyHandler);
         PubSub.subscribe('plugin.exited', onStartKeyHandler);
@@ -71,11 +72,26 @@ define([
     var insertKeyBindings;
 
     /**
+     * If this publication arrives before the key maps are initialised, save the keybindings
+     * and process them when the maps have downloaded.
+     */
+    function onInsertKeybindings(keyBindings) {
+        var map = CommandKeyHandler.prototype.INSERT_MAP;
+        if (map) {
+            keyBindings.forEach(function (key) {
+                map[key] = 'insert.' + key;
+            });
+        } else {
+            insertKeyBindings = keyBindings;
+        }
+    }
+
+    /**
      * Loads the downloaded keymaps into the command key handler.
      * Publishes the mode switch key and adds it to the COMMAND_MAP to ensure that the key used
      * to enter command mode is also used to leave command mode.
      */
-    KeyHandlerMgr.prototype.onDownload = function (data) {
+    function onDownloadKeyMap(data) {
         var msk;
         $.each(data, function (mapName, map) {
             if (mapName === 'mode-switch-key') {
@@ -91,21 +107,6 @@ define([
             insertKeyBindings = null;
         }
         CommandKeyHandler.prototype.map = CommandKeyHandler.prototype.COMMAND_MAP;
-    };
-
-    /**
-     * If this publication arrives before the key maps are initialised, save the keybindings
-     * and process them when the maps have downloaded.
-     */
-    function onInsertKeybindings(keyBindings) {
-        var map = CommandKeyHandler.prototype.INSERT_MAP;
-        if (map) {
-            keyBindings.forEach(function (key) {
-                map[key] = 'insert.' + key;
-            });
-        } else {
-            insertKeyBindings = keyBindings;
-        }
     }
 
     function initSubscriptions() {
@@ -113,6 +114,10 @@ define([
     }
 
     var managers = [];
+
+    function downloadKeyMap() {
+        return $.get(Env.resource('keymap.json')).done(onDownloadKeyMap);
+    }
 
     function getActiveMgr() {
         var editable = HitHandler.getCurrentEditable();
@@ -135,8 +140,11 @@ define([
     }
 
     function init(selector) {
+        var download;
         initSubscriptions();
+        download = downloadKeyMap();
         create(selector);
+        return download;
     }
 
     return {
