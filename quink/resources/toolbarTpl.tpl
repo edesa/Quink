@@ -21,7 +21,7 @@
         <% data.forEach(function(grp) { %>
         <div class="qk_tab qk_clearfix qk_hidden" id="qk_tab_<%= grp.id %>" >
             <% grp.items.forEach(function (item) { %>
-            <button class="qk_button <% if (item.hidden) { %> qk_hidden" <%} %>
+            <button class="qk_button <% if (item.hidden) { %> qk_hidden <% } %>"
                                     <% if (item.command) { %> data-cmd="<%= item.command %>"
                                     <% } else if (item.commandId) { %> data-cmd-id="<%= item.commandId %>"
                                     <% } %>
