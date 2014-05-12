@@ -2,7 +2,7 @@
     <div class="qk_toolbar_top_container qk_clearfix">
         <div class="qk_toolbar_tab_container qk_clearfix">
             <% data.forEach(function(grp) { %>
-            <div class="qk_toolbar_item qk_toolbar_tab" data-tab=<%= grp.id %>>
+            <div class="qk_toolbar_item qk_toolbar_tab <% if (grp.hidden) { %> qk_hidden <% } %>" data-tab=<%= grp.id %>>
                 <button class="qk_toolbar_tab_button" <% if (grp.commandId) { %> data-cmd-id="<%= grp.commandId %>" <% } %>
                                     <% if (grp.commandArgs) { %> data-cmd-args="<%= grp.commandArgs %>" <% } %>
                                     >
