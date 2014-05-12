@@ -433,7 +433,7 @@ define([
                 var iconUrl = 'url(' + Env.pluginAdapter(plugin.icon) + ')',
                     span = $('<span>').addClass('qk_button_bg').css('background-image', iconUrl),
                     btn = $('<button>').addClass('qk_button')
-                            .attr('data-cmd-id', 'openPluginFromToolbar')
+                            .attr('data-cmd', 'openPluginFromToolbar')
                             .attr('data-cmd-args', plugin.id)
                             .append(span)
                             .insertBefore(pluginMenuBtn);

@@ -20,7 +20,7 @@
     <div class="qk_toolbar_group_container">
         <% _.each(groups, function(grp, id) { %>
         <div class="qk_tab qk_clearfix qk_hidden" id="qk_tab_<%= id %>" >
-            <% grp.items.forEach(function (item) { %>
+            <% _.each(grp.items, function (item) { %>
             <button class="qk_button <% if (item.hidden) { %> qk_hidden <% } %>"
                                     <% if (item.command) { %> data-cmd="<%= item.command %>"
                                     <% } else if (item.command) { %> data-cmd="<%= item.command %>"
