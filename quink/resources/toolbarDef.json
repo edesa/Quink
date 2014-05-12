@@ -1,352 +1,408 @@
 {
-    "groups": {
-        "misc": {
+    "groups": [
+        {
+            "id": "misc",
             "label": "Misc",
-            "index": 0,
+            "index": 1,
             "command": "showTab",
             "commandArgs": "misc",
-            "items": {
-                "undo": {
+            "items": [
+                {
+                    "id": "undo",
                     "index": 0,
                     "cssClass": "qk_button_bg_undo",
                     "command": "execCommand",
                     "commandArgs": "undo"
                 },
-                "h2": {
+                {
+                    "id": "formath2",
                     "index": 1,
                     "cssClass": "qk_button_bg_formath2",
                     "command": "execCommand",
                     "commandArgs": "formatblock h2"
                 },
-                "bold": {
+                {
+                    "id": "bold",
                     "index": 2,
                     "cssClass": "qk_button_bg_bold",
                     "command": "execCommand",
                     "commandArgs": "bold"
                 },
-                "insertunorderedlist": {
+                {
+                    "id": "insertunorderedlist",
                     "index": 3,
                     "cssClass": "qk_button_bg_unorderedlist",
                     "command": "execCommand",
                     "commandArgs": "insertunorderedlist"
                 },
-                "insertorderedlist": {
+                {
+                    "id": "insertorderedlist",
                     "index": 4,
                     "cssClass": "qk_button_bg_orderedlist",
                     "command": "execCommand",
                     "commandArgs": "insertorderedlist"
                 },
-                "navcharleft": {
+                {
+                    "id": "navcharleft",
                     "index": 5,
                     "cssClass": "qk_button_bg_navcharleft",
                     "command": "navCharLeft",
                     "repeat": true
                 },
-                "navcharright": {
+                {
+                    "id": "navcharright",
                     "index": 6,
                     "cssClass": "qk_button_bg_navcharright",
                     "command": "navCharRight",
                     "repeat": true
                 },
-                "save": {
+                {
+                    "id": "save",
                     "index": 7,
                     "cssClass": "qk_button_bg_save",
                     "command": "save"
                 },
-                "submit": {
+                {
+                    "id": "submit",
                     "index": 8,
                     "cssClass": "qk_button_bg_submit",
                     "command": "submitDocument",
                     "hidden": true
                 }
-            }
+            ]
         },
 
-        "insert": {
+        {
+            "id": "insert",
             "label": "Insert",
-            "index": 1,
+            "index": 0,
             "command": "showTab",
             "commandArgs": "insert",
-            "items": {
-                "inserthorizontalrule": {
+            "items": [
+                {
+                    "id": "inserthorizontalrule",
                     "index": 0,
                     "cssClass": "qk_button_bg_horizontalrule",
                     "command": "execCommand",
                     "commandArgs": "inserthorizontalrule"
                 },
-                "createlink": {
+                {
+                    "id": "createlink",
                     "index": 1,
                     "cssClass": "qk_button_bg_createlink",
                     "command": "showCreateLinkDialog"
                 },
-                "showinsertmenu": {
+                {
+                    "id": "showinsertmenu",
                     "index": 2,
                     "elId": "qk_button_plugin_menu",
                     "cssClass": "qk_button_bg_insertmenu",
                     "command": "showInsertMenu"
                 }
-            }
+            ]
         },
 
-         "style": {
+        {
+            "id": "style",
             "label": "Style",
             "index": 2,
             "command": "showTab",
             "commandArgs": "style",
-            "items": {
-                "formath1": {
+            "items": [
+                {
+                    "id": "formath1",
                     "index": 0,
                     "cssClass": "qk_button_bg_formath1",
                     "command": "execCommand",
                     "commandArgs": "formatblock h1"
                 },
-                "formath2": {
+                {
+                    "id": "formath2",
                     "index": 1,
                     "cssClass": "qk_button_bg_formath2",
                     "command": "execCommand",
                     "commandArgs": "formatblock h2"
                 },
-                "formath3": {
+                {
+                    "id": "formath3",
                     "index": 2,
                     "cssClass": "qk_button_bg_formath3",
                     "command": "execCommand",
                     "commandArgs": "formatblock h3"
                 },
-                "formath4": {
+                {
+                    "id": "formath4",
                     "index": 3,
                     "cssClass": "qk_button_bg_formath4",
                     "command": "execCommand",
                     "commandArgs": "formatblock h4"
                 },
-                "formath5": {
+                {
+                    "id": "formath5",
                     "index": 4,
                     "cssClass": "qk_button_bg_formath5",
                     "command": "execCommand",
                     "commandArgs": "formatblock h5"
                 },
-                "formath6": {
+                {
+                    "id": "formath6",
                     "index": 5,
                     "cssClass": "qk_button_bg_formath6",
                     "command": "execCommand",
                     "commandArgs": "formatblock h6"
                 },
-                "formatpara": {
+                {
+                    "id": "formatpara",
                     "index": 6,
                     "cssClass": "qk_button_bg_formatpara",
                     "command": "execCommand",
                     "commandArgs": "formatblock p"
                 },
-                "formathpre": {
+                {
+                    "id": "formathpre",
                     "index": 7,
                     "cssClass": "qk_button_bg_formatpre",
                     "command": "execCommand",
                     "commandArgs": "formatblock pre"
                 }
-            }
+            ]
         },
 
-        "font": {
+        {
+            "id": "font",
             "label": "Font",
             "index": 3,
             "command": "showTab",
             "commandArgs": "font",
-            "items": {
-                "bold": {
+            "items": [
+                {
+                    "id": "bold",
                     "index": 0,
                     "cssClass": "qk_button_bg_bold",
                     "command": "execCommand",
                     "commandArgs": "bold"
                 },
-                "italic": {
+                {
+                    "id": "italic",
                     "index": 1,
                     "cssClass": "qk_button_bg_italic",
                     "command": "execCommand",
                     "commandArgs": "italic"
                 },
-                "underline": {
+                {
+                    "id": "underline",
                     "index": 2,
                     "cssClass": "qk_button_bg_underline",
                     "command": "execCommand",
                     "commandArgs": "underline"
                 },
-                "strikethrough": {
-                    "index": 2,
+                {
+                    "id": "strikethrough",
+                    "index": 3,
                     "cssClass": "qk_button_bg_strikethrough",
                     "command": "execCommand",
                     "commandArgs": "strikethrough"
                 },
-                "superscript": {
-                    "index": 3,
+                {
+                    "id": "superscript",
+                    "index": 4,
                     "cssClass": "qk_button_bg_superscript",
                     "command": "execCommand",
                     "commandArgs": "superscript"
                 },
-                "subscript": {
-                    "index": 4,
+                {
+                    "id": "subscript",
+                    "index": 5,
                     "cssClass": "qk_button_bg_subscript",
                     "command": "execCommand",
                     "commandArgs": "subscript"
                 }
-            }
+            ]
         },
 
-        "edit": {
+        {
+            "id": "edit",
             "label": "Edit",
             "index": 4,
             "command": "showTab",
             "commandArgs": "edit",
-            "items": {
-                "selectall": {
+            "items": [
+                {
+                    "id": "selectall",
                     "index": 0,
                     "cssClass": "qk_button_bg_selectall",
                     "command": "execCommand",
                     "commandArgs": "selectall"
                 },
-                "delete": {
+                {
+                    "id": "delete",
                     "index": 1,
                     "cssClass": "qk_button_bg_delete",
                     "command": "execCommand",
                     "commandArgs": "delete",
                     "repeat": true
                 },
-                "forwarddelete": {
+                {
+                    "id": "forwarddelete",
                     "index": 2,
                     "cssClass": "qk_button_bg_deleteforward",
                     "command": "execCommand",
                     "commandArgs": "forwarddelete",
                     "repeat": true
                 },
-                "undo": {
+                {
+                    "id": "undo",
                     "index": 3,
                     "cssClass": "qk_button_bg_undo",
                     "command": "execCommand",
                     "commandArgs": "undo"
                 },
-                "redo": {
+                {
+                    "id": "redo",
                     "index": 4,
                     "cssClass": "qk_button_bg_redo",
                     "command": "execCommand",
                     "commandArgs": "redo"
                 },
-                "removeformat": {
+                {
+                    "id": "removeformat",
                     "index": 5,
                     "cssClass": "qk_button_bg_removeformat",
                     "command": "execCommand",
                     "commandArgs": "removeformat"
                 }
-            }
+            ]
         },
 
-        "para": {
+        {
+            "id": "para",
             "label": "Para",
             "index": 5,
             "command": "showTab",
             "commandArgs": "para",
-            "items": {
-                "insertunorderedlist": {
+            "items": [
+                {
+                    "id": "insertunorderedlist",
                     "index": 0,
                     "cssClass": "qk_button_bg_unorderedlist",
                     "command": "execCommand",
                     "commandArgs": "insertunorderedlist"
                 },
-                "insertorderedlist": {
+                {
+                    "id": "insertorderedlist",
                     "index": 1,
                     "cssClass": "qk_button_bg_orderedlist",
                     "command": "execCommand",
                     "commandArgs": "insertorderedlist"
                 },
-                "indent": {
+                {
+                    "id": "indent",
                     "index": 2,
                     "cssClass": "qk_button_bg_indent",
                     "command": "execCommand",
                     "commandArgs": "indent"
                 },
-                "outdent": {
+                {
+                    "id": "outdent",
                     "index": 3,
                     "cssClass": "qk_button_bg_outdent",
                     "command": "execCommand",
                     "commandArgs": "outdent"
                 },
-                "justifyleft": {
+                {
+                    "id": "justifyleft",
                     "index": 4,
                     "cssClass": "qk_button_bg_justifyleft",
                     "command": "execCommand",
                     "commandArgs": "justifyleft"
                 },
-                "justifycenter": {
+                {
+                    "id": "justifycenter",
                     "index": 5,
                     "cssClass": "qk_button_bg_justifycenter",
                     "command": "execCommand",
                     "commandArgs": "justifycenter"
                 },
-                "justifyright": {
+                {
+                    "id": "justifyright",
                     "index": 6,
                     "cssClass": "qk_button_bg_justifyright",
                     "command": "execCommand",
                     "commandArgs": "justifyright"
                 },
-                "justifyfull": {
+                {
+                    "id": "justifyfull",
                     "index": 7,
                     "cssClass": "qk_button_bg_justifyfull",
                     "command": "execCommand",
                     "commandArgs": "justifyfull"
                 }
-            }
+            ]
         },
 
-        "cursor": {
+        {
+            "id": "cursor",
             "label": "Cursor",
             "index": 6,
             "command": "showTab",
             "commandArgs": "cursor",
-            "items": {
-                "navlineup": {
+            "items": [
+                {
+                    "id": "navlineup",
                     "index": 0,
                     "cssClass": "qk_button_bg_navlineup",
                     "command": "navLineUp",
                     "repeat": true
                 },
-                "navlinestart": {
+                {
+                    "id": "navlinestart",
                     "index": 1,
                     "cssClass": "qk_button_bg_navlinestart",
                     "command": "navLineStart"
                 },
-                "navwordleft": {
+                {
+                    "id": "navwordleft",
                     "index": 2,
                     "cssClass": "qk_button_bg_navwordleft",
                     "command": "navWordLeft",
                     "repeat": true
                 },
-                "navcharleft": {
+                {
+                    "id": "navcharleft",
                     "index": 3,
                     "cssClass": "qk_button_bg_navcharleft",
                     "command": "navCharLeft",
                     "repeat": true
                 },
-                "navcharright": {
+                {
+                    "id": "navcharright",
                     "index": 4,
                     "cssClass": "qk_button_bg_navcharright",
                     "command": "navCharRight",
                     "repeat": true
                 },
-                "navwordright": {
+                {
+                    "id": "navwordright",
                     "index": 5,
                     "cssClass": "qk_button_bg_navwordright",
                     "command": "navWordRight",
                     "repeat": true
                 },
-                "navlineend": {
+                {
+                    "id": "navlineend",
                     "index": 6,
                     "cssClass": "qk_button_bg_navlineend",
                     "command": "navLineEnd"
                 },
-                "navlinedown": {
+                {
+                    "id": "navlinedown",
                     "index": 7,
                     "cssClass": "qk_button_bg_navlinedown",
                     "command": "navLineDown",
                     "repeat": true
                 },
-                "navandselect": {
+                {
+                    "id": "navandselect",
                     "index": 8,
                     "type": "select",
                     "label": "Select",
@@ -354,31 +410,36 @@
                     "command": "navAndSelect",
                     "value": false
                 }
-            }
+            ]
         },
 
-        "help": {
+        {
+            "id": "help",
             "label": "Help",
             "index": 7,
             "command": "showTab",
             "commandArgs": "help",
-            "items": {
-                "info": {
+            "items": [
+                {
+                    "id": "info",
                     "index": 0,
                     "cssClass": "qk_button_bg_infohelp",
                     "command": "infoHelp"
                 },
-                "releasenotes": {
+                {
+                    "id": "releasenotes",
                     "index": 1,
                     "cssClass": "qk_button_bg_releasenotes",
                     "command": "infoReleaseNotes"
                 },
-                "license": {
+                {
+                    "id": "license",
                     "index": 2,
                     "cssClass": "qk_button_bg_license",
                     "command": "infoLicense"
                 },
-                "statusbar": {
+                {
+                    "id": "statusbar",
                     "index": 3,
                     "type": "select",
                     "label": "Status",
@@ -386,7 +447,7 @@
                     "command": "toggleStatusBar",
                     "value": "false"
                 }
-            }
+            ]
         }
-    }
+    ]
 }

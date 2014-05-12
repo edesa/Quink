@@ -551,6 +551,14 @@ define([
         this.afterToolbarCreated();
     };
 
+    Toolbar.prototype.orderToolbarItems = function (toolbarDefs) {
+        toolbarDefs.groups = _.sortBy(toolbarDefs.groups, 'index');
+        _.each(toolbarDefs.groups, function (grp) {
+            grp.items = _.sortBy(grp.items, 'index');
+        });
+        return toolbarDefs;
+    };
+
     /**
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
@@ -558,8 +566,9 @@ define([
         var toolbarDefs = tbDef[0],
             toolbarTpl = tbTpl[0],
             insertMenuHtml = imHtml[0],
-            html;
-        html = _.template(toolbarTpl, toolbarDefs);
+            sortedDefs, html;
+        sortedDefs = this.orderToolbarItems(toolbarDefs);
+        html = _.template(toolbarTpl, sortedDefs);
         this.onDownloadToolbar(html);
         this.onDownloadInsertMenu(insertMenuHtml);
     };
