@@ -274,11 +274,9 @@ define([
     /**
      * For commands that are going to use the browser's execCommand.
      */
-    Toolbar.prototype.execEditable = function (cmd, cmdArgs) {
-        var cmdStr = 'edit.' + cmd;
-        if (cmdArgs) {
-            cmdStr += '.' + cmdArgs;
-        }
+    Toolbar.prototype.execCommand = function () {
+        var cmdArgs = Array.prototype.slice.call(arguments, 1),
+            cmdStr = 'edit.' + cmdArgs.join('.');
         PubSub.publish('command.exec', cmdStr);
     };
 
