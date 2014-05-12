@@ -259,6 +259,15 @@ define([
     };
 
     /**
+     * For commands that are going to use the browser's execCommand.
+     */
+    Toolbar.prototype.execCommand = function () {
+        var cmdArgs = Array.prototype.slice.call(arguments, 1),
+            cmdStr = 'edit.' + cmdArgs.join('.');
+        PubSub.publish('command.exec', cmdStr);
+    };
+
+    /**
      * Execute a function. Id is the function name and args is an array of arguments the
      * first of which is the event object.
      */
@@ -272,34 +281,24 @@ define([
     };
 
     /**
-     * For commands that are going to use the browser's execCommand.
-     */
-    Toolbar.prototype.execCommand = function () {
-        var cmdArgs = Array.prototype.slice.call(arguments, 1),
-            cmdStr = 'edit.' + cmdArgs.join('.');
-        PubSub.publish('command.exec', cmdStr);
-    };
-
-    /**
-     * Executes commands based on the event. If the element has a data-cmd attribute, the
-     * value of that is assumed to be a valid contenteditable command and it is invoked.
-     * If the element has a data-cmd-id attribute it's value is assumed to be the name of a
-     * function and that function is invoked.
+     * Executes commands based on the event.
+     * If the element has a data-cmd attribute it's value is assumed to be the name of a
+     * function and that function is invoked with the event as the first argument and any arguments present
+     * in the data-cmd-args attribute passed in as remaining arguments.
      */
     Toolbar.prototype.cmdHandler = function (event) {
         var el = $(event.currentTarget),
             cmd = el.attr('data-cmd'),
             cmdArgs = el.attr('data-cmd-args'),
-            cmdId = el.attr('data-cmd-id'),
             argsArray = [];
-        if (cmdId) {
+        if (cmd) {
             if (cmdArgs) {
                 argsArray = cmdArgs.split(' ');
             }
             argsArray.splice(0, 0, event);
-            this.execFunc(cmdId.trim(), argsArray);
-        } else if (cmd) {
-            this.execEditable(cmd, cmdArgs);
+            this.execFunc(cmd.trim(), argsArray);
+        } else {
+            console.log('no data-cmd attribute');
         }
     };
 
