@@ -559,9 +559,7 @@ define([
             toolbarTpl = tbTpl[0],
             insertMenuHtml = imHtml[0],
             html;
-        html = _.template(toolbarTpl, toolbarDefs, {
-            variable: 'data'
-        });
+        html = _.template(toolbarTpl, toolbarDefs);
         this.onDownloadToolbar(html);
         this.onDownloadInsertMenu(insertMenuHtml);
     };

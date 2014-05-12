@@ -1,9 +1,9 @@
 <div class="qk_toolbar_container qk_hidden">
     <div class="qk_toolbar_top_container qk_clearfix">
         <div class="qk_toolbar_tab_container qk_clearfix">
-            <% data.forEach(function(grp) { %>
-            <div class="qk_toolbar_item qk_toolbar_tab <% if (grp.hidden) { %> qk_hidden <% } %>" data-tab=<%= grp.id %>>
-                <button class="qk_toolbar_tab_button" <% if (grp.commandId) { %> data-cmd-id="<%= grp.commandId %>" <% } %>
+            <% _.each(groups, function(grp, id) { %>
+            <div class="qk_toolbar_item qk_toolbar_tab <% if (grp.hidden) { %> qk_hidden <% } %>" data-tab=<%= id %>>
+                <button class="qk_toolbar_tab_button" <% if (grp.command) { %> data-cmd="<%= grp.command %>" <% } %>
                                     <% if (grp.commandArgs) { %> data-cmd-args="<%= grp.commandArgs %>" <% } %>
                                     >
                     <span><%= grp.label %></span>
@@ -18,12 +18,12 @@
         </div>
     </div>
     <div class="qk_toolbar_group_container">
-        <% data.forEach(function(grp) { %>
-        <div class="qk_tab qk_clearfix qk_hidden" id="qk_tab_<%= grp.id %>" >
+        <% _.each(groups, function(grp, id) { %>
+        <div class="qk_tab qk_clearfix qk_hidden" id="qk_tab_<%= id %>" >
             <% grp.items.forEach(function (item) { %>
             <button class="qk_button <% if (item.hidden) { %> qk_hidden <% } %>"
                                     <% if (item.command) { %> data-cmd="<%= item.command %>"
-                                    <% } else if (item.commandId) { %> data-cmd-id="<%= item.commandId %>"
+                                    <% } else if (item.command) { %> data-cmd="<%= item.command %>"
                                     <% } %>
                                     <% if (item.commandArgs) { %> data-cmd-args="<%= item.commandArgs %>" <% } %>
                                     <% if (item.repeat) { %> data-btn-repeat="true" <% } %>
