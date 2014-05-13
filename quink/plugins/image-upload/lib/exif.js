@@ -6,77 +6,77 @@ var EXIF = (function() {
     var ExifTags = {
 
         // version tags
-        0x9000 : "ExifVersion",			// EXIF version
-        0xA000 : "FlashpixVersion",		// Flashpix format version
+        0x9000 : "ExifVersion",             // EXIF version
+        0xA000 : "FlashpixVersion",         // Flashpix format version
 
         // colorspace tags
-        0xA001 : "ColorSpace",			// Color space information tag
+        0xA001 : "ColorSpace",              // Color space information tag
 
         // image configuration
-        0xA002 : "PixelXDimension",		// Valid width of meaningful image
-        0xA003 : "PixelYDimension",		// Valid height of meaningful image
-        0x9101 : "ComponentsConfiguration",	// Information about channels
-        0x9102 : "CompressedBitsPerPixel",	// Compressed bits per pixel
+        0xA002 : "PixelXDimension",         // Valid width of meaningful image
+        0xA003 : "PixelYDimension",         // Valid height of meaningful image
+        0x9101 : "ComponentsConfiguration", // Information about channels
+        0x9102 : "CompressedBitsPerPixel",  // Compressed bits per pixel
 
         // user information
-        0x927C : "MakerNote",			// Any desired information written by the manufacturer
-        0x9286 : "UserComment",			// Comments by user
+        0x927C : "MakerNote",               // Any desired information written by the manufacturer
+        0x9286 : "UserComment",             // Comments by user
 
         // related file
-        0xA004 : "RelatedSoundFile",		// Name of related sound file
+        0xA004 : "RelatedSoundFile",        // Name of related sound file
 
         // date and time
-        0x9003 : "DateTimeOriginal",		// Date and time when the original image was generated
-        0x9004 : "DateTimeDigitized",		// Date and time when the image was stored digitally
-        0x9290 : "SubsecTime",			// Fractions of seconds for DateTime
-        0x9291 : "SubsecTimeOriginal",		// Fractions of seconds for DateTimeOriginal
-        0x9292 : "SubsecTimeDigitized",		// Fractions of seconds for DateTimeDigitized
+        0x9003 : "DateTimeOriginal",        // Date and time when the original image was generated
+        0x9004 : "DateTimeDigitized",       // Date and time when the image was stored digitally
+        0x9290 : "SubsecTime",              // Fractions of seconds for DateTime
+        0x9291 : "SubsecTimeOriginal",      // Fractions of seconds for DateTimeOriginal
+        0x9292 : "SubsecTimeDigitized",     // Fractions of seconds for DateTimeDigitized
 
         // picture-taking conditions
-        0x829A : "ExposureTime",		// Exposure time (in seconds)
-        0x829D : "FNumber",			// F number
-        0x8822 : "ExposureProgram",		// Exposure program
-        0x8824 : "SpectralSensitivity",		// Spectral sensitivity
-        0x8827 : "ISOSpeedRatings",		// ISO speed rating
-        0x8828 : "OECF",			// Optoelectric conversion factor
-        0x9201 : "ShutterSpeedValue",		// Shutter speed
-        0x9202 : "ApertureValue",		// Lens aperture
-        0x9203 : "BrightnessValue",		// Value of brightness
-        0x9204 : "ExposureBias",		// Exposure bias
-        0x9205 : "MaxApertureValue",		// Smallest F number of lens
-        0x9206 : "SubjectDistance",		// Distance to subject in meters
-        0x9207 : "MeteringMode", 		// Metering mode
-        0x9208 : "LightSource",			// Kind of light source
-        0x9209 : "Flash",			// Flash status
-        0x9214 : "SubjectArea",			// Location and area of main subject
-        0x920A : "FocalLength",			// Focal length of the lens in mm
-        0xA20B : "FlashEnergy",			// Strobe energy in BCPS
-        0xA20C : "SpatialFrequencyResponse",	// 
-        0xA20E : "FocalPlaneXResolution", 	// Number of pixels in width direction per FocalPlaneResolutionUnit
-        0xA20F : "FocalPlaneYResolution", 	// Number of pixels in height direction per FocalPlaneResolutionUnit
-        0xA210 : "FocalPlaneResolutionUnit", 	// Unit for measuring FocalPlaneXResolution and FocalPlaneYResolution
-        0xA214 : "SubjectLocation",		// Location of subject in image
-        0xA215 : "ExposureIndex",		// Exposure index selected on camera
-        0xA217 : "SensingMethod", 		// Image sensor type
-        0xA300 : "FileSource", 			// Image source (3 == DSC)
-        0xA301 : "SceneType", 			// Scene type (1 == directly photographed)
-        0xA302 : "CFAPattern",			// Color filter array geometric pattern
-        0xA401 : "CustomRendered",		// Special processing
-        0xA402 : "ExposureMode",		// Exposure mode
-        0xA403 : "WhiteBalance",		// 1 = auto white balance, 2 = manual
-        0xA404 : "DigitalZoomRation",		// Digital zoom ratio
-        0xA405 : "FocalLengthIn35mmFilm",	// Equivalent foacl length assuming 35mm film camera (in mm)
-        0xA406 : "SceneCaptureType",		// Type of scene
-        0xA407 : "GainControl",			// Degree of overall image gain adjustment
-        0xA408 : "Contrast",			// Direction of contrast processing applied by camera
-        0xA409 : "Saturation", 			// Direction of saturation processing applied by camera
-        0xA40A : "Sharpness",			// Direction of sharpness processing applied by camera
-        0xA40B : "DeviceSettingDescription",	// 
-        0xA40C : "SubjectDistanceRange",	// Distance to subject
+        0x829A : "ExposureTime",            // Exposure time (in seconds)
+        0x829D : "FNumber",                 // F number
+        0x8822 : "ExposureProgram",         // Exposure program
+        0x8824 : "SpectralSensitivity",     // Spectral sensitivity
+        0x8827 : "ISOSpeedRatings",         // ISO speed rating
+        0x8828 : "OECF",                    // Optoelectric conversion factor
+        0x9201 : "ShutterSpeedValue",       // Shutter speed
+        0x9202 : "ApertureValue",           // Lens aperture
+        0x9203 : "BrightnessValue",         // Value of brightness
+        0x9204 : "ExposureBias",            // Exposure bias
+        0x9205 : "MaxApertureValue",        // Smallest F number of lens
+        0x9206 : "SubjectDistance",         // Distance to subject in meters
+        0x9207 : "MeteringMode",            // Metering mode
+        0x9208 : "LightSource",             // Kind of light source
+        0x9209 : "Flash",                   // Flash status
+        0x9214 : "SubjectArea",             // Location and area of main subject
+        0x920A : "FocalLength",             // Focal length of the lens in mm
+        0xA20B : "FlashEnergy",             // Strobe energy in BCPS
+        0xA20C : "SpatialFrequencyResponse",    // 
+        0xA20E : "FocalPlaneXResolution",   // Number of pixels in width direction per FocalPlaneResolutionUnit
+        0xA20F : "FocalPlaneYResolution",   // Number of pixels in height direction per FocalPlaneResolutionUnit
+        0xA210 : "FocalPlaneResolutionUnit",    // Unit for measuring FocalPlaneXResolution and FocalPlaneYResolution
+        0xA214 : "SubjectLocation",         // Location of subject in image
+        0xA215 : "ExposureIndex",           // Exposure index selected on camera
+        0xA217 : "SensingMethod",           // Image sensor type
+        0xA300 : "FileSource",              // Image source (3 == DSC)
+        0xA301 : "SceneType",               // Scene type (1 == directly photographed)
+        0xA302 : "CFAPattern",              // Color filter array geometric pattern
+        0xA401 : "CustomRendered",          // Special processing
+        0xA402 : "ExposureMode",            // Exposure mode
+        0xA403 : "WhiteBalance",            // 1 = auto white balance, 2 = manual
+        0xA404 : "DigitalZoomRation",       // Digital zoom ratio
+        0xA405 : "FocalLengthIn35mmFilm",   // Equivalent foacl length assuming 35mm film camera (in mm)
+        0xA406 : "SceneCaptureType",        // Type of scene
+        0xA407 : "GainControl",             // Degree of overall image gain adjustment
+        0xA408 : "Contrast",                // Direction of contrast processing applied by camera
+        0xA409 : "Saturation",              // Direction of saturation processing applied by camera
+        0xA40A : "Sharpness",               // Direction of sharpness processing applied by camera
+        0xA40B : "DeviceSettingDescription",    // 
+        0xA40C : "SubjectDistanceRange",    // Distance to subject
 
         // other tags
         0xA005 : "InteroperabilityIFDPointer",
-        0xA420 : "ImageUniqueID"		// Identifier assigned uniquely to each image
+        0xA420 : "ImageUniqueID"            // Identifier assigned uniquely to each image
     };
 
     var TiffTags = {
@@ -288,57 +288,81 @@ var EXIF = (function() {
     };
 
     function addEvent(element, event, handler) {
-        if (element.addEventListener) {
-            element.addEventListener(event, handler, false);
-        } else if (element.attachEvent) {
-            element.attachEvent("on" + event, handler);
+        if (element.addEventListener) { 
+            element.addEventListener(event, handler, false); 
+        } else if (element.attachEvent) { 
+            element.attachEvent("on" + event, handler); 
         }
     }
 
     function imageHasData(img) {
         return !!(img.exifdata);
     }
-    function imageIsBase64Encoded(img) {
-        return !!(img.src.match("base64"));
-    }
-    function convertBase64ToArrayBuffer(valueInBase64) {
-        var valueInBinary, valueInBytes, length, i, nextChar;
-        valueInBinary = atob(valueInBase64);
-        length = valueInBinary.length;
-        valueInBytes = new Uint8Array(length);
-        for (i = 0; i < length; i++)        {
-            nextChar = valueInBinary.charCodeAt(i);
-            valueInBytes[i] = nextChar;
+
+
+    function base64ToArrayBuffer(base64, contentType) {
+        contentType = contentType || base64.match(/^data\:([^\;]+)\;base64,/mi)[1] || ''; // e.g. 'data:image/jpeg;base64,...' => 'image/jpeg'
+        base64 = base64.replace(/^data\:([^\;]+)\;base64,/gmi, '');
+        var binary = atob(base64);
+        var len = binary.length;
+        var buffer = new ArrayBuffer(len);
+        var view = new Uint8Array(buffer);
+        for (var i = 0; i < len; i++) {
+            view[i] = binary.charCodeAt(i);
         }
-        return valueInBytes.buffer;
+        return buffer;
     }
 
-
+    function objectURLToBlob(url, callback) {
+        var http = new XMLHttpRequest();
+        http.open("GET", url, true);
+        http.responseType = "blob";
+        http.onload = function(e) {
+            if (this.status == 200 || this.status === 0) {
+                callback(this.response);
+            }
+        };
+        http.send();
+    }
 
     function getImageData(img, callback) {
         function handleBinaryFile(binFile) {
             var data = findEXIFinJPEG(binFile);
             img.exifdata = data || {};
             if (callback) {
-                callback.call(img)
+                callback.call(img);
             }
         }
 
         if (img instanceof Image || img instanceof HTMLImageElement) {
-            if (imageIsBase64Encoded(img)) {
-                var imageArrayBuffer;
-                //get the base64 encoded part, which is after the first comma
-                imageArrayBuffer = convertBase64ToArrayBuffer(img.src.split(",")[1]);
-                //not a binary file, but it still works, so maybe we should rename the function
-                handleBinaryFile(imageArrayBuffer);
-            } else {
-                BinaryAjax(img.src, function (http) {
-                    handleBinaryFile(http.binaryResponse);
-                });
-            }
-        } else if (window.FileReader && img instanceof window.File) {
-            var fileReader = new FileReader();
+            if (/^data\:/i.test(img.src)) { // Data URI
+                var arrayBuffer = base64ToArrayBuffer(img.src);
+                handleBinaryFile(arrayBuffer);
 
+            } else if (/^blob\:/i.test(img.src)) { // Object URL
+                var fileReader = new FileReader();
+                fileReader.onload = function(e) {
+                    handleBinaryFile(e.target.result);
+                };
+                objectURLToBlob(img.src, function (blob) {
+                    fileReader.readAsArrayBuffer(blob);
+                });
+            } else {
+                var http = new XMLHttpRequest();
+                http.onload = function() {
+                    if (http.status == "200") {
+                        handleBinaryFile(http.response);
+                    } else {
+                        throw "Could not load image";
+                    }
+                    http = null;
+                };
+                http.open("GET", img.src, true);
+                http.responseType = "arraybuffer";
+                http.send(null);
+            }
+        } else if (window.FileReader && (img instanceof window.Blob || img instanceof window.File)) {
+            var fileReader = new FileReader();
             fileReader.onload = function(e) {
                 if (debug) console.log("Got file of length " + e.target.result.byteLength);
                 handleBinaryFile(e.target.result);
@@ -350,7 +374,7 @@ var EXIF = (function() {
 
     function findEXIFinJPEG(file) {
         var dataView = new DataView(file);
-
+        
         if (debug) console.log("Got file of length " + file.byteLength);
         if ((dataView.getUint8(0) != 0xFF) || (dataView.getUint8(1) != 0xD8)) {
             if (debug) console.log("Not a valid JPEG");
@@ -375,9 +399,9 @@ var EXIF = (function() {
 
             if (marker == 225) {
                 if (debug) console.log("Found 0xFFE1 marker");
-
+                
                 return readEXIFData(dataView, offset + 4, dataView.getUint16(offset + 2) - 2);
-
+                
                 // offset += 2 + file.getShortAt(offset+2, true);
 
             } else {
@@ -391,10 +415,10 @@ var EXIF = (function() {
 
     function readTags(file, tiffStart, dirStart, strings, bigEnd) {
         var entries = file.getUint16(dirStart, !bigEnd),
-            tags = {},
+            tags = {}, 
             entryOffset, tag,
             i;
-
+            
         for (i=0;i<entries;i++) {
             entryOffset = dirStart + i*12 + 2;
             tag = strings[file.getUint16(entryOffset, !bigEnd)];
@@ -448,13 +472,13 @@ var EXIF = (function() {
                     return file.getUint32(entryOffset + 8, !bigEnd);
                 } else {
                     vals = [];
-                    for (var n=0;n<numValues;n++) {
+                    for (n=0;n<numValues;n++) {
                         vals[n] = file.getUint32(valueOffset + 4*n, !bigEnd);
                     }
                     return vals;
                 }
 
-            case 5:	// rational = two long values, first is numerator, second is denominator
+            case 5:    // rational = two long values, first is numerator, second is denominator
                 if (numValues == 1) {
                     numerator = file.getUint32(valueOffset, !bigEnd);
                     denominator = file.getUint32(valueOffset+4, !bigEnd);
@@ -505,7 +529,7 @@ var EXIF = (function() {
         }
         return outstr;
     }
-
+    
     function readEXIFData(file, start) {
         if (getStringFromDB(file, start, 4) != "Exif") {
             if (debug) console.log("Not valid EXIF data! " + getStringFromDB(file, start, 4));
@@ -551,27 +575,27 @@ var EXIF = (function() {
                     case "SceneCaptureType" :
                     case "SceneType" :
                     case "CustomRendered" :
-                    case "WhiteBalance" :
-                    case "GainControl" :
+                    case "WhiteBalance" : 
+                    case "GainControl" : 
                     case "Contrast" :
                     case "Saturation" :
-                    case "Sharpness" :
+                    case "Sharpness" : 
                     case "SubjectDistanceRange" :
                     case "FileSource" :
                         exifData[tag] = StringValues[tag][exifData[tag]];
                         break;
-
+        
                     case "ExifVersion" :
                     case "FlashpixVersion" :
                         exifData[tag] = String.fromCharCode(exifData[tag][0], exifData[tag][1], exifData[tag][2], exifData[tag][3]);
                         break;
-
-                    case "ComponentsConfiguration" :
-                        exifData[tag] =
-                            StringValues.Components[exifData[tag][0]]
-                            + StringValues.Components[exifData[tag][1]]
-                            + StringValues.Components[exifData[tag][2]]
-                            + StringValues.Components[exifData[tag][3]];
+        
+                    case "ComponentsConfiguration" : 
+                        exifData[tag] = 
+                            StringValues.Components[exifData[tag][0]] +
+                            StringValues.Components[exifData[tag][1]] +
+                            StringValues.Components[exifData[tag][2]] +
+                            StringValues.Components[exifData[tag][3]];
                         break;
                 }
                 tags[tag] = exifData[tag];
@@ -582,11 +606,11 @@ var EXIF = (function() {
             gpsData = readTags(file, tiffOffset, tiffOffset + tags.GPSInfoIFDPointer, GPSTags, bigEnd);
             for (tag in gpsData) {
                 switch (tag) {
-                    case "GPSVersionID" :
-                        gpsData[tag] = gpsData[tag][0]
-                            + "." + gpsData[tag][1]
-                            + "." + gpsData[tag][2]
-                            + "." + gpsData[tag][3];
+                    case "GPSVersionID" : 
+                        gpsData[tag] = gpsData[tag][0] +
+                            "." + gpsData[tag][1] +
+                            "." + gpsData[tag][2] +
+                            "." + gpsData[tag][3];
                         break;
                 }
                 tags[tag] = gpsData[tag];
@@ -599,6 +623,7 @@ var EXIF = (function() {
 
     function getData(img, callback) {
         if ((img instanceof Image || img instanceof HTMLImageElement) && !img.complete) return false;
+        
         if (!imageHasData(img)) {
             getImageData(img, callback);
         } else {
@@ -616,7 +641,7 @@ var EXIF = (function() {
 
     function getAllTags(img) {
         if (!imageHasData(img)) return {};
-        var a,
+        var a, 
             data = img.exifdata,
             tags = {};
         for (a in data) {
@@ -652,14 +677,14 @@ var EXIF = (function() {
         return findEXIFinJPEG(file);
     }
 
-
+   
     return {
         readFromBinaryFile : readFromBinaryFile,
         pretty : pretty,
         getTag : getTag,
         getAllTags : getAllTags,
         getData : getData,
-
+        
         Tags : ExifTags,
         TiffTags : TiffTags,
         GPSTags : GPSTags,

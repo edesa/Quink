@@ -43,18 +43,21 @@
                     return !isValueKeyed($element) || isValidNonBlankSizeField($element);
                 }
 
+                /***
+                 * Approach for validation: the overall intention is to give the end-user the minimum amount of keying/rekeying. So
+                 * a) if the user was probably doing something that should be ignored then ignore it (otherwise the user will have to do more work to spell out that it should be ignored)
+                 * b) if it's obvious what the user was trying to do then do it, even if it didn't follow the rules (otherwise the user will have more work to do the same thing)
+                 * c) if the user was probably trying to achieve something but it's not clear what that was then flag it
+                 *
+                 * With this in mind
+                 *
+                 * For a) if the user clicks "save" without selecting an image, then return an empty string from the plugin, and no image is added to the html. This happens even if some text is typed in the boxes.
+                 * For b) if the user enters "50%" in one of the input boxes, then treat this as 50 and % and allow the save.
+                 * For c) if the user enters "50pc" then flag this as a red box and don't save.
+                 *
+                 * @param sizeInputsArray
+                 */
                 function validateSizeInputs(sizeInputsArray) {
-                    /* Approach for validation: the overall intention is to give the end-user the minimum amount of keying/rekeying. So
-                     * a) if the user was probably doing something that should be ignored then ignore it (otherwise the user will have to do more work to spell out that it should be ignored)
-                     * b) if it's obvious what the user was trying to do then do it, even if it didn't follow the rules (otherwise the user will have more work to do the same thing)
-                     * c) if the user was probably trying to achieve something but it's not clear what that was then flag it
-                     *
-                     * With this in mind
-                     *
-                     * For a) if the user clicks "save" without selecting an image, then return an empty string from the plugin, and no image is added to the html. This happens even if some text is typed in the boxes.
-                     * For b) if the user enters "50%" in one of the input boxes, then treat this as 50 and % and allow the save.
-                     * For c) if the user enters "50pc" then flag this as a red box and don't save.
-                     */
                     $.each(sizeInputsArray, function (index, $element) {
                         if (isValidSizeField($element)) {
                             $element.closest('.form-group').removeClass('has-error').addClass('has-success');
