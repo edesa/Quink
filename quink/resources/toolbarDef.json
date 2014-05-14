@@ -3,7 +3,7 @@
         {
             "id": "misc",
             "label": "Misc",
-            "index": 1,
+            "index": 0,
             "command": "showTab",
             "commandArgs": "misc",
             "items": [
@@ -75,7 +75,7 @@
         {
             "id": "insert",
             "label": "Insert",
-            "index": 0,
+            "index": 1,
             "command": "showTab",
             "commandArgs": "insert",
             "items": [

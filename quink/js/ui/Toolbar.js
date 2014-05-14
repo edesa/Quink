@@ -509,7 +509,7 @@ define([
         PubSub.unsubscribe(this.cmdStateSub);
         PubSub.subscribe('command.executed', this.onCommandExec.bind(this));
         PubSub.subscribe('command.state', this.onCommandState.bind(this));
-        if (this.delayedPubs.length) {
+        if (this.delayedPubs && this.delayedPubs.length) {
             this.delayedPubs.forEach(function (args) {
                 var func = args[1] === 'command.executed' ? this.onCommandExec : this.onCommandState;
                 func.apply(this, args);
@@ -559,18 +559,26 @@ define([
         return toolbarDefs;
     };
 
+    Toolbar.prototype.createToolbar = function (toolbarDef, toolbarTpl, insertMenuHtml) {
+        var html;
+        this.toolbarDef = this.orderToolbarItems(toolbarDef);
+        html = _.template(toolbarTpl, this.toolbarDef);
+        this.onDownloadToolbar(html);
+        this.onDownloadInsertMenu(insertMenuHtml);
+    };
+
     /**
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
     Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml) {
-        var toolbarDefs = tbDef[0],
-            toolbarTpl = tbTpl[0],
-            insertMenuHtml = imHtml[0],
-            sortedDefs, html;
-        sortedDefs = this.orderToolbarItems(toolbarDefs);
-        html = _.template(toolbarTpl, sortedDefs);
-        this.onDownloadToolbar(html);
-        this.onDownloadInsertMenu(insertMenuHtml);
+        this.toolbarTpl = tbTpl[0];
+        this.toolbarDef = tbDef[0];
+        this.insertMenuHtml = imHtml[0];
+        this.createToolbar(this.toolbarDef, this.toolbarTpl, this.insertMenuHtml);
+        // this.toolbarDefs = this.orderToolbarItems(toolbarDefs);
+        // html = _.template(toolbarTpl, this.toolbarDefs);
+        // this.onDownloadToolbar(html);
+        // this.onDownloadInsertMenu(insertMenuHtml);
     };
 
     Toolbar.prototype.downloadResources = function () {
@@ -584,10 +592,71 @@ define([
         return downloads;
     };
 
+    Toolbar.prototype.TOOLBAR_GROUP_PROPS = [
+        'label',
+        'cssClass',
+        'index',
+        'command',
+        'commandArgs',
+        'hidden'
+    ];
+
+    /**
+     * Merges the edit definitinos into the src definitions to produce a final toolbar definition.
+     * src and edits are arrays of objects.
+     */
+    Toolbar.prototype.mergeConfig = function (src, edits) {
+        var findGroup = function (id) {
+                return _.find(src, function (grp) {
+                    return grp.id === id;
+                });
+            },
+            moveItems = function (items, oldIndex, newIndex) {
+                items.forEach(function (item) {
+                    if ((oldIndex < newIndex) && (item.index > oldIndex && item.index <= newIndex)) {
+                        item.index--;
+                    } else if ((oldIndex > newIndex) && (item.index >= newIndex && item.index < oldIndex)) {
+                        item.index++;
+                    }
+                });
+            },
+            updateItem = function (srcObj, editObj) {
+                var args = [editObj].concat(Toolbar.prototype.TOOLBAR_GROUP_PROPS),
+                    editProps = _.pick.apply(null, args);
+                Object.keys(editProps).forEach(function (propName) {
+                    srcObj[propName] = editObj[propName];
+                });
+            };
+        edits.forEach(function (editGroup) {
+            var srcGroup = findGroup(editGroup.id);
+            if (srcGroup) {
+                if (editGroup.index !== undefined) {
+                    moveItems(src, srcGroup.index, editGroup.index);
+                }
+                updateItem(srcGroup, editGroup);
+                if (editGroup.items) {
+                    this.mergeConfig(srcGroup.items, editGroup.items);
+                }
+            } else {
+                console.log('can\'t find item with id: ' + editGroup.id);
+            }
+        }.bind(this));
+    };
+
+    Toolbar.prototype.configureToolbar = function (def) {
+        this.mergeConfig(this.toolbarDef.groups, def.groups);
+        if (this.toolbar.length) {
+            this.toolbar.remove();
+            this.toolbar = null;
+        }
+        this.createToolbar(this.toolbarDef, this.toolbarTpl);
+    };
+
     var toolbar;
 
     function init() {
         toolbar = new Toolbar();
+        QUINK.configureToolbar = toolbar.configureToolbar.bind(toolbar);
         return toolbar.downloadResources();
     }
 
