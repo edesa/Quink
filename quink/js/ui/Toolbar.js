@@ -17,6 +17,7 @@
  * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*global QUINK */
 define([
     'Underscore',
     'jquery',
@@ -56,6 +57,21 @@ define([
         'ui.status.off': '#toggle_status_bar',
         'ui.status.toggle': '#toggle_status_bar'
     };
+
+    /**
+     * Names of the toolbar json defs that can be changed via configureToolbar.
+     */
+    Toolbar.prototype.TOOLBAR_GROUP_PROPS = [
+        'label',
+        'cssClass',
+        'index',
+        'command',
+        'commandArgs',
+        'hidden',
+        'type',
+        'selectId',
+        'value'
+    ];
 
     /**
      * Stores the name of the widest tab which will then be used to size the toolbar when
@@ -507,14 +523,15 @@ define([
     Toolbar.prototype.processHeldPubs = function () {
         PubSub.unsubscribe(this.cmdExecSub);
         PubSub.unsubscribe(this.cmdStateSub);
-        PubSub.subscribe('command.executed', this.onCommandExec.bind(this));
-        PubSub.subscribe('command.state', this.onCommandState.bind(this));
+        this.cmdExecSub = PubSub.subscribe('command.executed', this.onCommandExec.bind(this));
+        this.cmdStateSub = PubSub.subscribe('command.state', this.onCommandState.bind(this));
         if (this.delayedPubs && this.delayedPubs.length) {
             this.delayedPubs.forEach(function (args) {
                 var func = args[1] === 'command.executed' ? this.onCommandExec : this.onCommandState;
                 func.apply(this, args);
             }.bind(this));
-            this.delayedPubs = null;
+            // @@@
+            // this.delayedPubs = null;
         }
     };
 
@@ -542,7 +559,8 @@ define([
         this.insertMenu = $(data);
         if (this.pluginNames) {
             this.processPluginData(this.pluginNames, this.insertMenu);
-            delete this.pluginNames;
+            // @@@
+            // delete this.pluginNames;
         }
     };
 
@@ -575,10 +593,6 @@ define([
         this.toolbarDef = tbDef[0];
         this.insertMenuHtml = imHtml[0];
         this.createToolbar(this.toolbarDef, this.toolbarTpl, this.insertMenuHtml);
-        // this.toolbarDefs = this.orderToolbarItems(toolbarDefs);
-        // html = _.template(toolbarTpl, this.toolbarDefs);
-        // this.onDownloadToolbar(html);
-        // this.onDownloadInsertMenu(insertMenuHtml);
     };
 
     Toolbar.prototype.downloadResources = function () {
@@ -591,15 +605,6 @@ define([
         });
         return downloads;
     };
-
-    Toolbar.prototype.TOOLBAR_GROUP_PROPS = [
-        'label',
-        'cssClass',
-        'index',
-        'command',
-        'commandArgs',
-        'hidden'
-    ];
 
     /**
      * Merges the edit definitinos into the src definitions to produce a final toolbar definition.
