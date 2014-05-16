@@ -13,7 +13,7 @@
     </head>
     <body>
         <div contenteditable="true" id="ed-1">
-This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page.
+            The 'config n' buttons switch the toolbar configuration. The reset button switches back to the initial toolbar configuration. New configurations are applied on the existing toolbar definition, so to get reproducible results hit reset before applying a new configuration.
         </div>
         <button class="page-button" id="btn1">config 1</button>
         <button class="page-button" id="btn2">config 2</button>
@@ -25,7 +25,6 @@ This is editable... some text in here to fill up the page. Some more text and mo
                         {
                             id: 'misc',
                             index: 4,
-                            active: false,
                             items: [
                                 {
                                     id: 'save',
@@ -33,18 +32,38 @@ This is editable... some text in here to fill up the page. Some more text and mo
                                 },
                                 {
                                     id: 'navcharleft',
-                                    index: 0
+                                    index: 0,
+                                    repeat: false
                                 },
                                 {
                                     id: 'navcharright',
-                                    index: 1
+                                    index: 1,
+                                    repeat: false
                                 }
                             ]
                         },
                         {
                             id: 'help',
                             label: '?',
-                            active: true
+                            active: true,
+                            items: [
+                                {
+                                    id: "info",
+                                    index: 2
+                                },
+                                {
+                                    id: "releasenotes",
+                                    hidden: true
+                                },
+                                {
+                                    id: "license",
+                                    index: 1
+                                },
+                                {
+                                    id: "statusbar",
+                                    index: 0
+                                }
+                            ]
                         }
                     ]
                 },
@@ -71,19 +90,48 @@ This is editable... some text in here to fill up the page. Some more text and mo
                             hidden: true
                         },
                         {
-                            id: 'cursor',
+                            id: 'edit',
                             hidden: true
+                        },
+                        {
+                            id: 'help',
+                            hidden: true
+                        },
+                        {
+                            id: 'cursor',
+                            items: [
+                                {
+                                    id: 'navlineup',
+                                    index: 7,
+                                    repeat: true
+                                },
+                                {
+                                    id: 'navlinestart',
+                                    index: 4,
+                                    repeat: true
+                                },
+                                {
+                                    id: 'navwordleft',
+                                    index: 2,
+                                    repeat: true
+                                }
+                            ]
                         }
                     ]
-                };
+                },
+                origConfig;
             document.querySelector('#btn1').addEventListener('click', function () {
-                QUINK.configureToolbar(c1);
+                var cfg = QUINK.configureToolbar(c1);
+                origConfig = origConfig || cfg;
             });
             document.querySelector('#btn2').addEventListener('click', function () {
-                QUINK.configureToolbar(c2);
+                var cfg = QUINK.configureToolbar(c2);
+                origConfig = origConfig || cfg;
             });
             document.querySelector('#btnreset').addEventListener('click', function () {
-                QUINK.resetToolbar();
+                if (origConfig) {
+                    QUINK.configureToolbar(origConfig);
+                }
             });
         };
         </script>

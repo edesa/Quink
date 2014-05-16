@@ -69,27 +69,20 @@ define([
         'hidden',
         'index',
         'label',
+        'repeat',
         'selectId',
         'type',
         'value'
     ];
 
-    // Toolbar.prototype.initToolbarTabs = function() {
-    //     var longestTab = this.toolbarDef.groups.filter(function(grp) {
-    //         return !grp.hidden;
-    //     }).map(function(grp) {
-    //         var length = grp.items.reduce(function(count, item) {
-    //                 return item.hidden ? count : count + 1;
-    //             }, 0);
-    //         return {
-    //             id: grp.id,
-    //             length: length
-    //         };
-    //     }).reduce(function(prevObj, currentObj) {
-    //         return currentObj.length > prevObj.length ? currentObj : prevObj;
-    //     });
-    //     this.widestTabName = longestTab.id;
-    // };
+    /**
+     * Defaults that are applied to all toolbar group and item definitions unless otherwise specified.
+     */
+    Toolbar.prototype.TOOLBAR_ITEM_DEFAULTS = {
+        hidden: false,
+        active: false,
+        repeat: false
+    };
 
     /**
      * Stores the name of the widest tab which will then be used to size the toolbar when
@@ -111,19 +104,6 @@ define([
             });
         this.widestTabName = widestTabObj.id;
     };
-
-    // Toolbar.prototype.initToolbarTabs = function () {
-    //     var btnCounts = $('.qk_tab').map(function () {
-    //             return {
-    //                 el: this,
-    //                 btnCount: $(this).children('.qk_button').not('.qk_hidden').length
-    //             };
-    //         }).get(),
-    //         maxBtns = _.max(btnCounts, function (item) {
-    //             return item.btnCount;
-    //         });
-    //     this.widestTabName = maxBtns.el.id.substr(this.TAB_NAME_PREFIX.length);
-    // };
 
     Toolbar.prototype.hideCurrentDialog = function () {
         var dialog;
@@ -575,8 +555,6 @@ define([
                 var func = args[1] === 'command.executed' ? this.onCommandExec : this.onCommandState;
                 func.apply(this, args);
             }.bind(this));
-            // @@@
-            // this.delayedPubs = null;
         }
     };
 
@@ -604,8 +582,6 @@ define([
         this.insertMenu = $(data);
         if (this.pluginNames) {
             this.processPluginData(this.pluginNames, this.insertMenu);
-            // @@@
-            // delete this.pluginNames;
         }
     };
 
@@ -670,6 +646,16 @@ define([
                     }
                 });
             },
+            setDefaults = function () {
+                var objects = Array.prototype.slice.call(arguments, 0);
+                Object.keys(Toolbar.prototype.TOOLBAR_ITEM_DEFAULTS).forEach(function (propName) {
+                    objects.forEach(function (obj) {
+                        if (obj[propName] === undefined) {
+                            obj[propName] = Toolbar.prototype.TOOLBAR_ITEM_DEFAULTS[propName];
+                        }
+                    });
+                });
+            },
             updateItem = function (srcObj, editObj) {
                 var args = [editObj].concat(Toolbar.prototype.TOOLBAR_GROUP_PROPS),
                     editProps = _.pick.apply(null, args);
@@ -683,6 +669,7 @@ define([
                 if (editGroup.index !== undefined) {
                     moveItems(src, srcGroup.index, editGroup.index);
                 }
+                setDefaults(srcGroup, editGroup);
                 updateItem(srcGroup, editGroup);
                 if (editGroup.items) {
                     this.mergeConfig(srcGroup.items, editGroup.items);
@@ -694,15 +681,14 @@ define([
     };
 
     Toolbar.prototype.configureToolbar = function (def) {
+        var oldToolbarDef = $.extend(true, {}, this.toolbarDef);
         this.mergeConfig(this.toolbarDef.groups, def.groups);
         if (this.toolbar.length) {
             this.toolbar.remove();
             this.toolbar = null;
         }
         this.createToolbar(this.toolbarDef, this.toolbarTpl, this.insertMenuHtml);
-    };
-
-    Toolbar.prototype.resetToolbar = function () {
+        return oldToolbarDef;
     };
 
     var toolbar;
@@ -710,7 +696,6 @@ define([
     function init() {
         toolbar = new Toolbar();
         QUINK.configureToolbar = toolbar.configureToolbar.bind(toolbar);
-        QUINK.resetToolbar = toolbar.resetToolbar.bind(toolbar);
         return toolbar.downloadResources();
     }
 

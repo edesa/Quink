@@ -6,6 +6,7 @@
             "index": 0,
             "command": "showTab",
             "commandArgs": "misc",
+            "active": true,
             "items": [
                 {
                     "id": "undo",
