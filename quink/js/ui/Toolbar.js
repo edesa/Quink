@@ -33,12 +33,8 @@ define([
     'use strict';
 
     var Toolbar = function () {
-        var onPubBeforeToolbar = this.onPubBeforeToolbar.bind(this);
         HitHandler.register(this, true);
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
-        this.cmdExecSub = PubSub.subscribe('command.executed', onPubBeforeToolbar);
-        this.cmdStateSub = PubSub.subscribe('command.state', onPubBeforeToolbar);
-        this.delayedPubs = [];
     };
 
     Toolbar.prototype.TAB_NAME_PREFIX = 'qk_tab_';
@@ -50,12 +46,8 @@ define([
      * string versus checkbox selector for those commands.
      */
     Toolbar.prototype.KEY_COMMAND_MAP = {
-        'nav.select.on': '#nav_and_select',
-        'nav.select.off': '#nav_and_select',
-        'nav.select.toggle': '#nav_and_select',
-        'ui.status.on': '#toggle_status_bar',
-        'ui.status.off': '#toggle_status_bar',
-        'ui.status.toggle': '#toggle_status_bar'
+        'navandselect': '#nav_and_select',
+        'statusbar': '#toggle_status_bar',
     };
 
     /**
@@ -337,18 +329,15 @@ define([
      * Ensures that toolbar items that have persistent state (checkboxes) have that state kept
      * up to date.
      */
-    Toolbar.prototype.onCommandExec = function (data) {
-        var sel = this.KEY_COMMAND_MAP[data.cmd],
-            checkbox, newState;
-        if (data.result && sel) {
-            checkbox = this.toolbar.find(sel);
-            if (/\.toggle$/.test(data.cmd)) {
-                newState = !checkbox.prop('checked');
-            } else {
-                newState = /\.on$/.test(data.cmd);
+    Toolbar.prototype.processCheckboxState = function (state) {
+        Object.keys(state).forEach(function (key) {
+            var sel = this.KEY_COMMAND_MAP[key],
+                checkbox;
+            if (sel) {
+                checkbox = this.toolbar.find(sel);
+                checkbox.prop('checked', state[key]);
             }
-            checkbox.prop('checked', newState);
-        }
+        }.bind(this));
     };
 
     /**
@@ -357,6 +346,7 @@ define([
      * The state argument is a hash of command name versus current state (true|false|<string>).
      */
     Toolbar.prototype.onCommandState = function (state) {
+        this.lastCommandState = state;
         this.toolbar.find('[data-cmd=execCommand]').each(function () {
             var btn = $(this),
                 cmdAr = btn.attr('data-cmd-args').split(' '),
@@ -373,6 +363,7 @@ define([
                 func.call(btn, 'qk_button_active');
             }
         });
+        this.processCheckboxState(state);
     };
 
     /**
@@ -542,29 +533,10 @@ define([
         this.showToolbarAt(x, y);
     };
 
-    /**
-     * Sets up the correct subscriptions and processes any that have been received prior to the
-     * toolbar being created.
-     */
-    Toolbar.prototype.processHeldPubs = function () {
-        PubSub.unsubscribe(this.cmdExecSub);
-        PubSub.unsubscribe(this.cmdStateSub);
-        this.cmdExecSub = PubSub.subscribe('command.executed', this.onCommandExec.bind(this));
-        this.cmdStateSub = PubSub.subscribe('command.state', this.onCommandState.bind(this));
-        if (this.delayedPubs && this.delayedPubs.length) {
-            this.delayedPubs.forEach(function (args) {
-                var func = args[1] === 'command.executed' ? this.onCommandExec : this.onCommandState;
-                func.apply(this, args);
-            }.bind(this));
+    Toolbar.prototype.initSubscriptions = function () {
+        if (this.onCommandStateSub === undefined) {
+            this.onCommandStateSub = PubSub.subscribe('command.state', this.onCommandState.bind(this));
         }
-    };
-
-    /**
-     * Publications that will be handled using the toolbar are routed here until the toolbar has
-     * been created.
-     */
-    Toolbar.prototype.onPubBeforeToolbar = function () {
-        this.delayedPubs.push(arguments);
     };
 
     Toolbar.prototype.afterToolbarCreated = function () {
@@ -572,8 +544,9 @@ define([
         this.addToolbarTabListeners(document);
         this.addToolbarButtonListeners();
         this.checkShowSubmit();
+        this.initSubscriptions();
         Draggable.create('.qk_toolbar_container');
-        this.processHeldPubs();
+        PubSub.publish('ui.toolbar.created');
         if (Env.getParam('toolbar', 'off') === 'on') {
             this.showToolbar();
         }
@@ -630,7 +603,7 @@ define([
 
     /**
      * Merges the edit definitinos into the src definitions to produce a final toolbar definition.
-     * src and edits are arrays of objects.
+     * src and edits are arrays of objects. Updates the src array in place.
      */
     Toolbar.prototype.mergeConfig = function (src, edits) {
         var findGroup = function (id) {
@@ -689,6 +662,7 @@ define([
             this.toolbar = null;
         }
         this.createToolbar(this.toolbarDef, this.toolbarTpl, this.insertMenuHtml);
+        this.onCommandState(this.lastCommandState);
         return oldToolbarDef;
     };
 

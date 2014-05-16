@@ -41,6 +41,7 @@ define([
         PubSub.subscribe('persist.autosave', this.onAutoSaveStateChange.bind(this));
         PubSub.subscribe('insert.text', onDelayStateChange);
         PubSub.subscribe('insert.html', onDelayStateChange);
+        PubSub.subscribe('ui.toolbar.created', onStateChange);
     };
 
     CommandStateAdapter.prototype.STATE_CMDS = [
@@ -75,6 +76,22 @@ define([
         this.onStateChange();
     };
 
+    CommandStateAdapter.prototype.CMD_TOGGLES = {
+        'nav.select.on': 'navAndSelect',
+        'nav.select.off': 'navAndSelect',
+        'nav.select.toggle': 'navAndSelect',
+        'ui.status.on': 'statusBar',
+        'ui.status.off': 'statusBar',
+        'ui.status.toggle': 'statusBar'
+    };
+
+    CommandStateAdapter.prototype.processSuccessfulCmd = function (cmd) {
+        var propName = this.CMD_TOGGLES[cmd];
+        if (propName) {
+            this[propName] = /\.toggle$/.test(cmd) ? !(this[propName]) : /\.on$/.test(cmd);
+        }
+    };
+
     /**
      * Update internal state to reflect changes for persistence and nav and select.
      */
@@ -82,8 +99,8 @@ define([
         if (typeof cmd === 'string' && cmd.split('.')[0] === 'persist') {
             this.isDocDirty = false;
             this.persistError = false;
-        } else if (cmd.cmd && cmd.result && /^nav\.select\./.test(cmd.cmd)) {
-            this.navAndSelect = /\.toggle$/.test(cmd.cmd) ? !this.navAndSelect : /\.on$/.test(cmd.cmd);
+        } else if (cmd.cmd && cmd.result) {
+            this.processSuccessfulCmd(cmd.cmd);
         }
         this.onStateChange();
     };
@@ -129,6 +146,7 @@ define([
         state.docdirty = !this.persistError && this.isDocDirty;
         state.commandmode = this.isCommandMode;
         state.navandselect = this.navAndSelect;
+        state.statusbar = this.statusBar;
         this.STATE_CMDS.forEach(function (cmd) {
             state[cmd] = document.queryCommandState(cmd);
         });
