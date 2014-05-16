@@ -357,16 +357,17 @@ define([
      * The state argument is a hash of command name versus current state (true|false|<string>).
      */
     Toolbar.prototype.onCommandState = function (state) {
-        this.toolbar.find('[data-cmd]').each(function () {
+        this.toolbar.find('[data-cmd=execCommand]').each(function () {
             var btn = $(this),
-                cmd = btn.attr('data-cmd'),
+                cmdAr = btn.attr('data-cmd-args').split(' '),
+                cmd = cmdAr[0],
                 st = state[cmd],
                 func, args;
             if (st !== undefined) {
                 if (typeof st === 'boolean') {
                     func = st ? btn.addClass : btn.removeClass;
                 } else {
-                    args = btn.attr('data-cmd-args');
+                    args = cmdAr[1];
                     func = args === st ? btn.addClass : btn.removeClass;
                 }
                 func.call(btn, 'qk_button_active');
