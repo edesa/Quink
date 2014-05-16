@@ -96,8 +96,9 @@
                     "id": "showinsertmenu",
                     "index": 2,
                     "elId": "qk_button_plugin_menu",
-                    "cssClass": "qk_button_bg_insertmenu",
-                    "command": "showInsertMenu"
+                    "cssClass": "qk_button_bg_insert",
+                    "command": "showInsertMenu",
+                    "hidden": true
                 }
             ]
         },

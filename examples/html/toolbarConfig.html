@@ -3,39 +3,87 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
         <title>Quink Example - configure the toolbar from the host page</title>
+        <style>
+        .page-button {
+            min-height: 40px;
+            min-width: 100px;
+        }
+        </style>
         <script type="text/javascript" src="../../quink.js"></script>
     </head>
     <body>
         <div contenteditable="true" id="ed-1">
 This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page. Some more text and more and more and so on. Now just copy and paste to make it look like even more. This is editable... some text in here to fill up the page.
         </div>
+        <button class="page-button" id="btn1">config 1</button>
+        <button class="page-button" id="btn2">config 2</button>
+        <button class="page-button" id="btnreset">reset</button>
         <script type="text/javascript">
         QUINK.ready = function () {
-            QUINK.configureToolbar({
-                groups: [
-                    {
-                        id: 'misc',
-                        index: 4,
-                        items: [
-                            {
-                                id: 'save',
-                                hidden: true
-                            },
-                            {
-                                id: 'navcharleft',
-                                index: 0
-                            },
-                            {
-                                id: 'navcharright',
-                                index: 1
-                            }
-                        ]
-                    },
-                    {
-                        id: 'help',
-                        label: '?'
-                    }
-                ]
+            var c1 = {
+                    groups: [
+                        {
+                            id: 'misc',
+                            index: 4,
+                            active: false,
+                            items: [
+                                {
+                                    id: 'save',
+                                    hidden: true
+                                },
+                                {
+                                    id: 'navcharleft',
+                                    index: 0
+                                },
+                                {
+                                    id: 'navcharright',
+                                    index: 1
+                                }
+                            ]
+                        },
+                        {
+                            id: 'help',
+                            label: '?',
+                            active: true
+                        }
+                    ]
+                },
+            c2 = {
+                    groups: [
+                        {
+                            id: 'misc',
+                            hidden: true
+                        },
+                        {
+                            id: 'insert',
+                            hidden: true
+                        },
+                        {
+                            id: 'style',
+                            hidden: true
+                        },
+                        {
+                            id: 'font',
+                            hidden: true
+                        },
+                        {
+                            id: 'para',
+                            hidden: true
+                        },
+                        {
+                            id: 'cursor',
+                            hidden: true
+                        }
+                    ]
+                };
+            document.querySelector('#btn1').addEventListener('click', function () {
+                QUINK.configureToolbar(c1);
+            });
+            document.querySelector('#btn2').addEventListener('click', function () {
+                QUINK.configureToolbar(c2);
+            });
+            document.querySelector('#btnreset').addEventListener('click', function () {
+                QUINK.resetToolbar();
             });
         };
         </script>

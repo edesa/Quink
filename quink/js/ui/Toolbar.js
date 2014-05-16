@@ -62,33 +62,68 @@ define([
      * Names of the toolbar json defs that can be changed via configureToolbar.
      */
     Toolbar.prototype.TOOLBAR_GROUP_PROPS = [
-        'label',
-        'cssClass',
-        'index',
+        'active',
         'command',
         'commandArgs',
+        'cssClass',
         'hidden',
-        'type',
+        'index',
+        'label',
         'selectId',
+        'type',
         'value'
     ];
+
+    // Toolbar.prototype.initToolbarTabs = function() {
+    //     var longestTab = this.toolbarDef.groups.filter(function(grp) {
+    //         return !grp.hidden;
+    //     }).map(function(grp) {
+    //         var length = grp.items.reduce(function(count, item) {
+    //                 return item.hidden ? count : count + 1;
+    //             }, 0);
+    //         return {
+    //             id: grp.id,
+    //             length: length
+    //         };
+    //     }).reduce(function(prevObj, currentObj) {
+    //         return currentObj.length > prevObj.length ? currentObj : prevObj;
+    //     });
+    //     this.widestTabName = longestTab.id;
+    // };
 
     /**
      * Stores the name of the widest tab which will then be used to size the toolbar when
      * it's shown on the page.
      */
     Toolbar.prototype.initToolbarTabs = function () {
-        var btnCounts = $('.qk_tab').map(function () {
+        var widestTabObj = this.toolbarDef.groups.filter(function (grp) {
+                return !grp.hidden;
+            }).map(function (grp) {
+                var length = grp.items.reduce(function (count, item) {
+                        return item.hidden ? count : count + 1;
+                    }, 0);
                 return {
-                    el: this,
-                    btnCount: $(this).children('.qk_button').length
+                    id: grp.id,
+                    length: length
                 };
-            }).get(),
-            maxBtns = _.max(btnCounts, function (item) {
-                return item.btnCount;
+            }).reduce(function (prevObj, currentObj) {
+                return currentObj.length > prevObj.length ? currentObj : prevObj;
             });
-        this.widestTabName = maxBtns.el.id.substr(this.TAB_NAME_PREFIX.length);
+        this.widestTabName = widestTabObj.id;
     };
+
+    // Toolbar.prototype.initToolbarTabs = function () {
+    //     var btnCounts = $('.qk_tab').map(function () {
+    //             return {
+    //                 el: this,
+    //                 btnCount: $(this).children('.qk_button').not('.qk_hidden').length
+    //             };
+    //         }).get(),
+    //         maxBtns = _.max(btnCounts, function (item) {
+    //             return item.btnCount;
+    //         });
+    //     this.widestTabName = maxBtns.el.id.substr(this.TAB_NAME_PREFIX.length);
+    // };
 
     Toolbar.prototype.hideCurrentDialog = function () {
         var dialog;
@@ -475,10 +510,9 @@ define([
     };
 
     Toolbar.prototype.onPluginNames = function (pluginData) {
+        this.pluginNames = pluginData;
         if (this.insertMenu) {
             this.processPluginData(pluginData, this.insertMenu);
-        } else {
-            this.pluginNames = pluginData;
         }
     };
 
@@ -486,6 +520,17 @@ define([
         if (Env.getSubmitUrl()) {
             this.toolbar.find('[data-cmd-id=submitDocument]').removeClass('qk_hidden');
         }
+    };
+
+    Toolbar.prototype.showActivePanel = function () {
+        var firstVisibleGroupId,
+            activeGroup = _.find(this.toolbarDef.groups, function (grp) {
+                if (!grp.hidden) {
+                    firstVisibleGroupId = firstVisibleGroupId || grp.id;
+                }
+                return grp.active && !grp.hidden;
+            });
+        this.showTabPanel((activeGroup && activeGroup.id) || firstVisibleGroupId);
     };
 
     Toolbar.prototype.showToolbarAt = function (x, y) {
@@ -500,7 +545,7 @@ define([
             this.showTabPanel(this.widestTabName);
             this.toolbar.width(this.toolbar.width() + 5);
             this.widestTabName = null;
-            this.showTabPanel('misc');
+            this.showActivePanel();
         }
         this.toolbar.css({
             'left': x,
@@ -654,7 +699,10 @@ define([
             this.toolbar.remove();
             this.toolbar = null;
         }
-        this.createToolbar(this.toolbarDef, this.toolbarTpl);
+        this.createToolbar(this.toolbarDef, this.toolbarTpl, this.insertMenuHtml);
+    };
+
+    Toolbar.prototype.resetToolbar = function () {
     };
 
     var toolbar;
@@ -662,6 +710,7 @@ define([
     function init() {
         toolbar = new Toolbar();
         QUINK.configureToolbar = toolbar.configureToolbar.bind(toolbar);
+        QUINK.resetToolbar = toolbar.resetToolbar.bind(toolbar);
         return toolbar.downloadResources();
     }
 
