@@ -17,7 +17,8 @@
         </div>
         <button class="page-button" id="btn1">config 1</button>
         <button class="page-button" id="btn2">config 2</button>
-        <button class="page-button" id="btnreset">reset</button>
+        <button class="page-button" id="btn3">config 3</button>
+        <button class="page-button" id="btnreset">default config</button>
         <script type="text/javascript">
         QUINK.ready = function () {
             var c1 = {
@@ -119,13 +120,39 @@
                         }
                     ]
                 },
-                origConfig;
+            c3 = {
+                groups: [
+                    {
+                        id: 'font',
+                        hidden: false,
+                        active: true,
+                        items: [
+                            {
+                                id: 'bold',
+                                hidden: false
+                            },
+                            {
+                                id: 'italic',
+                                hidden: false
+                            }
+                        ]
+                    }
+                ],
+                defaults: {
+                    hidden: true
+                }
+            },
+            origConfig;
             document.querySelector('#btn1').addEventListener('click', function () {
                 var cfg = QUINK.configureToolbar(c1);
                 origConfig = origConfig || cfg;
             });
             document.querySelector('#btn2').addEventListener('click', function () {
                 var cfg = QUINK.configureToolbar(c2);
+                origConfig = origConfig || cfg;
+            });
+            document.querySelector('#btn3').addEventListener('click', function () {
+                var cfg = QUINK.configureToolbar(c3);
                 origConfig = origConfig || cfg;
             });
             document.querySelector('#btnreset').addEventListener('click', function () {

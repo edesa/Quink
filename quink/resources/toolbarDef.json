@@ -451,5 +451,11 @@
                 }
             ]
         }
-    ]
+    ],
+
+    "defaults": {
+        "hidden": false,
+        "active": false,
+        "repeat": false
+    }
 }

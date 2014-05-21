@@ -70,18 +70,18 @@ define([
     /**
      * Defaults that are applied to all toolbar group and item definitions unless otherwise specified.
      */
-    Toolbar.prototype.TOOLBAR_ITEM_DEFAULTS = {
-        hidden: false,
-        active: false,
-        repeat: false
-    };
+    // Toolbar.prototype.TOOLBAR_ITEM_DEFAULTS = {
+    //     hidden: false,
+    //     active: false,
+    //     repeat: false
+    // };
 
     /**
      * Stores the name of the widest tab which will then be used to size the toolbar when
      * it's shown on the page.
      */
-    Toolbar.prototype.initToolbarTabs = function () {
-        var widestTabObj = this.toolbarDef.groups.filter(function (grp) {
+    Toolbar.prototype.initToolbarTabs = function (toolbarDef) {
+        var widestTabObj = toolbarDef.groups.filter(function (grp) {
                 return !grp.hidden;
             }).map(function (grp) {
                 var length = grp.items.reduce(function (count, item) {
@@ -489,14 +489,14 @@ define([
     };
 
     Toolbar.prototype.checkShowSubmit = function () {
-        if (Env.getSubmitUrl()) {
-            this.toolbar.find('[data-cmd-id=submitDocument]').removeClass('qk_hidden');
-        }
+        var submitBtn = this.toolbar.find('[data-cmd=submitDocument]'),
+            func = !!Env.getSubmitUrl() ? submitBtn.removeClass : submitBtn.addClass;
+        func.call(submitBtn, 'qk_hidden');
     };
 
-    Toolbar.prototype.showActivePanel = function () {
+    Toolbar.prototype.showActivePanel = function (toolbarDef) {
         var firstVisibleGroupId,
-            activeGroup = _.find(this.toolbarDef.groups, function (grp) {
+            activeGroup = _.find(toolbarDef.groups, function (grp) {
                 if (!grp.hidden) {
                     firstVisibleGroupId = firstVisibleGroupId || grp.id;
                 }
@@ -505,7 +505,7 @@ define([
         this.showTabPanel((activeGroup && activeGroup.id) || firstVisibleGroupId);
     };
 
-    Toolbar.prototype.showToolbarAt = function (x, y) {
+    Toolbar.prototype.showToolbarAt = function (x, y, toolbarDef) {
         if (!this.vpToolbar) {
             this.vpToolbar = ViewportRelative.create(this.toolbar, {
                 top: y
@@ -517,7 +517,7 @@ define([
             this.showTabPanel(this.widestTabName);
             this.toolbar.width(this.toolbar.width() + 5);
             this.widestTabName = null;
-            this.showActivePanel();
+            this.showActivePanel(toolbarDef);
         }
         this.toolbar.css({
             'left': x,
@@ -525,12 +525,12 @@ define([
         });
     };
 
-    Toolbar.prototype.showToolbar = function () {
+    Toolbar.prototype.showToolbar = function (toolbarDef) {
         var y = $(window).innerHeight() / 5,
             x;
         this.toolbar.removeClass('qk_hidden');
         x = Math.floor(($(document).innerWidth() - this.toolbar.width()) / 2);
-        this.showToolbarAt(x, y);
+        this.showToolbarAt(x, y, toolbarDef);
     };
 
     Toolbar.prototype.initSubscriptions = function () {
@@ -539,8 +539,8 @@ define([
         }
     };
 
-    Toolbar.prototype.afterToolbarCreated = function () {
-        this.initToolbarTabs();
+    Toolbar.prototype.afterToolbarCreated = function (toolbarDef) {
+        this.initToolbarTabs(toolbarDef);
         this.addToolbarTabListeners(document);
         this.addToolbarButtonListeners();
         this.checkShowSubmit();
@@ -548,7 +548,7 @@ define([
         Draggable.create('.qk_toolbar_container');
         PubSub.publish('ui.toolbar.created');
         if (Env.getParam('toolbar', 'off') === 'on') {
-            this.showToolbar();
+            this.showToolbar(toolbarDef);
         }
     };
 
@@ -559,24 +559,24 @@ define([
         }
     };
 
-    Toolbar.prototype.onDownloadToolbar = function (data) {
-        this.toolbar = $(data).appendTo('body');
-        this.afterToolbarCreated();
+    Toolbar.prototype.onDownloadToolbar = function (html, def) {
+        this.toolbar = $(html).appendTo('body');
+        this.afterToolbarCreated(def);
     };
 
-    Toolbar.prototype.orderToolbarItems = function (toolbarDefs) {
-        toolbarDefs.groups = _.sortBy(toolbarDefs.groups, 'index');
-        _.each(toolbarDefs.groups, function (grp) {
+    Toolbar.prototype.orderToolbarItems = function (toolbarDef) {
+        toolbarDef.groups = _.sortBy(toolbarDef.groups, 'index');
+        _.each(toolbarDef.groups, function (grp) {
             grp.items = _.sortBy(grp.items, 'index');
         });
-        return toolbarDefs;
+        return toolbarDef;
     };
 
     Toolbar.prototype.createToolbar = function (toolbarDef, toolbarTpl, insertMenuHtml) {
         var html;
-        this.toolbarDef = this.orderToolbarItems(toolbarDef);
-        html = _.template(toolbarTpl, this.toolbarDef);
-        this.onDownloadToolbar(html);
+        this.orderToolbarItems(toolbarDef);
+        html = _.template(toolbarTpl, toolbarDef);
+        this.onDownloadToolbar(html, toolbarDef);
         this.onDownloadInsertMenu(insertMenuHtml);
     };
 
@@ -584,9 +584,12 @@ define([
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
     Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml) {
+        var defaults;
         this.toolbarTpl = tbTpl[0];
         this.toolbarDef = tbDef[0];
         this.insertMenuHtml = imHtml[0];
+        defaults = $.extend(true, {}, this.TOOLBAR_DEFAULTS, this.toolbarDef.defaults);
+        this.applyDefaults(this.toolbarDef.groups, defaults, true);
         this.createToolbar(this.toolbarDef, this.toolbarTpl, this.insertMenuHtml);
     };
 
@@ -602,12 +605,31 @@ define([
     };
 
     /**
-     * Merges the edit definitinos into the src definitions to produce a final toolbar definition.
-     * src and edits are arrays of objects. Updates the src array in place.
+     * Applies defaults to the objs array. If forceApply is true the defaults overwrite values in the
+     * array, otherwise they are only applied if the object has no value for that property.
+     * Recursively sets defaults in the the items array.
+     */
+    Toolbar.prototype.applyDefaults = function (objs, defaults, forceApply) {
+        objs.forEach(function (obj) {
+            Object.keys(defaults).forEach(function (propName) {
+                if (forceApply || obj[propName] === undefined) {
+                    obj[propName] = defaults[propName];
+                }
+            });
+            if (obj.items) {
+                this.applyDefaults(obj.items, defaults, forceApply);
+            }
+        }.bind(this));
+    };
+
+    /**
+     * Merges the edit definitions into the src definitions to produce a merged toolbar definition.
+     * src and edits are arrays of objects. Updates the src array in place. Adjusts index properties
+     * as needed.
      */
     Toolbar.prototype.mergeConfig = function (src, edits) {
-        var findGroup = function (id) {
-                return _.find(src, function (grp) {
+        var findGroup = function (groups, id) {
+                return _.find(groups, function (grp) {
                     return grp.id === id;
                 });
             },
@@ -620,16 +642,6 @@ define([
                     }
                 });
             },
-            setDefaults = function () {
-                var objects = Array.prototype.slice.call(arguments, 0);
-                Object.keys(Toolbar.prototype.TOOLBAR_ITEM_DEFAULTS).forEach(function (propName) {
-                    objects.forEach(function (obj) {
-                        if (obj[propName] === undefined) {
-                            obj[propName] = Toolbar.prototype.TOOLBAR_ITEM_DEFAULTS[propName];
-                        }
-                    });
-                });
-            },
             updateItem = function (srcObj, editObj) {
                 var args = [editObj].concat(Toolbar.prototype.TOOLBAR_GROUP_PROPS),
                     editProps = _.pick.apply(null, args);
@@ -638,12 +650,11 @@ define([
                 });
             };
         edits.forEach(function (editGroup) {
-            var srcGroup = findGroup(editGroup.id);
+            var srcGroup = findGroup(src, editGroup.id);
             if (srcGroup) {
                 if (editGroup.index !== undefined) {
                     moveItems(src, srcGroup.index, editGroup.index);
                 }
-                setDefaults(srcGroup, editGroup);
                 updateItem(srcGroup, editGroup);
                 if (editGroup.items) {
                     this.mergeConfig(srcGroup.items, editGroup.items);
@@ -652,16 +663,37 @@ define([
                 console.log('can\'t find item with id: ' + editGroup.id);
             }
         }.bind(this));
+        return src;
     };
 
+    /**
+     * These will be overriden by any defaults specified via the configureToolbar function argument.
+     */
+    Toolbar.prototype.TOOLBAR_DEFAULTS = {
+        hidden: false,
+        active: false,
+        repeat: false
+    };
+
+    /**
+     * New definition will be appied on top of the current definition after the defaults have been
+     * applied. Defaults overwrite properties in the current definition but not in the supplied
+     * definition.
+     * The current definition as at the function invocation is returned as the result.
+     */
     Toolbar.prototype.configureToolbar = function (def) {
-        var oldToolbarDef = $.extend(true, {}, this.toolbarDef);
-        this.mergeConfig(this.toolbarDef.groups, def.groups);
+        var oldToolbarDef = $.extend(true, {}, this.toolbarDef),
+            workingDef = this.toolbarDef,
+            defaults = $.extend(true, {}, this.TOOLBAR_DEFAULTS, def.defaults);
+        this.applyDefaults(workingDef.groups, defaults, true);
+        this.applyDefaults(def.groups, defaults, false);
+        this.mergeConfig(workingDef.groups, def.groups);
         if (this.toolbar.length) {
             this.toolbar.remove();
             this.toolbar = null;
         }
-        this.createToolbar(this.toolbarDef, this.toolbarTpl, this.insertMenuHtml);
+        this.createToolbar(workingDef, this.toolbarTpl, this.insertMenuHtml);
+        this.toolbarDef = workingDef;
         this.onCommandState(this.lastCommandState);
         return oldToolbarDef;
     };
