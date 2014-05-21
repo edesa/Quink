@@ -455,7 +455,6 @@
 
     "defaults": {
         "hidden": false,
-        "active": false,
-        "repeat": false
+        "active": false
     }
 }

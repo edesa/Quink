@@ -13,131 +13,120 @@
     </head>
     <body>
         <div contenteditable="true" id="ed-1">
-            The 'config n' buttons switch the toolbar configuration. The reset button switches back to the initial toolbar configuration. New configurations are applied on the existing toolbar definition, so to get reproducible results hit reset before applying a new configuration.
+            Hitting a button sets the toolbar configuration. The config 2 buttons use different configurations to end up with the same toolbar layout. The default config is the initial one.
         </div>
         <button class="page-button" id="btn1">config 1</button>
         <button class="page-button" id="btn2">config 2</button>
+        <button class="page-button" id="btn2alt">config 2 alt</button>
         <button class="page-button" id="btn3">config 3</button>
         <button class="page-button" id="btnreset">default config</button>
         <script type="text/javascript">
         QUINK.ready = function () {
             var c1 = {
-                    groups: [
-                        {
-                            id: 'misc',
-                            index: 4,
-                            items: [
-                                {
-                                    id: 'save',
-                                    hidden: true
-                                },
-                                {
-                                    id: 'navcharleft',
-                                    index: 0,
-                                    repeat: false
-                                },
-                                {
-                                    id: 'navcharright',
-                                    index: 1,
-                                    repeat: false
-                                }
-                            ]
-                        },
-                        {
-                            id: 'help',
-                            label: '?',
-                            active: true,
-                            items: [
-                                {
-                                    id: "info",
-                                    index: 2
-                                },
-                                {
-                                    id: "releasenotes",
-                                    hidden: true
-                                },
-                                {
-                                    id: "license",
-                                    index: 1
-                                },
-                                {
-                                    id: "statusbar",
-                                    index: 0
-                                }
-                            ]
-                        }
-                    ]
-                },
+                groups: [{
+                    id: 'misc',
+                    index: 4,
+                    items: [{
+                        id: 'save',
+                        hidden: true
+                    }, {
+                        id: 'navcharleft',
+                        index: 0,
+                        repeat: false
+                    }, {
+                        id: 'navcharright',
+                        index: 1,
+                        repeat: false
+                    }]
+                }, {
+                    id: 'help',
+                    label: '?',
+                    active: true,
+                    items: [{
+                        id: "info",
+                        index: 2
+                    }, {
+                        id: "releasenotes",
+                        hidden: true
+                    }, {
+                        id: "license",
+                        index: 1
+                    }, {
+                        id: "statusbar",
+                        index: 0
+                    }]
+                }]
+            },
             c2 = {
-                    groups: [
-                        {
-                            id: 'misc',
-                            hidden: true
-                        },
-                        {
-                            id: 'insert',
-                            hidden: true
-                        },
-                        {
-                            id: 'style',
-                            hidden: true
-                        },
-                        {
-                            id: 'font',
-                            hidden: true
-                        },
-                        {
-                            id: 'para',
-                            hidden: true
-                        },
-                        {
-                            id: 'edit',
-                            hidden: true
-                        },
-                        {
-                            id: 'help',
-                            hidden: true
-                        },
-                        {
-                            id: 'cursor',
-                            items: [
-                                {
-                                    id: 'navlineup',
-                                    index: 7,
-                                    repeat: true
-                                },
-                                {
-                                    id: 'navlinestart',
-                                    index: 4,
-                                    repeat: true
-                                },
-                                {
-                                    id: 'navwordleft',
-                                    index: 2,
-                                    repeat: true
-                                }
-                            ]
-                        }
-                    ]
-                },
-            c3 = {
-                groups: [
-                    {
-                        id: 'font',
-                        hidden: false,
-                        active: true,
-                        items: [
-                            {
-                                id: 'bold',
-                                hidden: false
-                            },
-                            {
-                                id: 'italic',
-                                hidden: false
-                            }
-                        ]
+                groups: [{
+                    id: 'misc',
+                    hidden: true
+                }, {
+                    id: 'insert',
+                    hidden: true
+                }, {
+                    id: 'style',
+                    hidden: true
+                }, {
+                    id: 'font',
+                    hidden: true
+                }, {
+                    id: 'para',
+                    hidden: true
+                }, {
+                    id: 'edit',
+                    hidden: true
+                }, {
+                    id: 'help',
+                    hidden: true
+                }, {
+                    id: 'cursor',
+                    items: [{
+                        id: 'navlineup',
+                        index: 7
+                    }, {
+                        id: 'navlinestart',
+                        index: 4
+                    }, {
+                        id: 'navwordleft',
+                        index: 2
+                    }]
+                }]
+            },
+            c2Alt = {
+                groups: [{
+                    id: 'cursor',
+                    hidden: false,
+                    items: [{
+                        id: 'navlineup',
+                        index: 7
+                    }, {
+                        id: 'navlinestart',
+                        index: 4
+                    }, {
+                        id: 'navwordleft',
+                        index: 2
+                    }]
+                }],
+                defaults: {
+                    hidden: true,
+                    item: {
+                        hidden: false
                     }
-                ],
+                }
+            },
+            c3 = {
+                groups: [{
+                    id: 'font',
+                    hidden: false,
+                    items: [{
+                        id: 'bold',
+                        hidden: false
+                    }, {
+                        id: 'italic',
+                        hidden: false
+                    }]
+                }],
                 defaults: {
                     hidden: true
                 }
@@ -149,6 +138,10 @@
             });
             document.querySelector('#btn2').addEventListener('click', function () {
                 var cfg = QUINK.configureToolbar(c2);
+                origConfig = origConfig || cfg;
+            });
+            document.querySelector('#btn2alt').addEventListener('click', function () {
+                var cfg = QUINK.configureToolbar(c2Alt);
                 origConfig = origConfig || cfg;
             });
             document.querySelector('#btn3').addEventListener('click', function () {

@@ -496,6 +496,10 @@ define([
         func.call(submitBtn, 'qk_hidden');
     };
 
+    /**
+     * Show the tab that's marked as active or the first tab if there isn't a visible one that's
+     * marked as active.
+     */
     Toolbar.prototype.showActivePanel = function (toolbarDef) {
         var firstVisibleGroupId,
             activeGroup = _.find(toolbarDef.groups, function (grp) {
@@ -591,7 +595,7 @@ define([
         this.toolbarDef = tbDef[0];
         this.insertMenuHtml = imHtml[0];
         defaults = $.extend(true, {}, this.TOOLBAR_DEFAULTS, this.toolbarDef.defaults);
-        this.applyDefaults(this.toolbarDef.groups, defaults, true);
+        this.applyDefaults(this.toolbarDef.groups, this.createDefaults(this.toolbarDef), true);
         this.createToolbar(this.toolbarDef, this.toolbarTpl, this.insertMenuHtml);
     };
 
@@ -612,14 +616,15 @@ define([
      * Recursively sets defaults in the the items array.
      */
     Toolbar.prototype.applyDefaults = function (objs, defaults, forceApply) {
+        var dflt = defaults.group || defaults;
         objs.forEach(function (obj) {
-            Object.keys(defaults).forEach(function (propName) {
+            Object.keys(dflt).forEach(function (propName) {
                 if (forceApply || obj[propName] === undefined) {
-                    obj[propName] = defaults[propName];
+                    obj[propName] = dflt[propName];
                 }
             });
             if (obj.items) {
-                this.applyDefaults(obj.items, defaults, forceApply);
+                this.applyDefaults(obj.items, defaults.item, forceApply);
             }
         }.bind(this));
     };
@@ -673,8 +678,50 @@ define([
      */
     Toolbar.prototype.TOOLBAR_DEFAULTS = {
         hidden: false,
-        active: false,
-        repeat: false
+        active: false
+    };
+
+    /**
+     * Property names in the defaults object that are ignored when copying top level properties to the
+     * more specific group and item default objects.
+     */
+    Toolbar.prototype.TOOLBAR_DEFAULTS_EXCLUDE = [
+        'group',
+        'item'
+    ];
+
+    /**
+     * Create an object that contains the defaults for this configuration. Any top level defaults properties
+     * specified in the definition are used for both groups and items unless overriden by more specific values
+     * in the group or item default objects.
+     * No defaults results in the fallback values being used for both groups and items.
+     */
+    Toolbar.prototype.createDefaults = function (def) {
+        var result = {},
+            defaults = def.defaults;
+        result.group = $.extend(true, {}, this.TOOLBAR_DEFAULTS);
+        result.item = $.extend(true, {}, this.TOOLBAR_DEFAULTS);
+        if (defaults) {
+            // Copy global defaults into each of the local default objects
+            Object.keys(defaults).forEach(function (propName) {
+                if (Toolbar.prototype.TOOLBAR_DEFAULTS_EXCLUDE.indexOf(propName) < 0) {
+                    result.group[propName] = defaults[propName];
+                    result.item[propName] = defaults[propName];
+                }
+            });
+            // Copy the local default objects
+            if (defaults.group) {
+                Object.keys(defaults.group).forEach(function (propName) {
+                    result.group[propName] = defaults.group[propName];
+                });
+            }
+            if (defaults.item) {
+                Object.keys(defaults.item).forEach(function (propName) {
+                    result.item[propName] = defaults.item[propName];
+                });
+            }
+        }
+        return result;
     };
 
     /**
@@ -686,7 +733,7 @@ define([
     Toolbar.prototype.configureToolbar = function (def) {
         var oldToolbarDef = $.extend(true, {}, this.toolbarDef),
             workingDef = this.toolbarDef,
-            defaults = $.extend(true, {}, this.TOOLBAR_DEFAULTS, def.defaults);
+            defaults = this.createDefaults(def);
         this.applyDefaults(workingDef.groups, defaults, true);
         this.applyDefaults(def.groups, defaults, false);
         this.mergeConfig(workingDef.groups, def.groups);
