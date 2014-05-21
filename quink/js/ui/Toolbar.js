@@ -384,6 +384,7 @@ define([
     Toolbar.prototype.hideToolbar = function () {
         this.hideCurrentDialog();
         this.toolbar.addClass('qk_hidden');
+        this.isVisible = false;
     };
 
     Toolbar.prototype.hideCurrentTabPanel = function () {
@@ -529,6 +530,7 @@ define([
             'left': x,
             'top': y
         });
+        this.isVisible = true;
     };
 
     Toolbar.prototype.showToolbar = function (toolbarDef) {
@@ -553,7 +555,7 @@ define([
         this.initSubscriptions();
         Draggable.create('.qk_toolbar_container');
         PubSub.publish('ui.toolbar.created');
-        if (Env.getParam('toolbar', 'off') === 'on') {
+        if ((this.isVisible === undefined && Env.getParam('toolbar', 'off') === 'on') || this.isVisible) {
             this.showToolbar(toolbarDef);
         }
     };
