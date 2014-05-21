@@ -415,7 +415,7 @@ define([
         var hit, handled;
         if (event.hitType === 'double') {
             hit = Event.isTouch ? event.event.originalEvent.changedTouches[0] : event.event;
-            this.showToolbarAt(hit.pageX, hit.pageY);
+            this.showToolbarAt(hit.pageX, hit.pageY, this.toolbarDef);
             this.vpToolbar.adjust();
             handled = true;
         }

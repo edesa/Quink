@@ -139,6 +139,7 @@ define([
     /**
      * Only show the doc dirty indicator if not showing the persistence error indicator (which
      * implies that the doc is dirty).
+     * queryCommandState and queryCommandValue throw on FireFox in some situations.
      */
     CommandStateAdapter.prototype.onStateChange = function () {
         var state = {};
@@ -148,10 +149,14 @@ define([
         state.navandselect = this.navAndSelect;
         state.statusbar = this.statusBar;
         this.STATE_CMDS.forEach(function (cmd) {
-            state[cmd] = document.queryCommandState(cmd);
+            try {
+                state[cmd] = document.queryCommandState(cmd);
+            } catch (e) {}
         });
         this.VALUE_CMDS.forEach(function (cmd) {
-            state[cmd] = document.queryCommandValue(cmd);
+            try {
+                state[cmd] = document.queryCommandValue(cmd);
+            } catch (e) {}
         });
         PubSub.publish('command.state', state);
     };
