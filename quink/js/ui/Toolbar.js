@@ -478,6 +478,8 @@ define([
         if (menuPlugins.length > 0) {
             this.createInsertMenu(menu, menuPlugins);
             this.toolbar.find('#qk_button_plugin_menu').removeClass('qk_hidden');
+        } else {
+            this.toolbar.find('#qk_button_plugin_menu').addClass('qk_hidden');
         }
     };
 
