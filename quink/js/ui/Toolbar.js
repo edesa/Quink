@@ -637,39 +637,39 @@ define([
      * as needed.
      */
     Toolbar.prototype.mergeConfig = function (src, edits) {
-        var findGroup = function (groups, id) {
-                return _.find(groups, function (grp) {
-                    return grp.id === id;
+        var findObject = function (objects, id) {
+                return _.find(objects, function (obj) {
+                    return obj.id === id;
                 });
             },
-            moveItems = function (items, oldIndex, newIndex) {
-                items.forEach(function (item) {
-                    if ((oldIndex < newIndex) && (item.index > oldIndex && item.index <= newIndex)) {
-                        item.index--;
-                    } else if ((oldIndex > newIndex) && (item.index >= newIndex && item.index < oldIndex)) {
-                        item.index++;
+            moveObjects = function (objects, oldIndex, newIndex) {
+                objects.forEach(function (obj) {
+                    if ((oldIndex < newIndex) && (obj.index > oldIndex && obj.index <= newIndex)) {
+                        obj.index--;
+                    } else if ((oldIndex > newIndex) && (obj.index >= newIndex && obj.index < oldIndex)) {
+                        obj.index++;
                     }
                 });
             },
-            updateItem = function (srcObj, editObj) {
+            updateObject = function (srcObj, editObj) {
                 var args = [editObj].concat(Toolbar.prototype.TOOLBAR_GROUP_PROPS),
                     editProps = _.pick.apply(null, args);
                 Object.keys(editProps).forEach(function (propName) {
                     srcObj[propName] = editObj[propName];
                 });
             };
-        edits.forEach(function (editGroup) {
-            var srcGroup = findGroup(src, editGroup.id);
-            if (srcGroup) {
-                if (editGroup.index !== undefined) {
-                    moveItems(src, srcGroup.index, editGroup.index);
+        edits.forEach(function (editObject) {
+            var srcObject = findObject(src, editObject.id);
+            if (srcObject) {
+                if (editObject.index !== undefined) {
+                    moveObjects(src, srcObject.index, editObject.index);
                 }
-                updateItem(srcGroup, editGroup);
-                if (editGroup.items) {
-                    this.mergeConfig(srcGroup.items, editGroup.items);
+                updateObject(srcObject, editObject);
+                if (editObject.items) {
+                    this.mergeConfig(srcObject.items, editObject.items);
                 }
             } else {
-                console.log('can\'t find item with id: ' + editGroup.id);
+                console.log('can\'t find item with id: ' + editObject.id);
             }
         }.bind(this));
         return src;
