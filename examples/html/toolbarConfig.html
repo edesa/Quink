@@ -19,6 +19,7 @@
         <button class="page-button" id="btn2">config 2</button>
         <button class="page-button" id="btn2alt">config 2 alt</button>
         <button class="page-button" id="btn3">config 3</button>
+        <button class="page-button" id="btn4">config 4</button>
         <button class="page-button" id="btnreset">default config</button>
         <script type="text/javascript">
         QUINK.ready = function () {
@@ -131,6 +132,41 @@
                     hidden: true
                 }
             },
+            c4 = {
+                groups: [{
+                    id: 'newgroup',
+                    label: 'toolbar',
+                    hidden: false,
+                    items: [{
+                        id: 'bold',
+                        index: 0
+                    }, {
+                        id: 'italic',
+                        index: 1
+                    }, {
+                        id: 'navwordleft',
+                        index: 2
+                    }, {
+                        id: 'navwordright',
+                        index: 3
+                    }, {
+                        id: 'forwarddelete',
+                        index: 4
+                    }, {
+                        id: 'navandselect',
+                        index: 5
+                    }, {
+                        id: 'statusbar',
+                        index: 6
+                    }]
+                }],
+                defaults: {
+                    hidden: true,
+                    item: {
+                        hidden: false
+                    }
+                }
+            },
             origConfig;
             document.querySelector('#btn1').addEventListener('click', function () {
                 var cfg = QUINK.configureToolbar(c1);
@@ -146,6 +182,10 @@
             });
             document.querySelector('#btn3').addEventListener('click', function () {
                 var cfg = QUINK.configureToolbar(c3);
+                origConfig = origConfig || cfg;
+            });
+            document.querySelector('#btn4').addEventListener('click', function () {
+                var cfg = QUINK.configureToolbar(c4);
                 origConfig = origConfig || cfg;
             });
             document.querySelector('#btnreset').addEventListener('click', function () {
