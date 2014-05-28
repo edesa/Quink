@@ -29,7 +29,6 @@ define([
 
     var CommandStateBar = function () {
         CommandSubscriber.register(this);
-        PubSub.subscribe('command.state', this.onStateChange.bind(this));
     };
 
     /**
@@ -83,6 +82,7 @@ define([
 
     CommandStateBar.prototype.onDownload = function (data) {
         this.bar = $(data).appendTo('body');
+        PubSub.subscribe('command.state', this.onStateChange.bind(this));
         this.vpBar = ViewportRelative.create(this.bar, {
             top: 5
         });
