@@ -2,7 +2,7 @@
 <html><head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
         <title>Empty template</title>
-        <script src="/quink/_design/quink/quink.js"></script>
+        <script src="../quink.js"></script>
         <style>
             * {
                 box-sizing: border-box;
@@ -22,40 +22,6 @@
         </style>
     </head>
     <body>
-        <div class="qk_scroll" contenteditable="true" id="editable-content"><h2>Query Parameter Options</h2><h4>submit=&lt;url&gt;</h4><h4><p><span style="font-weight: normal;">Enables a "submit" toolbar button: when pressed, this will POST a version of the document with the contenteditable modifiers and the quink bootstrap script removed: the result is a read-only version of the the edited document. &lt;url&gt; must be the last parameter of the querystring parameters, and does not need to be fully encoded to avoid &amp; and ? as a result. </span></p>autosave=&lt;url&gt;</h4><h4><p><span style="font-weight: normal;">Sets the autosave destination to be &lt;url&gt;. Autosaves are made using a PUT by default. The document is written to be re-editable using Quink. The default is to autosave to the source url.</span></p><p><span style="font-weight: normal;">If autosave=browser then it will use browser storage for autosave instead of writing to a server. If a page is loaded from the server, it checks if an autosave exists in browser storage </span>regardless<span style="font-weight: normal;"> of the autosave setting, and gives the user the option to load the page content from the autosave. The local storage autosave version is DELETED on a successful explicit save.</span></p>autosaveinterval=&lt;number&gt;</h4><h4><p><span style="font-weight: normal;">Sets the default autosave interval to be &lt;number&gt; seconds. Autosave will retry 3 times and then give up until the first change after a save attempt. To disable autosave, set the autosave interval to 0.</span></p>toolbar=on|off</h4><p>Pops up the toolbar on load if 'on', switches it off if 'off'. The default is off.</p><h4>statusbar=on|off</h4><p>Enables the statusbar on load if 'on', switches it off if 'off'. The default is on.</p><h4>caret=on|off</h4><div>Enables a Quink-controlled insert point caret. This allows the insert point to be visible in a content editable section regardless of whether that section has browser focus etc. Particularly useful if using 'external' inserts, or on mobile platforms (such as iOS) which do not always show the insert point at convenient times.</div><div></div></div>
-        <script type="text/javascript">
-            QUINK.save = function (docType, doc, jQuery, url) {
-                //console.log('GET before save...');
-                //console.log("url is '" + url + "'");
-
-                var docUrl = url.substr(0, url.lastIndexOf('/'));
-                var theRev;
-                return jQuery.ajax({
-                    url: docUrl,
-                    method: 'HEAD'
-                }).done(function (d, s, xhr) {
-                    //console.log('GET done...');
-                    theRev = xhr.getResponseHeader('ETag');
-                    theRev=theRev.replace(/^"(.+(?="$))"$/, '$1');
-                    //console.log("rev is: '"+ theRev +"'");
-                    //console.log('last modified: ' + xhr.getResponseHeader('last-modified'));
-                    //console.log(xhr.getAllResponseHeaders());
-                }).fail(function () {
-                    console.log('CouchDB HEAD failed...');
-                }).then(function () {
-                    if (theRev) {
-                        url = url + "?rev=" + theRev;
-                    }
-                    console.log('Saving to...' + url );
-                    return jQuery.ajax({
-                        url: url,
-                        method: 'PUT',
-                        contentType: "text/html",
-                        data: docType + '\n' + doc.documentElement.outerHTML
-                    });
-                })
-            };
-        </script>
-    
-
-<div class="qk_caret" id="qk_caret_id1" style="left: 89px; top: 87px;"></div><div class="qk_caret qk_hidden" id="qk_caret_id1"></div><div class="qk_caret qk_hidden" id="qk_caret_id1"></div></body></html>
+        <div class="qk_scroll" contenteditable="true" id="editable-content"><h2>Query Parameter Options</h2><h4>submit=&lt;url&gt;</h4><h4><p><span style="font-weight: normal;">Enables a "submit" toolbar button: when pressed, this will POST a version of the document with the contenteditable modifiers and the quink bootstrap script removed: the result is a read-only version of the the edited document. &lt;url&gt; must be the last parameter of the querystring parameters, and does not need to be fully encoded to avoid &amp; and ? as a result. </span></p>autosaveto=&lt;url&gt;</h4><h4><p><span style="font-weight: normal;">Sets the autosave destination to be &lt;url&gt;. Autosaves are made using a PUT by default. The document is written to be re-editable using Quink. The default is to autosave to the source url.</span></p><p><span style="font-weight: normal;">If autosaveto=browser then it will use browser storage for autosave instead of writing to a server. If a page is loaded from the server, it checks if an autosave exists in browser storage </span>regardless<span style="font-weight: normal;"> of the autosave setting, and gives the user the option to load the page content from the autosave. The local storage autosave version is DELETED on a successful explicit save.</span></p>autosaveinterval=&lt;number&gt;</h4><h4><p><span style="font-weight: normal;">Sets the default autosave interval to be &lt;number&gt; seconds. Autosave will retry 3 times and then give up until the first change after a save attempt. To disable autosave, set the autosave interval to 0.</span></p>toolbar=on|off</h4><p>Pops up the toolbar on load if 'on', switches it off if 'off'. The default is off.</p><h4>statusbar=on|off</h4><p>Enables the statusbar on load if 'on', switches it off if 'off'. The default is on.</p><h4>caret=on|off</h4><div>Enables a Quink-controlled insert point caret. This allows the insert point to be visible in a content editable section regardless of whether that section has browser focus etc. Particularly useful if using 'external' inserts, or on mobile platforms (such as iOS) which do not always show the insert point at convenient times.</div><div></div></div>
+    </body>
+</html>
