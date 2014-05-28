@@ -632,8 +632,14 @@ define([
         }.bind(this));
     };
 
-    Toolbar.prototype.moveObjects = function () {
-        console.log('moveObjects yet to be defined...');
+    Toolbar.prototype.orderObjects = function (objects, oldIndex, newIndex) {
+        objects.forEach(function (obj) {
+            if ((oldIndex < newIndex) && (obj.index > oldIndex && obj.index <= newIndex)) {
+                obj.index--;
+            } else if ((oldIndex > newIndex) && (obj.index >= newIndex && obj.index < oldIndex)) {
+                obj.index++;
+            }
+        });
     };
 
     Toolbar.prototype.findInList = function (list, id) {
@@ -657,6 +663,10 @@ define([
         return item;
     };
 
+    /**
+     * Sets properties in srcObj from those in editObj. forceUpdate indicates whether editObj values
+     * will overwrite values in srcObj.
+     */
     Toolbar.prototype.updateObject = function (srcObj, editObj, forceUpdate) {
         var args = [editObj].concat(Toolbar.prototype.TOOLBAR_GROUP_PROPS),
             editProps = _.pick.apply(null, args);
@@ -667,10 +677,16 @@ define([
         });
     };
 
+    /**
+     * Updates srcItems to reflect the changes specified in editItems.
+     */
     Toolbar.prototype.mergeItems = function (srcGroups, srcItems, editItems) {
         editItems.forEach(function (editItem) {
             var srcItem = this.findItem(srcGroups, srcItems, editItem.id);
             if (srcItem) {
+                if (editItem.index !== undefined) {
+                    this.orderObjects(srcItems, srcItem.index, editItem.index);
+                }
                 this.updateObject(srcItem, editItem, true);
             } else {
                 console.log('unable to find item with id: ' + editItem.id);
@@ -678,6 +694,9 @@ define([
         }, this);
     };
 
+    /**
+     * Applies the default setting for the command and commandArgs group properties if appropriate.
+     */
     Toolbar.prototype.setCommand = function (group) {
         if (group.command === undefined) {
             group.command = 'showTab';
@@ -703,10 +722,9 @@ define([
                 if (editGrp.items) {
                     this.mergeItems(src, srcGrp.items, editGrp.items);
                 }
-                // this.moveObjects(src, srcGrp.index, );
             } else {
                 if (editGrp.index !== undefined) {
-                    this.moveObjects(src, srcGrp.index, editGrp.index);
+                    this.orderObjects(src, srcGrp.index, editGrp.index);
                 }
                 this.updateObject(srcGrp, editGrp, true);
                 if (editGrp.items) {
@@ -715,64 +733,6 @@ define([
             }
         }, this);
     };
-
-    // Toolbar.prototype.mergeConfig = function (src, edits, willCreate) {
-    // Toolbar.prototype.mergeConfig = function (srcGroups, src, edits, willCreate) {
-    //     // var findObject = function (objects, id) {
-    //     //         return _.find(objects, function (obj) {
-    //     //             return obj.id === id;
-    //     //         });
-    //     //     },
-    //     var findInList = function (list, id) {
-    //             return _.find(list, function (obj) {
-    //                 return obj.id === id;
-    //             });
-    //         },
-    //         findItem = function (groups, itemId) {
-    //             var item;
-    //             _.find(groups, function (grp) {
-    //                 item = findInList(grp.items, itemId);
-    //                 return !!item;
-    //             });
-    //             return item;
-    //         },
-    //         moveObjects = function (objects, oldIndex, newIndex) {
-    //             objects.forEach(function (obj) {
-    //                 if ((oldIndex < newIndex) && (obj.index > oldIndex && obj.index <= newIndex)) {
-    //                     obj.index--;
-    //                 } else if ((oldIndex > newIndex) && (obj.index >= newIndex && obj.index < oldIndex)) {
-    //                     obj.index++;
-    //                 }
-    //             });
-    //         },
-    //         updateObject = function (srcObj, editObj) {
-    //             var args = [editObj].concat(Toolbar.prototype.TOOLBAR_GROUP_PROPS),
-    //                 editProps = _.pick.apply(null, args);
-    //             Object.keys(editProps).forEach(function (propName) {
-    //                 srcObj[propName] = editObj[propName];
-    //             });
-    //         };
-    //     edits.forEach(function (editObject) {
-    //         var srcObject = willCreate ? findInList(src, editObject.id) : findItem(srcGroups, editObject.id);
-    //         if (srcObject) {
-    //             if (editObject.index !== undefined) {
-    //                 moveObjects(src, srcObject.index, editObject.index);
-    //             }
-    //             updateObject(srcObject, editObject);
-    //             if (editObject.items) {
-    //                 this.mergeConfig(srcGroups, srcObject.items, editObject.items, false);
-    //             }
-    //         } else if (willCreate) {
-    //             srcObject = $.extend(true, {}, editObject);
-    //             if (editObject.items) {
-    //                 this.mergeConfig(srcGroups, srcObject.items, editObject.items, false);
-    //             }
-    //         } else {
-    //             console.log('can\'t find object with id: ' + editObject.id);
-    //         }
-    //     }.bind(this));
-    //     return src;
-    // };
 
     /**
      * These will be overriden by any defaults specified via the configureToolbar function argument.
@@ -838,7 +798,6 @@ define([
         this.applyDefaults(workingDef.groups, defaults, true, true);
         this.applyDefaults(def.groups, defaults, false, true);
         this.mergeGroups(workingDef.groups, def.groups);
-        // this.mergeConfig(workingDef.groups, workingDef.groups, def.groups, true);
         if (this.toolbar.length) {
             this.toolbar.remove();
             this.toolbar = null;
