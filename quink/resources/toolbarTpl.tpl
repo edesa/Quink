@@ -30,7 +30,7 @@
                                     <% if (item.elId) { %> id="<%= item.elId %>" <% } %>
                                     >
                 <% if (item.type === 'select') { %>
-                <input class="qk_input_checkbox" type="checkbox" id="<%= item.selectId %>" value="<%= item.value %>"/>
+                <input class="qk_input_checkbox" type="checkbox" data-tag="<%= item.dataTag %>" value="<%= item.value %>"/>
                 <label class="qk_input_label"><%= item.label %></label>
                 <% } else { %>
                 <span class="qk_button_bg <% if (item.cssClass) { %> <%= item.cssClass %> <% } %>"></span>

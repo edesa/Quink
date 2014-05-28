@@ -46,8 +46,8 @@ define([
      * string versus checkbox selector for those commands.
      */
     Toolbar.prototype.KEY_COMMAND_MAP = {
-        'navandselect': '#nav_and_select',
-        'statusbar': '#toggle_status_bar',
+        'navandselect': '[data-tag=nav_and_select]',
+        'statusbar': '[data-tag=toggle_status_bar]',
     };
 
     /**
@@ -66,15 +66,6 @@ define([
         'type',
         'value'
     ];
-
-    /**
-     * Defaults that are applied to all toolbar group and item definitions unless otherwise specified.
-     */
-    // Toolbar.prototype.TOOLBAR_ITEM_DEFAULTS = {
-    //     hidden: false,
-    //     active: false,
-    //     repeat: false
-    // };
 
     /**
      * Stores the name of the widest tab which will then be used to size the toolbar when
@@ -632,6 +623,9 @@ define([
         }.bind(this));
     };
 
+    /**
+     * Changes the index of objects to get them into the desired order. Doesn't actually move the objects.
+     */
     Toolbar.prototype.orderObjects = function (objects, oldIndex, newIndex) {
         objects.forEach(function (obj) {
             if ((oldIndex < newIndex) && (obj.index > oldIndex && obj.index <= newIndex)) {

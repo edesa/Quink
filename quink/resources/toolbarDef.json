@@ -450,7 +450,7 @@
                     "index": 8,
                     "type": "select",
                     "label": "Select",
-                    "selectId": "nav_and_select",
+                    "dataTag": "nav_and_select",
                     "command": "navAndSelect",
                     "value": false
                 }
@@ -490,7 +490,7 @@
                     "index": 3,
                     "type": "select",
                     "label": "Status",
-                    "selectId": "toggle_status_bar",
+                    "dataTag": "toggle_status_bar",
                     "command": "toggleStatusBar",
                     "value": "false"
                 }
