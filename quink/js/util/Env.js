@@ -113,6 +113,10 @@ define([
         }
     }
 
+    function initParams(obj) {
+        _.extend(urlParams, obj);
+    }
+
     /**
       * Tests for a ul ending with a trailing '/'. This isn't really right as a directory url
       * doesnt have to end with a trailing slash, but it won't be possible to know if it's
@@ -152,6 +156,7 @@ define([
         var origin = location.href.split('?')[0];
         setRoot(window.QUINK.root);
         delete window.QUINK.root;
+        initParams(window.QUINK.params);
         parseParams();
         autoSaveUrl = ensureUrlIsFile(getParam('autosave', origin));
         saveUrl = ensureUrlIsFile(origin);

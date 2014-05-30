@@ -65,16 +65,18 @@
             i, src, qi;
         for (i = 0; i < len; i++) {
             src = scripts[i].getAttribute('src');
-            qi = src.indexOf('quink.js');
-            if (qi >= 0) {
-                root = src.substr(0, qi);
-                global.QUINK.root = root;
-                break;
+            if (src) {
+                qi = src.indexOf('quink.js');
+                if (qi >= 0) {
+                    root = src.substr(0, qi);
+                    global.QUINK.root = root;
+                    break;
+                }
             }
         }
     }
 
-    global.QUINK = {};
+    global.QUINK = global.QUINK || {};
     calcRoot();
     loadStyleSheet();
     loadScripts();
