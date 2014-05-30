@@ -586,8 +586,7 @@ define([
         this.toolbarTpl = tbTpl[0];
         this.toolbarDef = tbDef[0];
         this.insertMenuHtml = imHtml[0];
-        this.applyDefaults(this.toolbarDef.groups, this.createDefaults(this.toolbarDef), false, true);
-        this.createToolbar(this.toolbarDef, this.toolbarTpl, this.insertMenuHtml);
+        this.configureToolbar(QUINK.toolbar || {});
     };
 
     Toolbar.prototype.downloadResources = function () {
@@ -788,11 +787,12 @@ define([
     Toolbar.prototype.configureToolbar = function (def) {
         var oldToolbarDef = $.extend(true, {}, this.toolbarDef),
             workingDef = this.toolbarDef,
-            defaults = this.createDefaults(def);
+            defaults = this.createDefaults(def),
+            editGroups = def.groups || [];
         this.applyDefaults(workingDef.groups, defaults, true, true);
-        this.applyDefaults(def.groups, defaults, false, true);
-        this.mergeGroups(workingDef.groups, def.groups);
-        if (this.toolbar.length) {
+        this.applyDefaults(editGroups, defaults, false, true);
+        this.mergeGroups(workingDef.groups, editGroups);
+        if (this.toolbar && this.toolbar.length) {
             this.toolbar.remove();
             this.toolbar = null;
         }
