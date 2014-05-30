@@ -28,23 +28,6 @@ define([
         this.toolbarDef = tbDef;
     };
 
-    /**
-     * Names of the toolbar json defs that can be changed via configureToolbar.
-     */
-    ToolbarProvider.prototype.TOOLBAR_GROUP_PROPS = [
-        'active',
-        'command',
-        'commandArgs',
-        'cssClass',
-        'hidden',
-        'index',
-        'label',
-        'repeat',
-        'selectId',
-        'type',
-        'value'
-    ];
-
     ToolbarProvider.prototype.orderToolbarItems = function (toolbarDef) {
         toolbarDef.groups = _.sortBy(toolbarDef.groups, 'index');
         _.each(toolbarDef.groups, function (grp) {
@@ -108,6 +91,23 @@ define([
         }
         return item;
     };
+
+    /**
+     * Names of the toolbar json defs that can be changed via configureToolbar.
+     */
+    ToolbarProvider.prototype.TOOLBAR_GROUP_PROPS = [
+        'active',
+        'command',
+        'commandArgs',
+        'cssClass',
+        'hidden',
+        'index',
+        'label',
+        'repeat',
+        'selectId',
+        'type',
+        'value'
+    ];
 
     /**
      * Sets properties in srcObj from those in editObj. forceUpdate indicates whether editObj values
@@ -246,11 +246,6 @@ define([
         this.applyDefaults(workingDef.groups, defaults, true, true);
         this.applyDefaults(editGroups, defaults, false, true);
         this.mergeGroups(workingDef.groups, editGroups);
-        // if (this.toolbar && this.toolbar.length) {
-        //     this.toolbar.remove();
-        //     this.toolbar = null;
-        // }
-        // this.createToolbar(workingDef, this.toolbarTpl, this.insertMenuHtml);
         this.orderToolbarItems(workingDef);
         html = _.template(this.toolbarTpl, workingDef);
         this.toolbarDef = workingDef;
