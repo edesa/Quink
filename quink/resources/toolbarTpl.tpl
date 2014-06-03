@@ -12,7 +12,7 @@
             <% }); %>
         </div>
         <div class="qk_toolbar_item qk_toolbar_close">
-            <button class="qk_toolbar_tab_button" id="qk_button_close">
+            <button class="qk_toolbar_tab_button" data-cmd="hideToolbar">
                 <span><b>x</b></span>
             </button>
         </div>

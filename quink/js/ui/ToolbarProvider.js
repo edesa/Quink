@@ -235,25 +235,59 @@ define([
      * New definition will be appied on top of the current definition after the defaults have been
      * applied. Defaults overwrite properties in the current definition but not in the supplied
      * definition.
-     * The current definition as at the function invocation is returned as the result.
+     * The returned value is the html for the toolbar.
      */
     ToolbarProvider.prototype.createToolbar = function (def) {
-        var oldToolbarDef = $.extend(true, {}, this.toolbarDef),
-            workingDef = this.toolbarDef,
+        var workingDef = $.extend(true, {}, this.toolbarDef),
             defaults = this.createDefaults(def),
-            editGroups = def.groups || [],
-            html;
+            editGroups = def.groups || [];
         this.applyDefaults(workingDef.groups, defaults, true, true);
         this.applyDefaults(editGroups, defaults, false, true);
         this.mergeGroups(workingDef.groups, editGroups);
         this.orderToolbarItems(workingDef);
-        html = _.template(this.toolbarTpl, workingDef);
         this.toolbarDef = workingDef;
-        return {
-            html: html,
-            defn: workingDef,
-            lastDefn: oldToolbarDef
-        };
+        return _.template(this.toolbarTpl, workingDef);
+    };
+
+    /**
+     * Returns the name of the group that contains the most non hidden items.
+     */
+    ToolbarProvider.prototype.getWidestGroupName = function () {
+        var widestTabObj = this.toolbarDef.groups.filter(function (grp) {
+                return !grp.hidden;
+            }).map(function (grp) {
+                var length = grp.items.reduce(function (count, item) {
+                        return item.hidden ? count : count + 1;
+                    }, 0);
+                return {
+                    id: grp.id,
+                    length: length
+                };
+            }).reduce(function (prevObj, currentObj) {
+                return currentObj.length > prevObj.length ? currentObj : prevObj;
+            });
+        return widestTabObj.id;
+    };
+
+    /**
+     * Returns the name of the active group.
+     */
+    ToolbarProvider.prototype.getActiveGroupName = function () {
+        var firstVisibleGroupId,
+            activeGroup = _.find(this.toolbarDef.groups, function (grp) {
+                if (!grp.hidden) {
+                    firstVisibleGroupId = firstVisibleGroupId || grp.id;
+                }
+                return grp.active && !grp.hidden;
+            });
+        return (activeGroup && activeGroup.id) || firstVisibleGroupId;
+    };
+
+    /**
+     * Returns the most recent toolbar definition.
+     */
+    ToolbarProvider.prototype.getToolbarDefinition = function () {
+        return this.toolbarDef;
     };
 
     return ToolbarProvider;

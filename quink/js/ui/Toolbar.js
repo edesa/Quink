@@ -50,27 +50,6 @@ define([
         'statusbar': '[data-tag=toggle_status_bar]',
     };
 
-    /**
-     * Stores the name of the widest tab which will then be used to size the toolbar when
-     * it's shown on the page.
-     */
-    Toolbar.prototype.initToolbarTabs = function (toolbarDef) {
-        var widestTabObj = toolbarDef.groups.filter(function (grp) {
-                return !grp.hidden;
-            }).map(function (grp) {
-                var length = grp.items.reduce(function (count, item) {
-                        return item.hidden ? count : count + 1;
-                    }, 0);
-                return {
-                    id: grp.id,
-                    length: length
-                };
-            }).reduce(function (prevObj, currentObj) {
-                return currentObj.length > prevObj.length ? currentObj : prevObj;
-            });
-        this.widestTabName = widestTabObj.id;
-    };
-
     Toolbar.prototype.hideCurrentDialog = function () {
         var dialog;
         if (this.activeDialogEl) {
@@ -377,10 +356,8 @@ define([
         this.showTabPanel(tabName);
     };
 
-    Toolbar.prototype.addToolbarTabListeners = function (document) {
-        var closeTab = document.querySelector('#qk_button_close'),
-            toolbar = this;
-        FastTap.fastTap(closeTab, this.hideToolbar, this);
+    Toolbar.prototype.addToolbarTabListeners = function () {
+        var toolbar = this;
         $('.qk_toolbar_tab_button').each(function () {
             FastTap.fastTapNoFocus(this, toolbar.cmdHandler.bind(toolbar));
         });
@@ -390,7 +367,7 @@ define([
         var hit, handled;
         if (event.hitType === 'double') {
             hit = Event.isTouch ? event.event.originalEvent.changedTouches[0] : event.event;
-            this.showToolbarAt(hit.pageX, hit.pageY, this.toolbarDef);
+            this.showToolbarAt(hit.pageX, hit.pageY);
             this.vpToolbar.adjust();
             handled = true;
         }
@@ -471,34 +448,19 @@ define([
         func.call(submitBtn, 'qk_hidden');
     };
 
-    /**
-     * Show the tab that's marked as active or the first tab if there isn't a visible one that's
-     * marked as active.
-     */
-    Toolbar.prototype.showActivePanel = function (toolbarDef) {
-        var firstVisibleGroupId,
-            activeGroup = _.find(toolbarDef.groups, function (grp) {
-                if (!grp.hidden) {
-                    firstVisibleGroupId = firstVisibleGroupId || grp.id;
-                }
-                return grp.active && !grp.hidden;
-            });
-        this.showTabPanel((activeGroup && activeGroup.id) || firstVisibleGroupId);
-    };
-
-    Toolbar.prototype.showToolbarAt = function (x, y, toolbarDef) {
+    Toolbar.prototype.showToolbarAt = function (x, y) {
         if (!this.vpToolbar) {
             this.vpToolbar = ViewportRelative.create(this.toolbar, {
                 top: y
             });
         }
         this.toolbar.removeClass('qk_hidden');
-        if (this.widestTabName) {
+        if (this.willInitToolbar) {
             // Ensures that the toolbar is sized to the tab with the most buttons. Hacky +5 needed on FF.
-            this.showTabPanel(this.widestTabName);
+            this.showTabPanel(this.toolbarProvider.getWidestGroupName());
             this.toolbar.width(this.toolbar.width() + 5);
-            this.widestTabName = null;
-            this.showActivePanel(toolbarDef);
+            this.showTabPanel(this.toolbarProvider.getActiveGroupName());
+            this.willInitToolbar = false;
         }
         this.toolbar.css({
             'left': x,
@@ -507,12 +469,12 @@ define([
         this.isVisible = true;
     };
 
-    Toolbar.prototype.showToolbar = function (toolbarDef) {
+    Toolbar.prototype.showToolbar = function () {
         var y = $(window).innerHeight() / 5,
             x;
         this.toolbar.removeClass('qk_hidden');
         x = Math.floor(($(document).innerWidth() - this.toolbar.width()) / 2);
-        this.showToolbarAt(x, y, toolbarDef);
+        this.showToolbarAt(x, y, true);
     };
 
     Toolbar.prototype.initSubscriptions = function () {
@@ -521,16 +483,15 @@ define([
         }
     };
 
-    Toolbar.prototype.afterToolbarCreated = function (toolbarDef) {
-        this.initToolbarTabs(toolbarDef);
-        this.addToolbarTabListeners(document);
+    Toolbar.prototype.afterToolbarCreated = function () {
+        this.addToolbarTabListeners();
         this.addToolbarButtonListeners();
         this.checkShowSubmit();
         this.initSubscriptions();
         Draggable.create('.qk_toolbar_container');
         PubSub.publish('ui.toolbar.created');
         if ((this.isVisible === undefined && Env.getParam('toolbar', 'off') === 'on') || this.isVisible) {
-            this.showToolbar(toolbarDef);
+            this.showToolbar();
         }
     };
 
@@ -541,9 +502,9 @@ define([
         }
     };
 
-    Toolbar.prototype.processToolbar = function (html, def, insertMenuHtml) {
+    Toolbar.prototype.processToolbar = function (html, insertMenuHtml) {
         this.toolbar = $(html).appendTo('body');
-        this.afterToolbarCreated(def);
+        this.afterToolbarCreated();
         this.onDownloadInsertMenu(insertMenuHtml);
         this.onCommandState(this.lastCommandState);
     };
@@ -552,11 +513,12 @@ define([
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
     Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml) {
-        var tb;
+        var html;
         this.insertMenuHtml = imHtml[0];
         this.toolbarProvider = new ToolbarProvider(tbTpl[0], tbDef[0]);
-        tb = this.toolbarProvider.createToolbar(QUINK.toolbar || {});
-        this.processToolbar(tb.html, tb.defn, this.insertMenuHtml);
+        html = this.toolbarProvider.createToolbar(QUINK.toolbar || {});
+        this.willInitToolbar = true;
+        this.processToolbar(html, this.insertMenuHtml);
     };
 
     Toolbar.prototype.downloadResources = function () {
@@ -571,14 +533,17 @@ define([
     };
 
     Toolbar.prototype.configureToolbar = function (def) {
-        var tb;
+        var provider = this.toolbarProvider,
+            lastDef = provider.getToolbarDefinition(),
+            html;
         if (this.toolbar && this.toolbar.length) {
             this.toolbar.remove();
             this.toolbar = null;
         }
-        tb = this.toolbarProvider.createToolbar(def);
-        this.processToolbar(tb.html, tb.defn, this.insertMenuHtml);
-        return tb.lastDefn;
+        this.willInitToolbar = true;
+        html = provider.createToolbar(def);
+        this.processToolbar(html, this.insertMenuHtml);
+        return lastDef;
     };
 
     var toolbar;
