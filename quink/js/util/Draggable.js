@@ -21,12 +21,10 @@
  * Makes an element draggable.
  */
 define([
-    'Underscore',
     'jquery',
     'util/Event',
-    'util/FocusTracker',
     'util/PubSub'
-], function (_, $, Event, FocusTracker, PubSub) {
+], function ($, Event, PubSub) {
     'use strict';
 
     var Draggable = function (selector) {
