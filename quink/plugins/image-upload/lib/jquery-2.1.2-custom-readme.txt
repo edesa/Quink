@@ -1,0 +1,21 @@
+This version of jquery was produced using a Grunt custom build on the jQuery repository, as described in https://github.com/jquery/jquery
+
+The Grunt command used was
+
+grunt custom:-ajax,-deprecated,-effects,-wrap
+
+(tried adding deferred to this list, but it was used by Bootstrap)
+
+The full list of modules from the "examples" section of the jQuery webpage is
+ajax: don't think any Ajax calls are made, so exclude
+css: CSS methods are used
+deprecated: don't think any deprecated methods are used , so exclude
+dimensions: width and height methods are used
+effects: Don't think any animate effects are used, so exclude
+event: presume events are used, although haven't checked closely
+offset: think offset might be used, although haven't checked
+wrap: wrap methods aren't used, so exclude
+core/ready: ready is used
+deferred: deferred is used by Bootstrap
+exports/global: the global jQuery variable is used
+exports/amd: think this is may be used
