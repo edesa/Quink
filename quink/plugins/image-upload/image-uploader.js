@@ -113,7 +113,7 @@
                             $heightUnitSelect.val(extractTrailingText($heightInput));
                             $heightInput.val(extractNumericText($heightInput));
                         }
-                        $imageElement.find("img").css('height', function () {
+                        $imageElement.css('height', function () {
                             return $heightInput.val() + $heightUnitSelect.val();
                         });
                     }
@@ -122,7 +122,7 @@
                             $widthUnitSelect.val(extractTrailingText($widthInput));
                             $widthInput.val(extractNumericText($widthInput));
                         }
-                        $imageElement.find("img").css('width', function () {
+                        $imageElement.css('width', function () {
                             return $widthInput.val() + $widthUnitSelect.val();
                         });
                     }
