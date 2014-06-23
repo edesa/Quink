@@ -8,7 +8,9 @@
     padding: 2px;
     z-index: 250;
     width: 90%;
+    max-width: 600px;
     height: 90%;
+    max-height: 430px;
     -webkit-box-shadow: 3px 3px 4px #555;
     box-shadow: 3px 3px 4px #555;
     -webkit-touch-callout: none;

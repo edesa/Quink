@@ -14,34 +14,30 @@
 </head>
 <body>
 <div class="image-dialog-contents">
-    <div class="col-xs-6 col-sm-4 col-md-3">
-        <div id="image-uploader">
-            <div class="fileinput fileinput-new" data-provides="fileinput">
-                <!-- xs-12 to stop button going up RHS -->
-                <div class="fileinput-new thumbnail  col-xs-12" data-trigger="fileinput">
-                    <img data-src="holder.js/200x200/gray/text:(no image)" alt="(no image)">
+    <form id="alt-text-form">
+        <div id="alt-text-inputs" class="col-xs-11">
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <label for="alt-text-input">Image description (alt text)</label>
                 </div>
-                <div class="fileinput-preview fileinput-exists thumbnail" id="image-preview"></div>
-                <!-- HTML5 media capture specification ensures that the "file"-type input will cause photo or video capture to be offered on iOS 6.0+ and Android OS 3.0+ devices -->
-                <span class="btn btn-default btn-file">
-                    <span class="fileinput-new">Select image</span>
-                    <span class="fileinput-exists">Select image</span><input type="file" name="...">
-                </span>
-                <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Delete</a>
+                <div class="col-xs-12">
+                    <input type="text" id="alt-text-input" class="form-control quink-reduced-padding" value="">
+                </div>
             </div>
         </div>
-    </div>
+    </form>
     <form id="size-inputs-form">
-        <div id="size-inputs" class="col-xs-12 col-md-9">
+        <div id="size-inputs" class="col-xs-4">
             <div class="form-group">
                 <div class="col-xs-12">
                     <label for="height-input-group">Height</label>
                 </div>
                 <div id="height-input-group">
-                    <div class="col-xs-2">
-                        <input type="text" id="height-input" class="form-control quink-reduced-padding" value="30">
+                    <div class="col-xs-7">
+                        <input type="text" id="height-input" class="form-control quink-reduced-padding numeric"
+                               value="30">
                     </div>
-                    <div class="col-xs-2">
+                    <div class="col-xs-5">
                         <!-- options from w3c http://www.w3.org/Style/Examples/007/units.en.html-->
                         <select id="height-unit-select" class="form-control" value="%">
                             <option>%</option>
@@ -62,11 +58,11 @@
                     <label for="width-input-group">Width</label>
                 </div>
                 <div id="width-input-group">
-
-                    <div class="col-xs-2">
-                        <input type="text" class="form-control quink-reduced-padding" id="width-input" value="30">
+                    <div class="col-xs-7">
+                        <input type="text" class="form-control quink-reduced-padding numeric" id="width-input"
+                               value="30">
                     </div>
-                    <div class="col-xs-2">
+                    <div class="col-xs-5">
                         <select id="width-unit-select" class="form-control">
                             <option>%</option>
                             <option>mm</option>
@@ -81,8 +77,49 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <label for="border-input-group">Border</label>
+                </div>
+                <div id="border-input-group">
+                    <div class="col-xs-7">
+                        <input type="text" class="form-control quink-reduced-padding numeric" id="border-input"
+                               value="">
+                    </div>
+                    <div class="col-xs-5">
+                        <select id="border-unit-select" class="form-control">
+                            <option>%</option>
+                            <option>mm</option>
+                            <option>cm</option>
+                            <option>in</option>
+                            <option>pt</option>
+                            <option>pc</option>
+                            <option selected>px</option>
+                            <option>em</option>
+                            <option>ex</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
+    <div class="col-xs-8 col-sm-4 col-md-3">
+        <div id="image-uploader" class="image-uploader">
+            <div class="fileinput fileinput-new" data-provides="fileinput">
+                <!-- xs-12 to stop button going up RHS -->
+                <div class="fileinput-new thumbnail col-xs-12" data-trigger="fileinput">
+                    <img data-src="holder.js/250x250/gray/text:(no image)" alt="(no image)">
+                </div>
+                <div class="fileinput-preview fileinput-exists thumbnail" id="image-preview"></div>
+                <!-- HTML5 media capture specification ensures that the "file"-type input will cause photo or video capture to be offered on iOS 6.0+ and Android OS 3.0+ devices -->
+                <span class="btn btn-default btn-file">
+                    <span class="fileinput-new">Select image</span>
+                    <span class="fileinput-exists">Select image</span><input type="file" name="...">
+                </span>
+                <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Delete</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Placed at the end of the document so the pages load faster -->
@@ -95,10 +132,10 @@
 <script type="text/javascript" src="lib/exif.js"></script>
 <script type="text/javascript" src="image-uploader.js"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         console.log('[' + new Date().toISOString() + ']' + 'imageUpload iframe posting ready');
         window.postMessage("imageUploadReady", "*");
-    } );
+    });
 </script>
 </body>
 </html>

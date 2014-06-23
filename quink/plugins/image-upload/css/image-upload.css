@@ -13,11 +13,15 @@ input.quink-reduced-padding {
     min-height: 200px;
 
 }
-input, select {
+input.numeric, select {
     min-width: 60px;
     max-width: 70px;
 }
 .image-dialog-contents {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+.image-uploader {
     padding-top: 15px;
     padding-bottom: 15px;
 }

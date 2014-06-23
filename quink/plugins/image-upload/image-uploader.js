@@ -106,26 +106,29 @@
                     }
                 }
 
-                function handleKeyedInputs($imageElement, $heightInput, $heightUnitSelect, $widthInput, $widthUnitSelect) {
-                    if (isValueKeyed($heightInput)) {
-
-                        if (hasTrailingText($heightInput)) {
-                            $heightUnitSelect.val(extractTrailingText($heightInput));
-                            $heightInput.val(extractNumericText($heightInput));
+                function handleKeyedCSSInputs($imageElement, inputsArray) {
+                    var suffix;
+                    $.each(inputsArray, function (index, nextItem) {
+                        if (isValueKeyed(nextItem.inputElement)) {
+                            if (hasTrailingText(nextItem.inputElement)) {
+                                nextItem.unitElement.val(extractTrailingText(nextItem.inputElement));
+                                nextItem.inputElement.val(extractNumericText(nextItem.inputElement));
+                            }
+                            $imageElement.css(nextItem.attribute, function () {
+                                suffix = nextItem.suffix ? " " + nextItem.suffix : "";
+                                return nextItem.inputElement.val() + nextItem.unitElement.val() + suffix;
+                            });
                         }
-                        $imageElement.css('height', function () {
-                            return $heightInput.val() + $heightUnitSelect.val();
-                        });
-                    }
-                    if (isValueKeyed($widthInput)) {
-                        if (hasTrailingText($widthInput)) {
-                            $widthUnitSelect.val(extractTrailingText($widthInput));
-                            $widthInput.val(extractNumericText($widthInput));
+                    });
+                }
+                function handleKeyedAttrInputs($imageElement, inputsArray) {
+                    $.each(inputsArray, function (index, nextItem) {
+                        if (isValueKeyed(nextItem.inputElement)) {
+                            $imageElement.attr(nextItem.attribute, function () {
+                                return nextItem.inputElement.val().trim();
+                            });
                         }
-                        $imageElement.css('width', function () {
-                            return $widthInput.val() + $widthUnitSelect.val();
-                        });
-                    }
+                    });
                 }
 
                 self.setImage = function (newImageHTML) {
@@ -234,7 +237,17 @@
                 }
 
                 self.getImageElementAsString = function () {
-                    var $imageElement, $widthInput, $widthUnitSelect, $heightInput, $heightUnitSelect, returnValue, exifOrientation, requiredRotationRadians;
+                    var $imageElement,
+                        $widthInput,
+                        $widthUnitSelect,
+                        $heightInput,
+                        $heightUnitSelect,
+                        $borderInput,
+                        $borderUnitSelect,
+                        $altTextInput,
+                        returnValue,
+                        exifOrientation,
+                        requiredRotationRadians;
 
                     isScreenValid = true;
 
@@ -251,14 +264,25 @@
                     $heightUnitSelect = $('#height-unit-select');
                     $widthInput = $('#width-input');
                     $widthUnitSelect = $('#width-unit-select');
+                    $borderInput = $('#border-input');
+                    $borderUnitSelect = $('#border-unit-select');
+                    $altTextInput = $('#alt-text-input');
 
                     if (isImageSelected($imageElement)) {
-                        validateSizeInputs([$widthInput, $heightInput]);
+                        validateSizeInputs([$widthInput, $heightInput, $borderInput]);
 
                         if (!isScreenValid) {
                             return "error:inputs failed validation";
                         }
-                        handleKeyedInputs($imageElement, $heightInput, $heightUnitSelect, $widthInput, $widthUnitSelect);
+
+                        handleKeyedCSSInputs($imageElement, [
+                            {inputElement: $heightInput, unitElement: $heightUnitSelect, attribute: 'height'},
+                            {inputElement: $widthInput, unitElement: $widthUnitSelect, attribute: 'width'},
+                            {inputElement: $borderInput, unitElement: $borderUnitSelect, suffix: 'solid', attribute: 'border'}
+                        ]);
+                        handleKeyedAttrInputs($imageElement, [
+                            {inputElement: $altTextInput, attribute: 'alt'}
+                        ]);
                     }
                     returnValue = $imageElement[0].outerHTML;
                     return returnValue;
