@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="images/logo.png"/>
     <link rel="stylesheet" href="css/bootstrap.custom.min.css" type="text/css"/>
     <link rel="stylesheet" href="css/jasny-bootstrap-fileinput.min.css" type="text/css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
     <link rel="stylesheet" href="css/image-upload.css" type="text/css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -27,17 +28,17 @@
         </div>
     </form>
     <form id="size-inputs-form">
-        <div id="size-inputs" class="col-xs-4">
+        <div id="size-inputs" class="col-xs-5">
             <div class="form-group">
                 <div class="col-xs-12">
                     <label for="height-input-group">Height</label>
                 </div>
                 <div id="height-input-group">
-                    <div class="col-xs-7">
+                    <div class="col-xs-5">
                         <input type="text" id="height-input" class="form-control quink-reduced-padding numeric"
                                value="30">
                     </div>
-                    <div class="col-xs-5">
+                    <div class="col-xs-4">
                         <!-- options from w3c http://www.w3.org/Style/Examples/007/units.en.html-->
                         <select id="height-unit-select" class="form-control" value="%">
                             <option>%</option>
@@ -51,6 +52,11 @@
                             <option>ex</option>
                         </select>
                     </div>
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-default">
+                            <span class="fa fa-lock"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -58,11 +64,11 @@
                     <label for="width-input-group">Width</label>
                 </div>
                 <div id="width-input-group">
-                    <div class="col-xs-7">
+                    <div class="col-xs-5">
                         <input type="text" class="form-control quink-reduced-padding numeric" id="width-input"
                                value="30">
                     </div>
-                    <div class="col-xs-5">
+                    <div class="col-xs-4">
                         <select id="width-unit-select" class="form-control">
                             <option>%</option>
                             <option>mm</option>
@@ -82,11 +88,11 @@
                     <label for="border-input-group">Border</label>
                 </div>
                 <div id="border-input-group">
-                    <div class="col-xs-7">
+                    <div class="col-xs-5">
                         <input type="text" class="form-control quink-reduced-padding numeric" id="border-input"
                                value="">
                     </div>
-                    <div class="col-xs-5">
+                    <div class="col-xs-4">
                         <select id="border-unit-select" class="form-control">
                             <option>%</option>
                             <option>mm</option>
@@ -103,7 +109,7 @@
             </div>
         </div>
     </form>
-    <div class="col-xs-8 col-sm-4 col-md-3">
+    <div class="col-xs-7">
         <div id="image-uploader" class="image-uploader">
             <div class="fileinput fileinput-new" data-provides="fileinput">
                 <!-- xs-12 to stop button going up RHS -->
