@@ -287,19 +287,60 @@
                     returnValue = $imageElement[0].outerHTML;
                     return returnValue;
                 };
-                self.onAspectRatioLockButtonClick = function(eventData) {
+                self.onAspectRatioLockButtonClick = function() {
                     //switch the image
                     if ($(this).hasClass("fa-lock")) {
                         $(this).removeClass("fa-lock");
                         $(this).addClass("fa-unlock");
+                        $.data($(this), "isLocked", false);
                     } else {
                         $(this).removeClass("fa-unlock");
                         $(this).addClass("fa-lock");
+                        $.data($(this), "isLocked", true);
                     }
 
-                }
+                };
+                self.onHeightInputKeyup = function() {
+                    var $imageElement, $widthInput, aspectRatio, newWidth;
+                    $imageElement = $('#image-uploader .fileinput .fileinput-preview img');
+                    $widthInput = $("#width-input");
+                    aspectRatio = $imageElement.height()/$imageElement.width();
+                    if (isNumber($(this).val()) && isNumber($widthInput.val())) {
+                        newWidth = $(this).val()/aspectRatio;
+                        if (Number(Math.round(newWidth)) !== Number(newWidth.toFixed(1))) {
+                            newWidth = newWidth.toFixed(1);
+                        } else {
+                            newWidth = Math.round(newWidth);
+                        }
+
+                        $widthInput.val(newWidth);
+                    }
+                };
+                self.onWidthInputKeyup = function() {
+                    var $imageElement, $heightInput, aspectRatio, newHeight;
+                    $imageElement = $('#image-uploader .fileinput .fileinput-preview img');
+                    $heightInput = $("#height-input");
+                    aspectRatio = $imageElement.height()*$imageElement.width();
+                    if (isNumber($(this).val()) && isNumber($heightInput.val())) {
+                        newHeight = $(this).val()/aspectRatio;
+                        if (Number(Math.round(newHeight)) !== Number(newHeight.toFixed(1))) {
+                            newHeight = newHeight.toFixed(1);
+                        } else {
+                            newHeight = Math.round(newHeight);
+                        }
+
+                        $heightInput.val(newHeight);
+                    }
+                };
                 self.init = function () {
-                    $("#aspect-ratio-lock-button").click(self.onAspectRatioLockButtonClick);
+                    var $aspectRatioButton, $heightInput, $widthInput;
+                    $aspectRatioButton = $("#aspect-ratio-lock-button");
+                    $heightInput = $("#height-input");
+                    $widthInput = $("#width-input");
+                    $aspectRatioButton.click(self.onAspectRatioLockButtonClick);
+                    $heightInput.keyup(self.onHeightInputKeyup);
+                    $widthInput.keyup(self.onWidthInputKeyup);
+                    $.data($aspectRatioButton, "isLocked", true);
                 };
                 return self;
             }());
