@@ -287,8 +287,19 @@
                     returnValue = $imageElement[0].outerHTML;
                     return returnValue;
                 };
+                self.onAspectRatioLockButtonClick = function(eventData) {
+                    //switch the image
+                    if ($(this).hasClass("fa-lock")) {
+                        $(this).removeClass("fa-lock");
+                        $(this).addClass("fa-unlock");
+                    } else {
+                        $(this).removeClass("fa-unlock");
+                        $(this).addClass("fa-lock");
+                    }
+
+                }
                 self.init = function () {
-                    //removed event listener setup. add init functionality here if required later
+                    $("#aspect-ratio-lock-button").click(self.onAspectRatioLockButtonClick);
                 };
                 return self;
             }());
