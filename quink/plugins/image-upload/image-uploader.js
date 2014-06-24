@@ -121,6 +121,7 @@
                         }
                     });
                 }
+
                 function handleKeyedAttrInputs($imageElement, inputsArray) {
                     $.each(inputsArray, function (index, nextItem) {
                         if (isValueKeyed(nextItem.inputElement)) {
@@ -287,60 +288,66 @@
                     returnValue = $imageElement[0].outerHTML;
                     return returnValue;
                 };
-                self.onAspectRatioLockButtonClick = function() {
+                self.onAspectRatioLockButtonClick = function () {
                     //switch the image
                     if ($(this).hasClass("fa-lock")) {
                         $(this).removeClass("fa-lock");
                         $(this).addClass("fa-unlock");
-                        $.data($(this), "isLocked", false);
+                        $(this).data("isLocked", false);
                     } else {
                         $(this).removeClass("fa-unlock");
                         $(this).addClass("fa-lock");
-                        $.data($(this), "isLocked", true);
+                        $(this).data("isLocked", true);
                     }
 
                 };
-                self.onHeightInputKeyup = function() {
+                self.onHeightInputKeyup = function () {
                     var $imageElement, $widthInput, aspectRatio, newWidth;
-                    $imageElement = $('#image-uploader .fileinput .fileinput-preview img');
-                    $widthInput = $("#width-input");
-                    aspectRatio = $imageElement.height()/$imageElement.width();
-                    if (isNumber($(this).val()) && isNumber($widthInput.val())) {
-                        newWidth = $(this).val()/aspectRatio;
-                        if (Number(Math.round(newWidth)) !== Number(newWidth.toFixed(1))) {
-                            newWidth = newWidth.toFixed(1);
-                        } else {
-                            newWidth = Math.round(newWidth);
+                    if ($("#aspect-ratio-lock-button").data("isLocked")) {
+                        $imageElement = $('#image-uploader .fileinput .fileinput-preview img');
+                        if ($imageElement && $imageElement.width()) {
+                            $widthInput = $("#width-input");
+                            aspectRatio = $imageElement.height() / $imageElement.width();
+                            if (isNumber($(this).val()) && isNumber($widthInput.val())) {
+                                newWidth = $(this).val() / aspectRatio;
+                                if (Number(Math.round(newWidth)) !== Number(newWidth.toFixed(1))) {
+                                    newWidth = newWidth.toFixed(1);
+                                } else {
+                                    newWidth = Math.round(newWidth);
+                                }
+                                $widthInput.val(newWidth);
+                            }
                         }
-
-                        $widthInput.val(newWidth);
                     }
                 };
-                self.onWidthInputKeyup = function() {
+                self.onWidthInputKeyup = function () {
                     var $imageElement, $heightInput, aspectRatio, newHeight;
-                    $imageElement = $('#image-uploader .fileinput .fileinput-preview img');
-                    $heightInput = $("#height-input");
-                    aspectRatio = $imageElement.height()*$imageElement.width();
-                    if (isNumber($(this).val()) && isNumber($heightInput.val())) {
-                        newHeight = $(this).val()/aspectRatio;
-                        if (Number(Math.round(newHeight)) !== Number(newHeight.toFixed(1))) {
-                            newHeight = newHeight.toFixed(1);
-                        } else {
-                            newHeight = Math.round(newHeight);
+                    if ($("#aspect-ratio-lock-button").data("isLocked")) {
+                        $imageElement = $('#image-uploader .fileinput .fileinput-preview img');
+                        if ($imageElement && $imageElement.width()) {
+                            $heightInput = $("#height-input");
+                            aspectRatio = $imageElement.height() / $imageElement.width();
+                            if (isNumber($(this).val()) && isNumber($heightInput.val())) {
+                                newHeight = $(this).val() * aspectRatio;
+                                if (Number(Math.round(newHeight)) !== Number(newHeight.toFixed(1))) {
+                                    newHeight = newHeight.toFixed(1);
+                                } else {
+                                    newHeight = Math.round(newHeight);
+                                }
+                                $heightInput.val(newHeight);
+                            }
                         }
-
-                        $heightInput.val(newHeight);
                     }
                 };
                 self.init = function () {
-                    var $aspectRatioButton, $heightInput, $widthInput;
-                    $aspectRatioButton = $("#aspect-ratio-lock-button");
+                    var $aspectRatioLockButton, $heightInput, $widthInput;
+                    $aspectRatioLockButton = $("#aspect-ratio-lock-button");
                     $heightInput = $("#height-input");
                     $widthInput = $("#width-input");
-                    $aspectRatioButton.click(self.onAspectRatioLockButtonClick);
+                    $aspectRatioLockButton.click(self.onAspectRatioLockButtonClick);
                     $heightInput.keyup(self.onHeightInputKeyup);
                     $widthInput.keyup(self.onWidthInputKeyup);
-                    $.data($aspectRatioButton, "isLocked", true);
+                    $aspectRatioLockButton.data("isLocked", true);
                 };
                 return self;
             }());
