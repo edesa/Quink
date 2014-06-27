@@ -223,14 +223,19 @@
                  */
 
 
-                function orientImageCorrectlyAndRemoveExifData($imageElement, exifOrientation, requiredRotationRadians) {
-                    var $canvas = $('<canvas></canvas>');
+                self.orientImageCorrectlyAndRemoveExifData = function($imageElement) {
+                    var $canvas, requiredRotationRadians, exifOrientation;
+                    EXIF.getData($imageElement[0], function () {
+                        console.log('[' + new Date().toISOString() + ']' + 'ImageUploader.getImageElementAsString() exifdata=' + JSON.stringify(this.exifdata));
+                        exifOrientation = this.exifdata.Orientation;
+                    });
+                    $canvas = $('<canvas></canvas>');
                     $canvas[0].height = $imageElement[0].naturalHeight;
                     $canvas[0].width = $imageElement[0].naturalWidth;
                     var ctx = $canvas[0].getContext("2d");
                     //check for the three orientation values that indicate camera not upright (we're ignoring the "flip" orientation values as these can't happen with the camera)
                     if (isRotatedByQuarterHalfOrThreeQuarterTurn(exifOrientation)) {
-                        requiredRotationRadians = selectRequiredRotationAngle(exifOrientation, requiredRotationRadians);
+                        requiredRotationRadians = selectRequiredRotationAngle(exifOrientation);
                         rotateImage(ctx, $imageElement, requiredRotationRadians);
                     }
                     ctx.drawImage($imageElement[0], 0, 0);
@@ -246,20 +251,13 @@
                         $borderInput,
                         $borderUnitSelect,
                         $altTextInput,
-                        returnValue,
-                        exifOrientation,
-                        requiredRotationRadians;
+                        returnValue;
 
                     isScreenValid = true;
 
                     $imageElement = $('#image-uploader .fileinput .fileinput-preview img');
 
-                    EXIF.getData($imageElement[0], function () {
-                        console.log('[' + new Date().toISOString() + ']' + 'ImageUploader.getImageElementAsString() exifdata=' + JSON.stringify(this.exifdata));
-                        exifOrientation = this.exifdata.Orientation;
-                    });
-
-                    orientImageCorrectlyAndRemoveExifData($imageElement, exifOrientation, requiredRotationRadians);
+                    self.orientImageCorrectlyAndRemoveExifData($imageElement);
 
                     $heightInput = $('#height-input');
                     $heightUnitSelect = $('#height-unit-select');
@@ -301,6 +299,21 @@
                     }
 
                 };
+                self.onDownloadButtonClick = function () {
+                    //switch the image
+                    var img, $loadedImage;
+                    img = new Image();
+                    $(img).load(function () {
+                        console.log("Image loaded");
+                        $loadedImage = $(this);
+                        self.orientImageCorrectlyAndRemoveExifData($loadedImage);
+                        console.log("$loadedImage.outerHTML:" + $loadedImage[0].outerHTML);
+                    }).attr({
+                        src: $("#download-url-input").val().trim()
+                    }).error(function () {
+                        console.log("image didnt load");
+                    });
+                };
                 self.onHeightInputKeyup = function () {
                     var $imageElement, $widthInput, aspectRatio, newWidth;
                     if ($("#aspect-ratio-lock-button").data("isLocked")) {
@@ -340,14 +353,16 @@
                     }
                 };
                 self.init = function () {
-                    var $aspectRatioLockButton, $heightInput, $widthInput;
+                    var $aspectRatioLockButton, $heightInput, $widthInput, $downloadButton;
                     $aspectRatioLockButton = $("#aspect-ratio-lock-button");
                     $heightInput = $("#height-input");
                     $widthInput = $("#width-input");
+                    $downloadButton = $("#download-button");
                     $aspectRatioLockButton.click(self.onAspectRatioLockButtonClick);
                     $heightInput.keyup(self.onHeightInputKeyup);
                     $widthInput.keyup(self.onWidthInputKeyup);
                     $aspectRatioLockButton.data("isLocked", true);
+                    $downloadButton.click(self.onDownloadButtonClick);
                 };
                 return self;
             }());

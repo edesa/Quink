@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
     <link rel="icon" type="image/png" href="images/logo.png"/>
     <link rel="stylesheet" href="css/bootstrap.custom.min.css" type="text/css"/>
-    <link rel="stylesheet" href="css/jasny-bootstrap-fileinput.min.css" type="text/css"/>
+    <link rel="stylesheet" href="css/jasny-bootstrap.css" type="text/css"/>
     <link rel="stylesheet" href="css/font-awesome.min.css"/>
     <link rel="stylesheet" href="css/image-upload.css" type="text/css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
@@ -53,7 +53,7 @@
                         </select>
                     </div>
                     <div class="col-xs-2">
-                        <button id="aspect-ratio-lock-button" type="button" class="btn btn-default fa fa-lock" />
+                        <button id="aspect-ratio-lock-button" type="button" class="btn btn-default fa fa-lock"/>
                     </div>
                 </div>
             </div>
@@ -117,10 +117,16 @@
                 <div class="fileinput-preview fileinput-exists thumbnail" id="image-preview"></div>
                 <!-- HTML5 media capture specification ensures that the "file"-type input will cause photo or video capture to be offered on iOS 6.0+ and Android OS 3.0+ devices -->
                 <span class="btn btn-default btn-file">
-                    <span class="fileinput-new">Select image</span>
-                    <span class="fileinput-exists">Select image</span><input type="file" name="...">
+                    <span class="fileinput-new">Upload...</span>
+                    <span class="fileinput-exists">Upload...</span><input type="file" name="...">
                 </span>
                 <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Delete</a>
+            </div>
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <button id="download-button" type="button" class="btn btn-default" tabindex="-1">Download</button>
+                </div>
+                <input id="download-url-input" type="text" class="form-control" placeholder="URL">
             </div>
         </div>
     </div>
@@ -129,7 +135,7 @@
 <!-- Placed at the end of the document so the pages load faster -->
 <script type="text/javascript" src="lib/jquery-2.1.2-custom.min.js"></script>
 <!-- Image/File upload plugin -->
-<script type="text/javascript" src="lib/jasny-bootstrap-fileinput.min.js"></script>
+<script type="text/javascript" src="lib/jasny-bootstrap.js"></script>
 <script type="text/javascript" src="lib/holder.js"></script>
 <!-- exif library to detect image orientation from camera -->
 <script type="text/javascript" src="lib/binaryajax.js"></script>
