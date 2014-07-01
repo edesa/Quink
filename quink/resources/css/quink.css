@@ -502,3 +502,27 @@ button {
     -webkit-user-select: none;
     -moz-user-select: none;
 }
+.qk_h1 {
+    font-weight: bold;
+    font-size: 2em;
+}
+.qk_h2 {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+.qk_h3 {
+    font-weight: bold;
+    font-size: 1.17em;
+}
+.qk_h4 {
+    font-weight: bold;
+    font-size: 1em;
+}
+.qk_h5 {
+    font-weight: bold;
+    font-size: 0.83em;
+}
+.qk_h6 {
+    font-weight: bold;
+    font-size: 0.67em;
+}
