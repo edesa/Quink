@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Quink Example - markup to play with the new formatblock</title>
+        <script type="text/javascript" src="../../quink.js"></script>
+        <style>
+            .inline {
+                display: inline;
+            }
+        </style>
+    </head>
+    <body>
+        <div>Use the markup below to try out the changed formatblock functionality. The Hn commands are all changed. Note that the status bar no longer shows Hn status and they don't work for undo/redo either.</div>
+        <div contenteditable="true">
+            <div class="inline">Start with an inline div <div class="inline">(and here is a contained div) </div>then follow with a </div>text node followed by a <span>span that contains some text</span> then another text node <div class="inline">and finally an inline div that contains another <div class="inline">inline div right here</div>.</div>
+        </div>
+    </body>
+</html>
