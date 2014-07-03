@@ -141,80 +141,12 @@ define([
         this.activeDialogEl = dialog;
     };
 
-    Toolbar.prototype.navLineStart = function () {
-        PubSub.publish('command.exec', 'nav.line.start');
-    };
-
-    Toolbar.prototype.navLineEnd = function () {
-        PubSub.publish('command.exec', 'nav.line.end');
-    };
-
-    Toolbar.prototype.navLineUp = function () {
-        PubSub.publish('command.exec', 'nav.line.up');
-    };
-
-    Toolbar.prototype.navLineDown = function () {
-        PubSub.publish('command.exec', 'nav.line.down');
-    };
-
-    Toolbar.prototype.navCharLeft = function () {
-        PubSub.publish('command.exec', 'nav.char.prev');
-    };
-
-    Toolbar.prototype.navWordLeft = function () {
-        PubSub.publish('command.exec', 'nav.word.prev');
-    };
-
-    Toolbar.prototype.navCharRight = function () {
-        PubSub.publish('command.exec', 'nav.char.next');
-    };
-
-    Toolbar.prototype.navWordRight = function () {
-        PubSub.publish('command.exec', 'nav.word.next');
-    };
-
-    Toolbar.prototype.navAndSelect = function () {
-        PubSub.publish('command.exec', 'nav.select.toggle');
-    };
-
-    Toolbar.prototype.infoHelp = function () {
-        PubSub.publish('command.exec', 'info.help');
-    };
-
-    Toolbar.prototype.infoKeybindings = function () {
-        PubSub.publish('command.exec', 'info.keybindings');
-    };
-
-    Toolbar.prototype.infoLicense = function () {
-        PubSub.publish('command.exec', 'info.license');
-    };
-
-    Toolbar.prototype.infoReleaseNotes = function () {
-        PubSub.publish('command.exec', 'info.releasenotes');
-    };
-
-    Toolbar.prototype.infoAbout = function () {
-        PubSub.publish('command.exec', 'info.about');
-    };
-
     Toolbar.prototype.showInsertMenu = function (event) {
         var hit = Event.isTouch ? event.changedTouches[0] : event;
         this.insertMenu.css({
             'top': hit.pageY,
             'left': hit.pageX
         }).appendTo('body').removeClass('qk_hidden');
-    };
-
-    Toolbar.prototype.toggleStatusBar = function () {
-        PubSub.publish('command.exec', 'ui.status.toggle');
-    };
-
-    Toolbar.prototype.submitDocument = function () {
-        PubSub.publish('command.exec', 'persist.submit');
-    };
-
-    Toolbar.prototype.save = function () {
-        PubSub.publish('command.exec', 'persist.save');
     };
 
     Toolbar.prototype.openPluginFromToolbar = function (event, pluginId) {
@@ -224,10 +156,8 @@ define([
     /**
      * For commands that are going to use the browser's execCommand.
      */
-    Toolbar.prototype.execCommand = function () {
-        var cmdArgs = Array.prototype.slice.call(arguments, 1),
-            cmdStr = 'edit.' + cmdArgs.join('.');
-        PubSub.publish('command.exec', cmdStr);
+    Toolbar.prototype.execCommand = function (event, msg) {
+        PubSub.publish('command.exec', msg);
     };
 
     /**
@@ -252,14 +182,9 @@ define([
     Toolbar.prototype.cmdHandler = function (event) {
         var el = $(event.currentTarget),
             cmd = el.attr('data-cmd'),
-            cmdArgs = el.attr('data-cmd-args'),
-            argsArray = [];
+            cmdArgs = el.attr('data-cmd-args');
         if (cmd) {
-            if (cmdArgs) {
-                argsArray = cmdArgs.split(' ');
-            }
-            argsArray.splice(0, 0, event);
-            this.execFunc(cmd.trim(), argsArray);
+            this.execFunc(cmd.trim(), [event, cmdArgs]);
         } else {
             console.log('no data-cmd attribute');
         }
@@ -430,7 +355,7 @@ define([
     };
 
     Toolbar.prototype.checkShowSubmit = function () {
-        var submitBtn = this.toolbar.find('[data-cmd=submitDocument]'),
+        var submitBtn = this.toolbar.find('[data-cmd-args="persist.submit"]'),
             func = !!Env.getSubmitUrl() ? submitBtn.removeClass : submitBtn.addClass;
         func.call(submitBtn, 'qk_hidden');
     };

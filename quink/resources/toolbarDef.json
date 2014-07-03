@@ -13,7 +13,7 @@
                     "index": 0,
                     "cssClass": "qk_button_bg_undo",
                     "command": "execCommand",
-                    "commandArgs": "undo"
+                    "commandArgs": "edit.undo"
                 },
                 {
                     "id": "formath2",
@@ -21,7 +21,7 @@
                     "index": 1,
                     "cssClass": "qk_button_bg_formath2",
                     "command": "execCommand",
-                    "commandArgs": "formatblock h2"
+                    "commandArgs": "style.formatblock.h2"
                 },
                 {
                     "id": "bold",
@@ -29,7 +29,7 @@
                     "index": 2,
                     "cssClass": "qk_button_bg_bold",
                     "command": "execCommand",
-                    "commandArgs": "bold"
+                    "commandArgs": "font.bold"
                 },
                 {
                     "id": "insertunorderedlist",
@@ -37,7 +37,7 @@
                     "index": 3,
                     "cssClass": "qk_button_bg_unorderedlist",
                     "command": "execCommand",
-                    "commandArgs": "insertunorderedlist"
+                    "commandArgs": "para.insertunorderedlist"
                 },
                 {
                     "id": "insertorderedlist",
@@ -45,14 +45,15 @@
                     "index": 4,
                     "cssClass": "qk_button_bg_orderedlist",
                     "command": "execCommand",
-                    "commandArgs": "insertorderedlist"
+                    "commandArgs": "para.insertorderedlist"
                 },
                 {
                     "id": "navcharleft",
                     "hidden": false,
                     "index": 5,
                     "cssClass": "qk_button_bg_navcharleft",
-                    "command": "navCharLeft",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.prev",
                     "repeat": true
                 },
                 {
@@ -60,7 +61,8 @@
                     "hidden": false,
                     "index": 6,
                     "cssClass": "qk_button_bg_navcharright",
-                    "command": "navCharRight",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.next",
                     "repeat": true
                 },
                 {
@@ -68,14 +70,16 @@
                     "hidden": false,
                     "index": 7,
                     "cssClass": "qk_button_bg_save",
-                    "command": "save"
+                    "command": "execCommand",
+                    "commandArgs": "persist.save"
                 },
                 {
                     "id": "submit",
                     "hidden": false,
                     "index": 8,
                     "cssClass": "qk_button_bg_submit",
-                    "command": "submitDocument",
+                    "command": "execCommand",
+                    "commandArgs": "persist.submit",
                     "hidden": true
                 }
             ]
@@ -93,7 +97,7 @@
                     "index": 0,
                     "cssClass": "qk_button_bg_horizontalrule",
                     "command": "execCommand",
-                    "commandArgs": "inserthorizontalrule"
+                    "commandArgs": "edit.inserthorizontalrule"
                 },
                 {
                     "id": "createlink",
@@ -126,7 +130,7 @@
                     "index": 0,
                     "cssClass": "qk_button_bg_formath1",
                     "command": "execCommand",
-                    "commandArgs": "formatblock h1"
+                    "commandArgs": "style.formatblock.h1"
                 },
                 {
                     "id": "formath2",
@@ -134,7 +138,7 @@
                     "index": 1,
                     "cssClass": "qk_button_bg_formath2",
                     "command": "execCommand",
-                    "commandArgs": "formatblock h2"
+                    "commandArgs": "style.formatblock.h2"
                 },
                 {
                     "id": "formath3",
@@ -142,7 +146,7 @@
                     "index": 2,
                     "cssClass": "qk_button_bg_formath3",
                     "command": "execCommand",
-                    "commandArgs": "formatblock h3"
+                    "commandArgs": "style.formatblock.h3"
                 },
                 {
                     "id": "formath4",
@@ -150,7 +154,7 @@
                     "index": 3,
                     "cssClass": "qk_button_bg_formath4",
                     "command": "execCommand",
-                    "commandArgs": "formatblock h4"
+                    "commandArgs": "style.formatblock.h4"
                 },
                 {
                     "id": "formath5",
@@ -158,7 +162,7 @@
                     "index": 4,
                     "cssClass": "qk_button_bg_formath5",
                     "command": "execCommand",
-                    "commandArgs": "formatblock h5"
+                    "commandArgs": "style.formatblock.h5"
                 },
                 {
                     "id": "formath6",
@@ -166,7 +170,7 @@
                     "index": 5,
                     "cssClass": "qk_button_bg_formath6",
                     "command": "execCommand",
-                    "commandArgs": "formatblock h6"
+                    "commandArgs": "style.formatblock.h6"
                 },
                 {
                     "id": "formatpara",
@@ -174,7 +178,7 @@
                     "index": 6,
                     "cssClass": "qk_button_bg_formatpara",
                     "command": "execCommand",
-                    "commandArgs": "formatblock p"
+                    "commandArgs": "style.formatblock.p"
                 },
                 {
                     "id": "formathpre",
@@ -182,7 +186,7 @@
                     "index": 7,
                     "cssClass": "qk_button_bg_formatpre",
                     "command": "execCommand",
-                    "commandArgs": "formatblock pre"
+                    "commandArgs": "style.formatblock.pre"
                 }
             ]
         },
@@ -199,7 +203,7 @@
                     "index": 0,
                     "cssClass": "qk_button_bg_bold",
                     "command": "execCommand",
-                    "commandArgs": "bold"
+                    "commandArgs": "font.bold"
                 },
                 {
                     "id": "italic",
@@ -207,7 +211,7 @@
                     "index": 1,
                     "cssClass": "qk_button_bg_italic",
                     "command": "execCommand",
-                    "commandArgs": "italic"
+                    "commandArgs": "font.italic"
                 },
                 {
                     "id": "underline",
@@ -215,7 +219,7 @@
                     "index": 2,
                     "cssClass": "qk_button_bg_underline",
                     "command": "execCommand",
-                    "commandArgs": "underline"
+                    "commandArgs": "font.underline"
                 },
                 {
                     "id": "strikethrough",
@@ -223,7 +227,7 @@
                     "index": 3,
                     "cssClass": "qk_button_bg_strikethrough",
                     "command": "execCommand",
-                    "commandArgs": "strikethrough"
+                    "commandArgs": "font.strikethrough"
                 },
                 {
                     "id": "superscript",
@@ -231,7 +235,7 @@
                     "index": 4,
                     "cssClass": "qk_button_bg_superscript",
                     "command": "execCommand",
-                    "commandArgs": "superscript"
+                    "commandArgs": "font.superscript"
                 },
                 {
                     "id": "subscript",
@@ -239,7 +243,7 @@
                     "index": 5,
                     "cssClass": "qk_button_bg_subscript",
                     "command": "execCommand",
-                    "commandArgs": "subscript"
+                    "commandArgs": "font.subscript"
                 }
             ]
         },
@@ -256,7 +260,7 @@
                     "index": 0,
                     "cssClass": "qk_button_bg_selectall",
                     "command": "execCommand",
-                    "commandArgs": "selectall"
+                    "commandArgs": "edit.selectall"
                 },
                 {
                     "id": "delete",
@@ -264,7 +268,7 @@
                     "index": 1,
                     "cssClass": "qk_button_bg_delete",
                     "command": "execCommand",
-                    "commandArgs": "delete",
+                    "commandArgs": "edit.delete",
                     "repeat": true
                 },
                 {
@@ -273,7 +277,7 @@
                     "index": 2,
                     "cssClass": "qk_button_bg_deleteforward",
                     "command": "execCommand",
-                    "commandArgs": "forwarddelete",
+                    "commandArgs": "edit.forwarddelete",
                     "repeat": true
                 },
                 {
@@ -282,7 +286,7 @@
                     "index": 3,
                     "cssClass": "qk_button_bg_undo",
                     "command": "execCommand",
-                    "commandArgs": "undo"
+                    "commandArgs": "edit.undo"
                 },
                 {
                     "id": "redo",
@@ -290,7 +294,7 @@
                     "index": 4,
                     "cssClass": "qk_button_bg_redo",
                     "command": "execCommand",
-                    "commandArgs": "redo"
+                    "commandArgs": "edit.redo"
                 },
                 {
                     "id": "removeformat",
@@ -298,7 +302,7 @@
                     "index": 5,
                     "cssClass": "qk_button_bg_removeformat",
                     "command": "execCommand",
-                    "commandArgs": "removeformat"
+                    "commandArgs": "edit.removeformat"
                 }
             ]
         },
@@ -315,7 +319,7 @@
                     "index": 0,
                     "cssClass": "qk_button_bg_unorderedlist",
                     "command": "execCommand",
-                    "commandArgs": "insertunorderedlist"
+                    "commandArgs": "para.insertunorderedlist"
                 },
                 {
                     "id": "insertorderedlist",
@@ -323,7 +327,7 @@
                     "index": 1,
                     "cssClass": "qk_button_bg_orderedlist",
                     "command": "execCommand",
-                    "commandArgs": "insertorderedlist"
+                    "commandArgs": "para.insertorderedlist"
                 },
                 {
                     "id": "indent",
@@ -331,7 +335,7 @@
                     "index": 2,
                     "cssClass": "qk_button_bg_indent",
                     "command": "execCommand",
-                    "commandArgs": "indent"
+                    "commandArgs": "para.indent"
                 },
                 {
                     "id": "outdent",
@@ -339,7 +343,7 @@
                     "index": 3,
                     "cssClass": "qk_button_bg_outdent",
                     "command": "execCommand",
-                    "commandArgs": "outdent"
+                    "commandArgs": "para.outdent"
                 },
                 {
                     "id": "justifyleft",
@@ -347,7 +351,7 @@
                     "index": 4,
                     "cssClass": "qk_button_bg_justifyleft",
                     "command": "execCommand",
-                    "commandArgs": "justifyleft"
+                    "commandArgs": "para.justifyleft"
                 },
                 {
                     "id": "justifycenter",
@@ -355,7 +359,7 @@
                     "index": 5,
                     "cssClass": "qk_button_bg_justifycenter",
                     "command": "execCommand",
-                    "commandArgs": "justifycenter"
+                    "commandArgs": "para.justifycenter"
                 },
                 {
                     "id": "justifyright",
@@ -363,7 +367,7 @@
                     "index": 6,
                     "cssClass": "qk_button_bg_justifyright",
                     "command": "execCommand",
-                    "commandArgs": "justifyright"
+                    "commandArgs": "para.justifyright"
                 },
                 {
                     "id": "justifyfull",
@@ -371,7 +375,7 @@
                     "index": 7,
                     "cssClass": "qk_button_bg_justifyfull",
                     "command": "execCommand",
-                    "commandArgs": "justifyfull"
+                    "commandArgs": "para.justifyfull"
                 }
             ]
         },
@@ -387,7 +391,8 @@
                     "hidden": false,
                     "index": 0,
                     "cssClass": "qk_button_bg_navlineup",
-                    "command": "navLineUp",
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.up",
                     "repeat": true
                 },
                 {
@@ -395,14 +400,16 @@
                     "hidden": false,
                     "index": 1,
                     "cssClass": "qk_button_bg_navlinestart",
-                    "command": "navLineStart"
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.start"
                 },
                 {
                     "id": "navwordleft",
                     "hidden": false,
                     "index": 2,
                     "cssClass": "qk_button_bg_navwordleft",
-                    "command": "navWordLeft",
+                    "command": "execCommand",
+                    "commandArgs": "nav.word.prev",
                     "repeat": true
                 },
                 {
@@ -410,7 +417,8 @@
                     "hidden": false,
                     "index": 3,
                     "cssClass": "qk_button_bg_navcharleft",
-                    "command": "navCharLeft",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.prev",
                     "repeat": true
                 },
                 {
@@ -418,7 +426,8 @@
                     "hidden": false,
                     "index": 4,
                     "cssClass": "qk_button_bg_navcharright",
-                    "command": "navCharRight",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.next",
                     "repeat": true
                 },
                 {
@@ -426,7 +435,8 @@
                     "hidden": false,
                     "index": 5,
                     "cssClass": "qk_button_bg_navwordright",
-                    "command": "navWordRight",
+                    "command": "execCommand",
+                    "commandArgs": "nav.word.next",
                     "repeat": true
                 },
                 {
@@ -434,14 +444,16 @@
                     "hidden": false,
                     "index": 6,
                     "cssClass": "qk_button_bg_navlineend",
-                    "command": "navLineEnd"
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.end"
                 },
                 {
                     "id": "navlinedown",
                     "hidden": false,
                     "index": 7,
                     "cssClass": "qk_button_bg_navlinedown",
-                    "command": "navLineDown",
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.down",
                     "repeat": true
                 },
                 {
@@ -451,7 +463,8 @@
                     "type": "select",
                     "label": "Select",
                     "dataTag": "nav_and_select",
-                    "command": "navAndSelect",
+                    "command": "execCommand",
+                    "commandArgs": "nav.select.toggle",
                     "value": false
                 }
             ]
@@ -468,21 +481,24 @@
                     "hidden": false,
                     "index": 0,
                     "cssClass": "qk_button_bg_infohelp",
-                    "command": "infoHelp"
+                    "command": "execCommand",
+                    "commandArgs": "info.help"
                 },
                 {
                     "id": "releasenotes",
                     "hidden": false,
                     "index": 1,
                     "cssClass": "qk_button_bg_releasenotes",
-                    "command": "infoReleaseNotes"
+                    "command": "execCommand",
+                    "commandArgs": "info.releasenotes"
                 },
                 {
                     "id": "license",
                     "hidden": false,
                     "index": 2,
                     "cssClass": "qk_button_bg_license",
-                    "command": "infoLicense"
+                    "command": "execCommand",
+                    "commandArgs": "info.license"
                 },
                 {
                     "id": "statusbar",
@@ -491,7 +507,8 @@
                     "type": "select",
                     "label": "Status",
                     "dataTag": "toggle_status_bar",
-                    "command": "toggleStatusBar",
+                    "command": "execCommand",
+                    "commandArgs": "ui.status.toggle",
                     "value": "false"
                 }
             ]
