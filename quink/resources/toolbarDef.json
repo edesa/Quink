@@ -387,7 +387,8 @@
                     "hidden": false,
                     "index": 0,
                     "cssClass": "qk_button_bg_navlineup",
-                    "command": "navLineUp",
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.up",
                     "repeat": true
                 },
                 {
@@ -395,14 +396,16 @@
                     "hidden": false,
                     "index": 1,
                     "cssClass": "qk_button_bg_navlinestart",
-                    "command": "navLineStart"
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.start"
                 },
                 {
                     "id": "navwordleft",
                     "hidden": false,
                     "index": 2,
                     "cssClass": "qk_button_bg_navwordleft",
-                    "command": "navWordLeft",
+                    "command": "execCommand",
+                    "commandArgs": "nav.word.prev",
                     "repeat": true
                 },
                 {
@@ -410,7 +413,8 @@
                     "hidden": false,
                     "index": 3,
                     "cssClass": "qk_button_bg_navcharleft",
-                    "command": "navCharLeft",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.prev",
                     "repeat": true
                 },
                 {
@@ -418,7 +422,8 @@
                     "hidden": false,
                     "index": 4,
                     "cssClass": "qk_button_bg_navcharright",
-                    "command": "navCharRight",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.next",
                     "repeat": true
                 },
                 {
@@ -426,7 +431,8 @@
                     "hidden": false,
                     "index": 5,
                     "cssClass": "qk_button_bg_navwordright",
-                    "command": "navWordRight",
+                    "command": "execCommand",
+                    "commandArgs": "nav.word.next",
                     "repeat": true
                 },
                 {
@@ -434,14 +440,16 @@
                     "hidden": false,
                     "index": 6,
                     "cssClass": "qk_button_bg_navlineend",
-                    "command": "navLineEnd"
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.end"
                 },
                 {
                     "id": "navlinedown",
                     "hidden": false,
                     "index": 7,
                     "cssClass": "qk_button_bg_navlinedown",
-                    "command": "navLineDown",
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.down",
                     "repeat": true
                 },
                 {
@@ -451,7 +459,8 @@
                     "type": "select",
                     "label": "Select",
                     "dataTag": "nav_and_select",
-                    "command": "navAndSelect",
+                    "command": "execCommand",
+                    "commandArgs": "nav.select.toggle",
                     "value": false
                 }
             ]

@@ -141,42 +141,6 @@ define([
         this.activeDialogEl = dialog;
     };
 
-    Toolbar.prototype.navLineStart = function () {
-        PubSub.publish('command.exec', 'nav.line.start');
-    };
-
-    Toolbar.prototype.navLineEnd = function () {
-        PubSub.publish('command.exec', 'nav.line.end');
-    };
-
-    Toolbar.prototype.navLineUp = function () {
-        PubSub.publish('command.exec', 'nav.line.up');
-    };
-
-    Toolbar.prototype.navLineDown = function () {
-        PubSub.publish('command.exec', 'nav.line.down');
-    };
-
-    Toolbar.prototype.navCharLeft = function () {
-        PubSub.publish('command.exec', 'nav.char.prev');
-    };
-
-    Toolbar.prototype.navWordLeft = function () {
-        PubSub.publish('command.exec', 'nav.word.prev');
-    };
-
-    Toolbar.prototype.navCharRight = function () {
-        PubSub.publish('command.exec', 'nav.char.next');
-    };
-
-    Toolbar.prototype.navWordRight = function () {
-        PubSub.publish('command.exec', 'nav.word.next');
-    };
-
-    Toolbar.prototype.navAndSelect = function () {
-        PubSub.publish('command.exec', 'nav.select.toggle');
-    };
-
     Toolbar.prototype.infoHelp = function () {
         PubSub.publish('command.exec', 'info.help');
     };
