@@ -12,7 +12,7 @@
                     "hidden": false,
                     "index": 0,
                     "cssClass": "qk_button_bg_undo",
-                    "exec.command": "execCommand",
+                    "command": "execCommand",
                     "commandArgs": "edit.undo"
                 },
                 {
@@ -52,7 +52,8 @@
                     "hidden": false,
                     "index": 5,
                     "cssClass": "qk_button_bg_navcharleft",
-                    "command": "navCharLeft",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.prev",
                     "repeat": true
                 },
                 {
@@ -60,7 +61,8 @@
                     "hidden": false,
                     "index": 6,
                     "cssClass": "qk_button_bg_navcharright",
-                    "command": "navCharRight",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.next",
                     "repeat": true
                 },
                 {
@@ -68,14 +70,16 @@
                     "hidden": false,
                     "index": 7,
                     "cssClass": "qk_button_bg_save",
-                    "command": "save"
+                    "command": "execCommand",
+                    "commandArgs": "persist.save"
                 },
                 {
                     "id": "submit",
                     "hidden": false,
                     "index": 8,
                     "cssClass": "qk_button_bg_submit",
-                    "command": "submitDocument",
+                    "command": "execCommand",
+                    "commandArgs": "persist.submit",
                     "hidden": true
                 }
             ]
@@ -477,21 +481,24 @@
                     "hidden": false,
                     "index": 0,
                     "cssClass": "qk_button_bg_infohelp",
-                    "command": "infoHelp"
+                    "command": "execCommand",
+                    "commandArgs": "info.help"
                 },
                 {
                     "id": "releasenotes",
                     "hidden": false,
                     "index": 1,
                     "cssClass": "qk_button_bg_releasenotes",
-                    "command": "infoReleaseNotes"
+                    "command": "execCommand",
+                    "commandArgs": "info.releasenotes"
                 },
                 {
                     "id": "license",
                     "hidden": false,
                     "index": 2,
                     "cssClass": "qk_button_bg_license",
-                    "command": "infoLicense"
+                    "command": "execCommand",
+                    "commandArgs": "info.license"
                 },
                 {
                     "id": "statusbar",
@@ -500,7 +507,8 @@
                     "type": "select",
                     "label": "Status",
                     "dataTag": "toggle_status_bar",
-                    "command": "toggleStatusBar",
+                    "command": "execCommand",
+                    "commandArgs": "ui.status.toggle",
                     "value": "false"
                 }
             ]
