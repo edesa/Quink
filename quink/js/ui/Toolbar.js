@@ -1,26 +1,15 @@
 /**
- * Quink, Copyright (c) 2013-2014 IMD - International Institute for Management Development, Switzerland.
+ * Copyright (c), 2013-2014 IMD - International Institute for Management Development, Switzerland.
  *
- * This file is part of Quink.
- * 
- * Quink is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Quink is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
+ * See the file license.txt for copying permission.
  */
 
+/*global QUINK */
 define([
     'Underscore',
     'jquery',
     'rangy',
+    'ui/ToolbarProvider',
     'util/Event',
     'util/FastTap',
     'util/Draggable',
@@ -28,22 +17,15 @@ define([
     'util/Env',
     'util/ViewportRelative',
     'hithandler/HitHandler'
-], function (_, $, rangy, Event, FastTap, Draggable, PubSub, Env, ViewportRelative, HitHandler) {
+], function (_, $, rangy, ToolbarProvider, Event, FastTap, Draggable, PubSub, Env, ViewportRelative, HitHandler) {
     'use strict';
 
     var Toolbar = function () {
-        var onPubBeforeToolbar = this.onPubBeforeToolbar.bind(this);
         HitHandler.register(this, true);
-        PubSub.subscribe('download.toolbar', this.onDownload.bind(this));
-        PubSub.subscribe('download.insertmenu', this.onDownload.bind(this));
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
-        this.cmdExecSub = PubSub.subscribe('command.executed', onPubBeforeToolbar);
-        this.cmdStateSub = PubSub.subscribe('command.state', onPubBeforeToolbar);
-        this.delayedPubs = [];
     };
 
     Toolbar.prototype.TAB_NAME_PREFIX = 'qk_tab_';
-    Toolbar.prototype.DEFAULT_TAB_NAME = 'misc';
 
     /**
      * Each command that has persistent (currently checkbox) state in the toolbar has to have
@@ -51,29 +33,8 @@ define([
      * string versus checkbox selector for those commands.
      */
     Toolbar.prototype.KEY_COMMAND_MAP = {
-        'nav.select.on': '#nav_and_select',
-        'nav.select.off': '#nav_and_select',
-        'nav.select.toggle': '#nav_and_select',
-        'ui.status.on': '#toggle_status_bar',
-        'ui.status.off': '#toggle_status_bar',
-        'ui.status.toggle': '#toggle_status_bar'
-    };
-
-    /**
-     * Stores the name of the widest tab which will then be used to size the toolbar when
-     * it's shown on the page.
-     */
-    Toolbar.prototype.initToolbarTabs = function () {
-        var btnCounts = $('.qk_tab').map(function () {
-                return {
-                    el: this,
-                    btnCount: $(this).children('.qk_button').length
-                };
-            }).get(),
-            maxBtns = _.max(btnCounts, function (item) {
-                return item.btnCount;
-            });
-        this.widestTabName = maxBtns.el.id.substr(this.TAB_NAME_PREFIX.length);
+        'navandselect': '[data-tag=nav_and_select]',
+        'statusbar': '[data-tag=toggle_status_bar]',
     };
 
     Toolbar.prototype.hideCurrentDialog = function () {
@@ -180,62 +141,6 @@ define([
         this.activeDialogEl = dialog;
     };
 
-    Toolbar.prototype.navLineStart = function () {
-        PubSub.publish('command.exec', 'nav.line.start');
-    };
-
-    Toolbar.prototype.navLineEnd = function () {
-        PubSub.publish('command.exec', 'nav.line.end');
-    };
-
-    Toolbar.prototype.navLineUp = function () {
-        PubSub.publish('command.exec', 'nav.line.up');
-    };
-
-    Toolbar.prototype.navLineDown = function () {
-        PubSub.publish('command.exec', 'nav.line.down');
-    };
-
-    Toolbar.prototype.navCharLeft = function () {
-        PubSub.publish('command.exec', 'nav.char.prev');
-    };
-
-    Toolbar.prototype.navWordLeft = function () {
-        PubSub.publish('command.exec', 'nav.word.prev');
-    };
-
-    Toolbar.prototype.navCharRight = function () {
-        PubSub.publish('command.exec', 'nav.char.next');
-    };
-
-    Toolbar.prototype.navWordRight = function () {
-        PubSub.publish('command.exec', 'nav.word.next');
-    };
-
-    Toolbar.prototype.navAndSelect = function () {
-        PubSub.publish('command.exec', 'nav.select.toggle');
-    };
-
-    Toolbar.prototype.infoHelp = function () {
-        PubSub.publish('command.exec', 'info.help');
-    };
-
-    Toolbar.prototype.infoKeybindings = function () {
-        PubSub.publish('command.exec', 'info.keybindings');
-    };
-
-    Toolbar.prototype.infoLicense = function () {
-        PubSub.publish('command.exec', 'info.license');
-    };
-
-    Toolbar.prototype.infoReleaseNotes = function () {
-        PubSub.publish('command.exec', 'info.releasenotes');
-    };
-
-    Toolbar.prototype.infoAbout = function () {
-        PubSub.publish('command.exec', 'info.about');
-    };
-
     Toolbar.prototype.showInsertMenu = function (event) {
         var hit = Event.isTouch ? event.changedTouches[0] : event;
         this.insertMenu.css({
@@ -244,20 +149,15 @@ define([
         }).appendTo('body').removeClass('qk_hidden');
     };
 
-    Toolbar.prototype.toggleStatusBar = function () {
-        PubSub.publish('command.exec', 'ui.status.toggle');
-    };
-
-    Toolbar.prototype.submitDocument = function () {
-        PubSub.publish('command.exec', 'persist.submit');
-    };
-
-    Toolbar.prototype.save = function () {
-        PubSub.publish('command.exec', 'persist.save');
-    };
-
     Toolbar.prototype.openPluginFromToolbar = function (event, pluginId) {
         PubSub.publish('command.exec', 'insert.' + pluginId);
+    };
+
+    /**
+     * For commands that are going to use the browser's execCommand.
+     */
+    Toolbar.prototype.execCommand = function (event, msg) {
+        PubSub.publish('command.exec', msg);
     };
 
     /**
@@ -274,36 +174,19 @@ define([
     };
 
     /**
-     * For commands that are going to use the browser's execCommand.
-     */
-    Toolbar.prototype.execEditable = function (cmd, cmdArgs) {
-        var cmdStr = 'edit.' + cmd;
-        if (cmdArgs) {
-            cmdStr += '.' + cmdArgs;
-        }
-        PubSub.publish('command.exec', cmdStr);
-    };
-
-    /**
-     * Executes commands based on the event. If the element has a data-cmd attribute, the
-     * value of that is assumed to be a valid contenteditable command and it is invoked.
-     * If the element has a data-cmd-id attribute it's value is assumed to be the name of a
-     * function and that function is invoked.
+     * Executes commands based on the event.
+     * If the element has a data-cmd attribute it's value is assumed to be the name of a
+     * function and that function is invoked with the event as the first argument and any arguments present
+     * in the data-cmd-args attribute passed in as remaining arguments.
      */
     Toolbar.prototype.cmdHandler = function (event) {
         var el = $(event.currentTarget),
             cmd = el.attr('data-cmd'),
-            cmdArgs = el.attr('data-cmd-args'),
-            cmdId = el.attr('data-cmd-id'),
-            argsArray = [];
-        if (cmdId) {
-            if (cmdArgs) {
-                argsArray = cmdArgs.split(' ');
-            }
-            argsArray.splice(0, 0, event);
-            this.execFunc(cmdId.trim(), argsArray);
-        } else if (cmd) {
-            this.execEditable(cmd, cmdArgs);
+            cmdArgs = el.attr('data-cmd-args');
+        if (cmd) {
+            this.execFunc(cmd.trim(), [event, cmdArgs]);
+        } else {
+            console.log('no data-cmd attribute');
         }
     };
 
@@ -311,18 +194,15 @@ define([
      * Ensures that toolbar items that have persistent state (checkboxes) have that state kept
      * up to date.
      */
-    Toolbar.prototype.onCommandExec = function (data) {
-        var sel = this.KEY_COMMAND_MAP[data.cmd],
-            checkbox, newState;
-        if (data.result && sel) {
-            checkbox = this.toolbar.find(sel);
-            if (/\.toggle$/.test(data.cmd)) {
-                newState = !checkbox.prop('checked');
-            } else {
-                newState = /\.on$/.test(data.cmd);
+    Toolbar.prototype.processCheckboxState = function (state) {
+        Object.keys(state).forEach(function (key) {
+            var sel = this.KEY_COMMAND_MAP[key],
+                checkbox;
+            if (sel) {
+                checkbox = this.toolbar.find(sel);
+                checkbox.prop('checked', state[key]);
             }
-            checkbox.prop('checked', newState);
-        }
+        }.bind(this));
     };
 
     /**
@@ -331,21 +211,24 @@ define([
      * The state argument is a hash of command name versus current state (true|false|<string>).
      */
     Toolbar.prototype.onCommandState = function (state) {
-        this.toolbar.find('[data-cmd]').each(function () {
+        this.lastCommandState = state;
+        this.toolbar.find('[data-cmd=execCommand]').each(function () {
             var btn = $(this),
-                cmd = btn.attr('data-cmd'),
+                cmdAr = btn.attr('data-cmd-args').split(' '),
+                cmd = cmdAr[0],
                 st = state[cmd],
                 func, args;
             if (st !== undefined) {
                 if (typeof st === 'boolean') {
                     func = st ? btn.addClass : btn.removeClass;
                 } else {
-                    args = btn.attr('data-cmd-args');
+                    args = cmdAr[1];
                     func = args === st ? btn.addClass : btn.removeClass;
                 }
                 func.call(btn, 'qk_button_active');
             }
         });
+        this.processCheckboxState(state);
     };
 
     /**
@@ -363,6 +246,12 @@ define([
         });
     };
 
+    Toolbar.prototype.hideToolbar = function () {
+        this.hideCurrentDialog();
+        this.toolbar.addClass('qk_hidden');
+        this.isVisible = false;
+    };
+
     Toolbar.prototype.hideCurrentTabPanel = function () {
         this.hideCurrentDialog();
         this.toolbar.find('.qk_tab').not('.qk_hidden').addClass('qk_hidden');
@@ -372,21 +261,17 @@ define([
         this.hideCurrentTabPanel();
         this.toolbar.find('#' + this.TAB_NAME_PREFIX + tabName).removeClass('qk_hidden');
         this.toolbar.find('.qk_tab_active').removeClass('qk_tab_active');
-        this.toolbar.find('[data-tab=' + tabName + ']').closest('.qk_toolbar_tab').addClass('qk_tab_active');
+        this.toolbar.find('[data-tab=' + tabName + ']').addClass('qk_tab_active');
     };
 
-    Toolbar.prototype.addToolbarTabListeners = function (document) {
-        var closeTab = document.querySelector('#qk_button_close'),
-            toolbar = this;
-        FastTap.fastTap(closeTab, function () {
-            this.hideCurrentDialog();
-            this.toolbar.addClass('qk_hidden');
-        }, this);
+    Toolbar.prototype.showTab = function (event, tabName) {
+        this.showTabPanel(tabName);
+    };
+
+    Toolbar.prototype.addToolbarTabListeners = function () {
+        var toolbar = this;
         $('.qk_toolbar_tab_button').each(function () {
-            var tabName = this.getAttribute('data-tab');
-            if (tabName) {
-                FastTap.fastTap(this, toolbar.showTabPanel.bind(toolbar, tabName));
-            }
+            FastTap.fastTapNoFocus(this, toolbar.cmdHandler.bind(toolbar));
         });
     };
 
@@ -430,16 +315,18 @@ define([
     Toolbar.prototype.addPluginsToToolbar = function (plugins) {
         var toolbar = this,
             pluginMenuBtn = this.toolbar.find('#qk_button_plugin_menu');
-        plugins.forEach(function (plugin) {
-            var iconUrl = 'url(' + Env.pluginAdapter(plugin.icon) + ')',
-                span = $('<span>').addClass('qk_button_bg').css('background-image', iconUrl),
-                btn = $('<button>').addClass('qk_button')
-                        .attr('data-cmd-id', 'openPluginFromToolbar')
-                        .attr('data-cmd-args', plugin.id)
-                        .append(span)
-                        .insertBefore(pluginMenuBtn);
-            FastTap.fastTap(btn[0], toolbar.cmdHandler, toolbar, true);
-        });
+        if (pluginMenuBtn.length) {
+            plugins.forEach(function (plugin) {
+                var iconUrl = 'url(' + Env.pluginAdapter(plugin.icon) + ')',
+                    span = $('<span>').addClass('qk_button_bg').css('background-image', iconUrl),
+                    btn = $('<button>').addClass('qk_button')
+                            .attr('data-cmd', 'openPluginFromToolbar')
+                            .attr('data-cmd-args', plugin.id)
+                            .append(span)
+                            .insertBefore(pluginMenuBtn);
+                FastTap.fastTap(btn[0], toolbar.cmdHandler, toolbar, true);
+            });
+        }
     };
 
     /**
@@ -455,36 +342,43 @@ define([
         if (menuPlugins.length > 0) {
             this.createInsertMenu(menu, menuPlugins);
             this.toolbar.find('#qk_button_plugin_menu').removeClass('qk_hidden');
+        } else {
+            this.toolbar.find('#qk_button_plugin_menu').addClass('qk_hidden');
         }
     };
 
     Toolbar.prototype.onPluginNames = function (pluginData) {
+        this.pluginNames = pluginData;
         if (this.insertMenu) {
             this.processPluginData(pluginData, this.insertMenu);
-        } else {
-            this.pluginNames = pluginData;
         }
     };
 
     Toolbar.prototype.checkShowSubmit = function () {
-        if (Env.getSubmitUrl()) {
-            this.toolbar.find('[data-cmd-id=submitDocument]').removeClass('qk_hidden');
-        }
+        var submitBtn = this.toolbar.find('[data-cmd-args="persist.submit"]'),
+            func = !!Env.getSubmitUrl() ? submitBtn.removeClass : submitBtn.addClass;
+        func.call(submitBtn, 'qk_hidden');
     };
 
     Toolbar.prototype.showToolbarAt = function (x, y) {
+        if (!this.vpToolbar) {
+            this.vpToolbar = ViewportRelative.create(this.toolbar, {
+                top: y
+            });
+        }
         this.toolbar.removeClass('qk_hidden');
-        if (this.widestTabName) {
+        if (this.willInitToolbar) {
             // Ensures that the toolbar is sized to the tab with the most buttons. Hacky +5 needed on FF.
-            this.showTabPanel(this.widestTabName);
+            this.showTabPanel(this.toolbarProvider.getWidestGroupName());
             this.toolbar.width(this.toolbar.width() + 5);
-            this.widestTabName = null;
-            this.showTabPanel('misc');
+            this.showTabPanel(this.toolbarProvider.getActiveGroupName());
+            this.willInitToolbar = false;
         }
         this.toolbar.css({
             'left': x,
             'top': y
         });
+        this.isVisible = true;
     };
 
     Toolbar.prototype.showToolbar = function () {
@@ -492,46 +386,23 @@ define([
             x;
         this.toolbar.removeClass('qk_hidden');
         x = Math.floor(($(document).innerWidth() - this.toolbar.width()) / 2);
-        this.vpToolbar = ViewportRelative.create(this.toolbar, {
-            top: y
-        });
-        this.showToolbarAt(x, y);
+        this.showToolbarAt(x, y, true);
     };
 
-    /**
-     * Sets up the correct subscriptions and processes any that have been received prior to the
-     * toolbar being created.
-     */
-    Toolbar.prototype.processHeldPubs = function () {
-        PubSub.unsubscribe(this.cmdExecSub);
-        PubSub.unsubscribe(this.cmdStateSub);
-        PubSub.subscribe('command.executed', this.onCommandExec.bind(this));
-        PubSub.subscribe('command.state', this.onCommandState.bind(this));
-        if (this.delayedPubs.length) {
-            this.delayedPubs.forEach(function (args) {
-                var func = args[1] === 'command.executed' ? this.onCommandExec : this.onCommandState;
-                func.apply(this, args);
-            }.bind(this));
-            this.delayedPubs = null;
+    Toolbar.prototype.initSubscriptions = function () {
+        if (this.onCommandStateSub === undefined) {
+            this.onCommandStateSub = PubSub.subscribe('command.state', this.onCommandState.bind(this));
         }
     };
 
-    /**
-     * Publications that will be handled using the toolbar are routed here until the toolbar has
-     * been created.
-     */
-    Toolbar.prototype.onPubBeforeToolbar = function () {
-        this.delayedPubs.push(arguments);
-    };
-
     Toolbar.prototype.afterToolbarCreated = function () {
-        this.initToolbarTabs();
-        this.addToolbarTabListeners(document);
+        this.addToolbarTabListeners();
         this.addToolbarButtonListeners();
         this.checkShowSubmit();
+        this.initSubscriptions();
         Draggable.create('.qk_toolbar_container');
-        this.processHeldPubs();
-        if (Env.getParam('toolbar', 'off') === 'on') {
+        PubSub.publish('ui.toolbar.created');
+        if ((this.isVisible === undefined && Env.getParam('toolbar', 'off') === 'on') || this.isVisible) {
             this.showToolbar();
         }
     };
@@ -540,36 +411,59 @@ define([
         this.insertMenu = $(data);
         if (this.pluginNames) {
             this.processPluginData(this.pluginNames, this.insertMenu);
-            delete this.pluginNames;
         }
     };
 
-    Toolbar.prototype.onDownloadToolbar = function (data) {
-        this.toolbar = $(data).appendTo('body');
+    Toolbar.prototype.processToolbar = function (html, insertMenuHtml) {
+        this.toolbar = $(html).appendTo('body');
         this.afterToolbarCreated();
+        this.onDownloadInsertMenu(insertMenuHtml);
+        this.onCommandState(this.lastCommandState);
     };
 
     /**
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
-    Toolbar.prototype.onDownload = function (data, topic) {
-        if (topic === 'download.toolbar') {
-            this.onDownloadToolbar(data);
-            if (this.insertMenuData) {
-                this.onDownloadInsertMenu(this.insertMenuData);
-                this.insertMenuData = null;
-            }
-        } else if (this.toolbar) {
-            this.onDownloadInsertMenu(data);
-        } else {
-            this.insertMenuData = data;
+    Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml) {
+        var html;
+        this.insertMenuHtml = imHtml[0];
+        this.toolbarProvider = new ToolbarProvider(tbTpl[0], tbDef[0]);
+        html = this.toolbarProvider.createToolbar(QUINK.toolbar || {});
+        this.willInitToolbar = true;
+        this.processToolbar(html, this.insertMenuHtml);
+    };
+
+    Toolbar.prototype.downloadResources = function () {
+        var downloads = $.when($.get(Env.resource('toolbarDef.json')),
+                            $.get(Env.resource('toolbarTpl.tpl')),
+                            $.get(Env.resource('insertmenu.html')));
+        downloads.done(this.onDownload.bind(this));
+        downloads.fail(function () {
+            console.log('toolbar download failed...');
+        });
+        return downloads;
+    };
+
+    Toolbar.prototype.configureToolbar = function (def) {
+        var provider = this.toolbarProvider,
+            lastDef = provider.getToolbarDefinition(),
+            html;
+        if (this.toolbar && this.toolbar.length) {
+            this.toolbar.remove();
+            this.toolbar = null;
         }
+        this.willInitToolbar = true;
+        html = provider.createToolbar(def);
+        this.processToolbar(html, this.insertMenuHtml);
+        return lastDef;
     };
 
     var toolbar;
 
     function init() {
         toolbar = new Toolbar();
+        QUINK.configureToolbar = toolbar.configureToolbar.bind(toolbar);
+        return toolbar.downloadResources();
     }
 
     return {

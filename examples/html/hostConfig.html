@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Quink Example - configure Quink from the host page</title>
+        <script type="text/javascript">
+            QUINK = {
+                params: {
+                    toolbar: 'on',
+                    caret: 'on'
+                },
+                toolbar: {
+                    groups: [{
+                        id: 'cursor',
+                        index: 0
+                    }]
+                }
+            }
+        </script>
+        <script type="text/javascript" src="../../quink.js"></script>
+    </head>
+    <body>
+        <div contenteditable="true">
+            This is the editable area... on page load the toolbar should appear with the cursor tab active and furthest left. There should also be a visible indicator for the text insertion point when appropriate.
+        </div>
+    <body>
+</html>

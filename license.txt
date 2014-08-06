@@ -1,32 +1,3 @@
-<div class="qk_info_license">
-<h1>
-    <a href="http://www.imd.org"><img src="quink/resources/images/IMD-Web-Logo.png" data-qk-ref="src" alt="IMD"></a>
-</h1>
-<p>
-    Quink is brought to you by IMD - International Institute for Management Development. The innovative global business school.
-</p>
-<p>
-    IMD is ranked FIRST in open programs worldwide (Financial Times 2012 &amp; 2013) and<br>
-    FIRST in executive education outside the US (Financial Times 2008-2013)
-</p>
-<p>
-    Quink is created by the IMD IT team, particularly:
-</p>
-<ul>
-    <li>Iain Cooke
-    </li>
-    <li>Arthur Seaton
-    </li>
-</ul>
-<p>
-    With support and contributions from:
-</p>
-<ul>
-    <li>Andrew Brooke
-    </li>
-    <li>Phil Westwell</li>
-</ul>
-<pre>
 Copyright (c) 2013-2014 IMD - International Institute for Management Development, Switzerland.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -46,6 +17,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-</pre>
-<br>
-</div>

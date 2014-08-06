@@ -1,20 +1,7 @@
 /**
- * Quink, Copyright (c) 2013-2014 IMD - International Institute for Management Development, Switzerland.
+ * Copyright (c), 2013-2014 IMD - International Institute for Management Development, Switzerland.
  *
- * This file is part of Quink.
- * 
- * Quink is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Quink is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
+ * See the file license.txt for copying permission.
  */
 
 define([
@@ -29,8 +16,6 @@ define([
     'use strict';
 
     var PluginMgr = function () {
-        PubSub.subscribe('download.plugins', this.onDownloadDefs.bind(this));
-        PubSub.subscribe('download.pluginmenu', this.onDownloadMenu.bind(this));
     };
 
     PluginMgr.prototype.getDefs = function () {
@@ -126,19 +111,6 @@ define([
     PluginMgr.prototype.PLUGIN_MENU_CONFIG_DEFAULT = {
         lateral: 'right',
         vertical: 'top'
-    };
-
-    PluginMgr.prototype.onDownloadMenu = function (data) {
-        var menu = $(data);
-        menu.appendTo('body').on(Event.eventName('end'), this.onPluginCloseMenuHit);
-    };
-
-    PluginMgr.prototype.onDownloadDefs = function (data) {
-        this.pluginDefs = data.plugins;
-        this.ui = data.ui;
-        this.editIdentifiers();
-        this.publishKeyBindings();
-        this.publishNames();
     };
 
     /**
@@ -306,6 +278,19 @@ define([
         return this.getDefs()[id];
     };
 
+    PluginMgr.prototype.onDownloadMenu = function (data) {
+        var menu = $(data);
+        menu.appendTo('body').on(Event.eventName('end'), this.onPluginCloseMenuHit);
+    };
+
+    PluginMgr.prototype.onDownloadDefs = function (data) {
+        this.pluginDefs = data.plugins;
+        this.ui = data.ui;
+        this.editIdentifiers();
+        this.publishKeyBindings();
+        this.publishNames();
+    };
+
     /**
      * Identifies which plugin will handle the hit event. Returns an object with the plugin's
      * definition plus a jQuery object for the container that contains the hit (which will be
@@ -358,9 +343,17 @@ define([
         this.openPlugin(def);
     };
 
+    PluginMgr.prototype.init = function () {
+        return $.when(
+            $.get(Env.resource('plugins.json')).done(this.onDownloadDefs.bind(this)),
+            $.get(Env.resource('pluginmenu.html')).done(this.onDownloadMenu.bind(this))
+        );
+    };
+
     var theInstance = new PluginMgr();
 
     return {
+        init: theInstance.init.bind(theInstance),
         loadPlugin: theInstance.loadPlugin.bind(theInstance),
         identifyPlugin: theInstance.identifyPlugin.bind(theInstance)
     };

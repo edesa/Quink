@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Quink Example - inside an iframe</title>
+        <style>
+        html body {
+            width: 100%;
+            height: 100%;
+        }
+        .iframe-wrapper {
+            -webkit-overflow-scrolling: touch;
+            overflow: auto;
+            text-align: center;
+            height: 50%;
+        }
+        iframe {
+            height: 50%;
+            width: 75%;
+        }
+        </style>
+    </head>
+    <body>
+        <div>
+            This shows Quink running inside an iframe.
+        </div>
+        <br>
+        <div class="iframe-wrapper">
+            <iframe src="example2.html"></iframe>
+        </div>
+    <body>
+</html>

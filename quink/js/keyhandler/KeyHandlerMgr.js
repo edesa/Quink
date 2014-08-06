@@ -1,30 +1,18 @@
 /**
- * Quink, Copyright (c) 2013-2014 IMD - International Institute for Management Development, Switzerland.
+ * Copyright (c), 2013-2014 IMD - International Institute for Management Development, Switzerland.
  *
- * This file is part of Quink.
- * 
- * Quink is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Quink is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
+ * See the file license.txt for copying permission.
  */
 
 define([
-    'jquery',
     'Underscore',
+    'jquery',
+    'util/Env',
+    'util/FocusTracker',
     'util/PubSub',
     'keyhandler/InsertKeyHandler',
-    'keyhandler/CommandKeyHandler',
-    'hithandler/HitHandler'
-], function ($, _, PubSub, InsertKeyHandler, CommandKeyHandler, HitHandler) {
+    'keyhandler/CommandKeyHandler'
+], function (_, $, Env, FocusTracker, PubSub, InsertKeyHandler, CommandKeyHandler) {
     'use strict';
 
     var KeyHandlerMgr = function () {
@@ -33,7 +21,6 @@ define([
         this.insertKeyHandler = null;
         this.commandKeyHandler = null;
         this.keyHandler = null;
-        PubSub.subscribe('download.keymap', this.onDownload.bind(this));
         PubSub.subscribe('plugin.open', onStopKeyHandler);
         PubSub.subscribe('plugin.saved', onStartKeyHandler);
         PubSub.subscribe('plugin.exited', onStartKeyHandler);
@@ -71,11 +58,26 @@ define([
     var insertKeyBindings;
 
     /**
+     * If this publication arrives before the key maps are initialised, save the keybindings
+     * and process them when the maps have downloaded.
+     */
+    function onInsertKeybindings(keyBindings) {
+        var map = CommandKeyHandler.prototype.INSERT_MAP;
+        if (map) {
+            keyBindings.forEach(function (key) {
+                map[key] = 'insert.' + key;
+            });
+        } else {
+            insertKeyBindings = keyBindings;
+        }
+    }
+
+    /**
      * Loads the downloaded keymaps into the command key handler.
      * Publishes the mode switch key and adds it to the COMMAND_MAP to ensure that the key used
      * to enter command mode is also used to leave command mode.
      */
-    KeyHandlerMgr.prototype.onDownload = function (data) {
+    function onDownloadKeyMap(data) {
         var msk;
         $.each(data, function (mapName, map) {
             if (mapName === 'mode-switch-key') {
@@ -91,21 +93,6 @@ define([
             insertKeyBindings = null;
         }
         CommandKeyHandler.prototype.map = CommandKeyHandler.prototype.COMMAND_MAP;
-    };
-
-    /**
-     * If this publication arrives before the key maps are initialised, save the keybindings
-     * and process them when the maps have downloaded.
-     */
-    function onInsertKeybindings(keyBindings) {
-        var map = CommandKeyHandler.prototype.INSERT_MAP;
-        if (map) {
-            keyBindings.forEach(function (key) {
-                map[key] = 'insert.' + key;
-            });
-        } else {
-            insertKeyBindings = keyBindings;
-        }
     }
 
     function initSubscriptions() {
@@ -115,15 +102,22 @@ define([
     var managers = [];
 
     function getActiveMgr() {
-        var editable = HitHandler.getCurrentEditable();
+        var editable = FocusTracker.getCurrentEditable();
         return _.find(managers, function (mgr) {
             return mgr.editable[0] === editable;
         });
     }
 
-    function isCommandMode() {
+    /**
+     * Determines whether the current editable is in command mode.
+     */
+    function isEditableInCommandMode() {
         var mgr = getActiveMgr();
         return mgr ? mgr.isCommandMode() : false;
+    }
+
+    function downloadKeyMap() {
+        return $.get(Env.resource('keymap.json')).done(onDownloadKeyMap);
     }
 
     function create(selector) {
@@ -135,12 +129,15 @@ define([
     }
 
     function init(selector) {
+        var download;
         initSubscriptions();
+        download = downloadKeyMap();
         create(selector);
+        return download;
     }
 
     return {
         init: init,
-        isCommandMode: isCommandMode
+        isEditableInCommandMode: isEditableInCommandMode
     };
 });

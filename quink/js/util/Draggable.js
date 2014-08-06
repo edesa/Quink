@@ -1,32 +1,17 @@
 /**
- * Quink, Copyright (c) 2013-2014 IMD - International Institute for Management Development, Switzerland.
+ * Copyright (c), 2013-2014 IMD - International Institute for Management Development, Switzerland.
  *
- * This file is part of Quink.
- * 
- * Quink is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Quink is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
+ * See the file license.txt for copying permission.
  */
 
 /**
  * Makes an element draggable.
  */
 define([
-    'Underscore',
     'jquery',
     'util/Event',
-    'util/FocusTracker',
     'util/PubSub'
-], function (_, $, Event, FocusTracker, PubSub) {
+], function ($, Event, PubSub) {
     'use strict';
 
     var Draggable = function (selector) {
@@ -71,15 +56,12 @@ define([
         if (this.dragging) {
             event.preventDefault();
             this.dragging = false;
-            _.delay(function () {
-                FocusTracker.restoreFocus();
-            }, 0);
+            PubSub.publish('draggable.dragend', this.draggable[0]);
         }
         this.offX = this.offY = 0;
         this.startCoords = null;
         document.removeEventListener(Event.eventName('move'), this.onDragProxy);
         document.removeEventListener(Event.eventName('end'), this.onDragEndProxy);
-        PubSub.publish('draggable.dragend', this.draggable[0]);
     };
 
     function create(selector) {

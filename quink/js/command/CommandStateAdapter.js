@@ -1,27 +1,15 @@
 /**
- * Quink, Copyright (c) 2013-2014 IMD - International Institute for Management Development, Switzerland.
+ * Copyright (c), 2013-2014 IMD - International Institute for Management Development, Switzerland.
  *
- * This file is part of Quink.
- * 
- * Quink is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Quink is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with Quink.  If not, see <http://www.gnu.org/licenses/>.
+ * See the file license.txt for copying permission.
  */
 
 define([
     'Underscore',
-    'util/PubSub',
-    'hithandler/HitHandler'
-], function (_, PubSub, HitHandler) {
+    'hithandler/HitHandler',
+    'keyhandler/KeyHandlerMgr',
+    'util/PubSub'
+], function (_, HitHandler, KeyHandlerMgr, PubSub) {
     'use strict';
 
     var CommandStateAdapter = function () {
@@ -40,6 +28,7 @@ define([
         PubSub.subscribe('persist.autosave', this.onAutoSaveStateChange.bind(this));
         PubSub.subscribe('insert.text', onDelayStateChange);
         PubSub.subscribe('insert.html', onDelayStateChange);
+        PubSub.subscribe('ui.toolbar.created', onStateChange);
     };
 
     CommandStateAdapter.prototype.STATE_CMDS = [
@@ -74,6 +63,22 @@ define([
         this.onStateChange();
     };
 
+    CommandStateAdapter.prototype.CMD_TOGGLES = {
+        'nav.select.on': 'navAndSelect',
+        'nav.select.off': 'navAndSelect',
+        'nav.select.toggle': 'navAndSelect',
+        'ui.status.on': 'statusBar',
+        'ui.status.off': 'statusBar',
+        'ui.status.toggle': 'statusBar'
+    };
+
+    CommandStateAdapter.prototype.processSuccessfulCmd = function (cmd) {
+        var propName = this.CMD_TOGGLES[cmd];
+        if (propName) {
+            this[propName] = /\.toggle$/.test(cmd) ? !(this[propName]) : /\.on$/.test(cmd);
+        }
+    };
+
     /**
      * Update internal state to reflect changes for persistence and nav and select.
      */
@@ -81,8 +86,8 @@ define([
         if (typeof cmd === 'string' && cmd.split('.')[0] === 'persist') {
             this.isDocDirty = false;
             this.persistError = false;
-        } else if (cmd.cmd && cmd.result && /^nav\.select\./.test(cmd.cmd)) {
-            this.navAndSelect = /\.toggle$/.test(cmd.cmd) ? !this.navAndSelect : /\.on$/.test(cmd.cmd);
+        } else if (cmd.cmd && cmd.result) {
+            this.processSuccessfulCmd(cmd.cmd);
         }
         this.onStateChange();
     };
@@ -96,6 +101,10 @@ define([
             this.persistError = true;
             this.onStateChange();
         }
+    };
+
+    CommandStateAdapter.prototype.updateMode = function () {
+        this.isCommandMode = KeyHandlerMgr.isEditableInCommandMode();
     };
 
     CommandStateAdapter.prototype.onModeChange = function (isCommandMode) {
@@ -117,6 +126,7 @@ define([
     /**
      * Only show the doc dirty indicator if not showing the persistence error indicator (which
      * implies that the doc is dirty).
+     * queryCommandState and queryCommandValue throw on FireFox in some situations.
      */
     CommandStateAdapter.prototype.onStateChange = function () {
         var state = {};
@@ -124,11 +134,16 @@ define([
         state.docdirty = !this.persistError && this.isDocDirty;
         state.commandmode = this.isCommandMode;
         state.navandselect = this.navAndSelect;
+        state.statusbar = this.statusBar;
         this.STATE_CMDS.forEach(function (cmd) {
-            state[cmd] = document.queryCommandState(cmd);
+            try {
+                state[cmd] = document.queryCommandState(cmd);
+            } catch (e) {}
         });
         this.VALUE_CMDS.forEach(function (cmd) {
-            state[cmd] = document.queryCommandValue(cmd);
+            try {
+                state[cmd] = document.queryCommandValue(cmd);
+            } catch (e) {}
         });
         PubSub.publish('command.state', state);
     };
@@ -140,6 +155,7 @@ define([
     CommandStateAdapter.prototype.handle = function (hit) {
         var handled = false;
         if (hit.hitType === 'single') {
+            this.updateMode();
             this.onDelayStateChange(200);
             handled = true;
         }

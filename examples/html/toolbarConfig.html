@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Quink Example - configure the toolbar from the host page</title>
+        <style>
+        .page-button {
+            min-height: 40px;
+            min-width: 100px;
+        }
+        </style>
+        <script type="text/javascript">
+            QUINK = {
+                params: {
+                    toolbar: 'on'
+                }
+            };
+        </script>
+        <script type="text/javascript" src="../../quink.js"></script>
+    </head>
+    <body>
+        <div contenteditable="true" id="ed-1">
+            Hitting a button sets the toolbar configuration. The config 2 buttons use different configurations to end up with the same toolbar layout. The default config is the initial one.
+        </div>
+        <button class="page-button" id="btn1">config 1</button>
+        <button class="page-button" id="btn2">config 2</button>
+        <button class="page-button" id="btn2alt">config 2 alt</button>
+        <button class="page-button" id="btn3">config 3</button>
+        <button class="page-button" id="btn4">config 4</button>
+        <button class="page-button" id="btnreset">default config</button>
+        <script type="text/javascript">
+        QUINK.ready = function () {
+            var c1 = {
+                groups: [{
+                    id: 'misc',
+                    index: 4,
+                    items: [{
+                        id: 'save',
+                        hidden: true
+                    }, {
+                        id: 'navcharleft',
+                        index: 0,
+                        repeat: false
+                    }, {
+                        id: 'navcharright',
+                        index: 1,
+                        repeat: false
+                    }]
+                }, {
+                    id: 'help',
+                    label: '?',
+                    active: true,
+                    items: [{
+                        id: "info",
+                        index: 2
+                    }, {
+                        id: "releasenotes",
+                        hidden: true
+                    }, {
+                        id: "license",
+                        index: 1
+                    }, {
+                        id: "statusbar",
+                        index: 0
+                    }]
+                }]
+            },
+            c2 = {
+                groups: [{
+                    id: 'misc',
+                    hidden: true
+                }, {
+                    id: 'insert',
+                    hidden: true
+                }, {
+                    id: 'style',
+                    hidden: true
+                }, {
+                    id: 'font',
+                    hidden: true
+                }, {
+                    id: 'para',
+                    hidden: true
+                }, {
+                    id: 'edit',
+                    hidden: true
+                }, {
+                    id: 'help',
+                    hidden: true
+                }, {
+                    id: 'cursor',
+                    items: [{
+                        id: 'navlineup',
+                        index: 7
+                    }, {
+                        id: 'navlinestart',
+                        index: 4
+                    }, {
+                        id: 'navwordleft',
+                        index: 2
+                    }]
+                }]
+            },
+            c2Alt = {
+                groups: [{
+                    id: 'cursor',
+                    hidden: false,
+                    items: [{
+                        id: 'navlineup',
+                        index: 7
+                    }, {
+                        id: 'navlinestart',
+                        index: 4
+                    }, {
+                        id: 'navwordleft',
+                        index: 2
+                    }]
+                }],
+                defaults: {
+                    hidden: true,
+                    item: {
+                        hidden: false
+                    }
+                }
+            },
+            c3 = {
+                groups: [{
+                    id: 'font',
+                    hidden: false,
+                    items: [{
+                        id: 'bold',
+                        hidden: false
+                    }, {
+                        id: 'italic',
+                        hidden: false
+                    }]
+                }],
+                defaults: {
+                    hidden: true
+                }
+            },
+            c4 = {
+                groups: [{
+                    id: 'newgroup',
+                    label: 'toolbar',
+                    hidden: false,
+                    items: [{
+                        id: 'bold',
+                        index: 0
+                    }, {
+                        id: 'italic',
+                        index: 1
+                    }, {
+                        id: 'navwordleft',
+                        index: 2
+                    }, {
+                        id: 'navwordright',
+                        index: 3
+                    }, {
+                        id: 'forwarddelete',
+                        index: 4
+                    }, {
+                        id: 'navandselect',
+                        index: 5
+                    }, {
+                        id: 'statusbar',
+                        index: 6
+                    }]
+                }],
+                defaults: {
+                    hidden: true,
+                    item: {
+                        hidden: false
+                    }
+                }
+            },
+            origConfig;
+            document.querySelector('#btn1').addEventListener('click', function () {
+                var cfg = QUINK.configureToolbar(c1);
+                origConfig = origConfig || cfg;
+            });
+            document.querySelector('#btn2').addEventListener('click', function () {
+                var cfg = QUINK.configureToolbar(c2);
+                origConfig = origConfig || cfg;
+            });
+            document.querySelector('#btn2alt').addEventListener('click', function () {
+                var cfg = QUINK.configureToolbar(c2Alt);
+                origConfig = origConfig || cfg;
+            });
+            document.querySelector('#btn3').addEventListener('click', function () {
+                var cfg = QUINK.configureToolbar(c3);
+                origConfig = origConfig || cfg;
+            });
+            document.querySelector('#btn4').addEventListener('click', function () {
+                var cfg = QUINK.configureToolbar(c4);
+                origConfig = origConfig || cfg;
+            });
+            document.querySelector('#btnreset').addEventListener('click', function () {
+                if (origConfig) {
+                    QUINK.configureToolbar(origConfig);
+                }
+            });
+        };
+        </script>
+    <body>
+</html>

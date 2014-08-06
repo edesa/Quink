@@ -1,0 +1,522 @@
+{
+    "groups": [
+        {
+            "id": "misc",
+            "hidden": false,
+            "label": "Misc",
+            "index": 0,
+            "active": true,
+            "items": [
+                {
+                    "id": "undo",
+                    "hidden": false,
+                    "index": 0,
+                    "cssClass": "qk_button_bg_undo",
+                    "command": "execCommand",
+                    "commandArgs": "edit.undo"
+                },
+                {
+                    "id": "formath2",
+                    "hidden": false,
+                    "index": 1,
+                    "cssClass": "qk_button_bg_formath2",
+                    "command": "execCommand",
+                    "commandArgs": "style.formatblock.h2"
+                },
+                {
+                    "id": "bold",
+                    "hidden": false,
+                    "index": 2,
+                    "cssClass": "qk_button_bg_bold",
+                    "command": "execCommand",
+                    "commandArgs": "font.bold"
+                },
+                {
+                    "id": "insertunorderedlist",
+                    "hidden": false,
+                    "index": 3,
+                    "cssClass": "qk_button_bg_unorderedlist",
+                    "command": "execCommand",
+                    "commandArgs": "para.insertunorderedlist"
+                },
+                {
+                    "id": "insertorderedlist",
+                    "hidden": false,
+                    "index": 4,
+                    "cssClass": "qk_button_bg_orderedlist",
+                    "command": "execCommand",
+                    "commandArgs": "para.insertorderedlist"
+                },
+                {
+                    "id": "navcharleft",
+                    "hidden": false,
+                    "index": 5,
+                    "cssClass": "qk_button_bg_navcharleft",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.prev",
+                    "repeat": true
+                },
+                {
+                    "id": "navcharright",
+                    "hidden": false,
+                    "index": 6,
+                    "cssClass": "qk_button_bg_navcharright",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.next",
+                    "repeat": true
+                },
+                {
+                    "id": "save",
+                    "hidden": false,
+                    "index": 7,
+                    "cssClass": "qk_button_bg_save",
+                    "command": "execCommand",
+                    "commandArgs": "persist.save"
+                },
+                {
+                    "id": "submit",
+                    "hidden": false,
+                    "index": 8,
+                    "cssClass": "qk_button_bg_submit",
+                    "command": "execCommand",
+                    "commandArgs": "persist.submit",
+                    "hidden": true
+                }
+            ]
+        },
+
+        {
+            "id": "insert",
+            "hidden": false,
+            "label": "Insert",
+            "index": 1,
+            "items": [
+                {
+                    "id": "inserthorizontalrule",
+                    "hidden": false,
+                    "index": 0,
+                    "cssClass": "qk_button_bg_horizontalrule",
+                    "command": "execCommand",
+                    "commandArgs": "edit.inserthorizontalrule"
+                },
+                {
+                    "id": "createlink",
+                    "hidden": false,
+                    "index": 1,
+                    "cssClass": "qk_button_bg_createlink",
+                    "command": "showCreateLinkDialog"
+                },
+                {
+                    "id": "showinsertmenu",
+                    "hidden": false,
+                    "index": 2,
+                    "elId": "qk_button_plugin_menu",
+                    "cssClass": "qk_button_bg_insert",
+                    "command": "showInsertMenu",
+                    "hidden": true
+                }
+            ]
+        },
+
+        {
+            "id": "style",
+            "hidden": false,
+            "label": "Style",
+            "index": 2,
+            "items": [
+                {
+                    "id": "formath1",
+                    "hidden": false,
+                    "index": 0,
+                    "cssClass": "qk_button_bg_formath1",
+                    "command": "execCommand",
+                    "commandArgs": "style.formatblock.h1"
+                },
+                {
+                    "id": "formath2",
+                    "hidden": false,
+                    "index": 1,
+                    "cssClass": "qk_button_bg_formath2",
+                    "command": "execCommand",
+                    "commandArgs": "style.formatblock.h2"
+                },
+                {
+                    "id": "formath3",
+                    "hidden": false,
+                    "index": 2,
+                    "cssClass": "qk_button_bg_formath3",
+                    "command": "execCommand",
+                    "commandArgs": "style.formatblock.h3"
+                },
+                {
+                    "id": "formath4",
+                    "hidden": false,
+                    "index": 3,
+                    "cssClass": "qk_button_bg_formath4",
+                    "command": "execCommand",
+                    "commandArgs": "style.formatblock.h4"
+                },
+                {
+                    "id": "formath5",
+                    "hidden": false,
+                    "index": 4,
+                    "cssClass": "qk_button_bg_formath5",
+                    "command": "execCommand",
+                    "commandArgs": "style.formatblock.h5"
+                },
+                {
+                    "id": "formath6",
+                    "hidden": false,
+                    "index": 5,
+                    "cssClass": "qk_button_bg_formath6",
+                    "command": "execCommand",
+                    "commandArgs": "style.formatblock.h6"
+                },
+                {
+                    "id": "formatpara",
+                    "hidden": false,
+                    "index": 6,
+                    "cssClass": "qk_button_bg_formatpara",
+                    "command": "execCommand",
+                    "commandArgs": "style.formatblock.p"
+                },
+                {
+                    "id": "formathpre",
+                    "hidden": false,
+                    "index": 7,
+                    "cssClass": "qk_button_bg_formatpre",
+                    "command": "execCommand",
+                    "commandArgs": "style.formatblock.pre"
+                }
+            ]
+        },
+
+        {
+            "id": "font",
+            "hidden": false,
+            "label": "Font",
+            "index": 3,
+            "items": [
+                {
+                    "id": "bold",
+                    "hidden": false,
+                    "index": 0,
+                    "cssClass": "qk_button_bg_bold",
+                    "command": "execCommand",
+                    "commandArgs": "font.bold"
+                },
+                {
+                    "id": "italic",
+                    "hidden": false,
+                    "index": 1,
+                    "cssClass": "qk_button_bg_italic",
+                    "command": "execCommand",
+                    "commandArgs": "font.italic"
+                },
+                {
+                    "id": "underline",
+                    "hidden": false,
+                    "index": 2,
+                    "cssClass": "qk_button_bg_underline",
+                    "command": "execCommand",
+                    "commandArgs": "font.underline"
+                },
+                {
+                    "id": "strikethrough",
+                    "hidden": false,
+                    "index": 3,
+                    "cssClass": "qk_button_bg_strikethrough",
+                    "command": "execCommand",
+                    "commandArgs": "font.strikethrough"
+                },
+                {
+                    "id": "superscript",
+                    "hidden": false,
+                    "index": 4,
+                    "cssClass": "qk_button_bg_superscript",
+                    "command": "execCommand",
+                    "commandArgs": "font.superscript"
+                },
+                {
+                    "id": "subscript",
+                    "hidden": false,
+                    "index": 5,
+                    "cssClass": "qk_button_bg_subscript",
+                    "command": "execCommand",
+                    "commandArgs": "font.subscript"
+                }
+            ]
+        },
+
+        {
+            "id": "edit",
+            "hidden": false,
+            "label": "Edit",
+            "index": 4,
+            "items": [
+                {
+                    "id": "selectall",
+                    "hidden": false,
+                    "index": 0,
+                    "cssClass": "qk_button_bg_selectall",
+                    "command": "execCommand",
+                    "commandArgs": "edit.selectall"
+                },
+                {
+                    "id": "delete",
+                    "hidden": false,
+                    "index": 1,
+                    "cssClass": "qk_button_bg_delete",
+                    "command": "execCommand",
+                    "commandArgs": "edit.delete",
+                    "repeat": true
+                },
+                {
+                    "id": "forwarddelete",
+                    "hidden": false,
+                    "index": 2,
+                    "cssClass": "qk_button_bg_deleteforward",
+                    "command": "execCommand",
+                    "commandArgs": "edit.forwarddelete",
+                    "repeat": true
+                },
+                {
+                    "id": "undo",
+                    "hidden": false,
+                    "index": 3,
+                    "cssClass": "qk_button_bg_undo",
+                    "command": "execCommand",
+                    "commandArgs": "edit.undo"
+                },
+                {
+                    "id": "redo",
+                    "hidden": false,
+                    "index": 4,
+                    "cssClass": "qk_button_bg_redo",
+                    "command": "execCommand",
+                    "commandArgs": "edit.redo"
+                },
+                {
+                    "id": "removeformat",
+                    "hidden": false,
+                    "index": 5,
+                    "cssClass": "qk_button_bg_removeformat",
+                    "command": "execCommand",
+                    "commandArgs": "edit.removeformat"
+                }
+            ]
+        },
+
+        {
+            "id": "para",
+            "hidden": false,
+            "label": "Para",
+            "index": 5,
+            "items": [
+                {
+                    "id": "insertunorderedlist",
+                    "hidden": false,
+                    "index": 0,
+                    "cssClass": "qk_button_bg_unorderedlist",
+                    "command": "execCommand",
+                    "commandArgs": "para.insertunorderedlist"
+                },
+                {
+                    "id": "insertorderedlist",
+                    "hidden": false,
+                    "index": 1,
+                    "cssClass": "qk_button_bg_orderedlist",
+                    "command": "execCommand",
+                    "commandArgs": "para.insertorderedlist"
+                },
+                {
+                    "id": "indent",
+                    "hidden": false,
+                    "index": 2,
+                    "cssClass": "qk_button_bg_indent",
+                    "command": "execCommand",
+                    "commandArgs": "para.indent"
+                },
+                {
+                    "id": "outdent",
+                    "hidden": false,
+                    "index": 3,
+                    "cssClass": "qk_button_bg_outdent",
+                    "command": "execCommand",
+                    "commandArgs": "para.outdent"
+                },
+                {
+                    "id": "justifyleft",
+                    "hidden": false,
+                    "index": 4,
+                    "cssClass": "qk_button_bg_justifyleft",
+                    "command": "execCommand",
+                    "commandArgs": "para.justifyleft"
+                },
+                {
+                    "id": "justifycenter",
+                    "hidden": false,
+                    "index": 5,
+                    "cssClass": "qk_button_bg_justifycenter",
+                    "command": "execCommand",
+                    "commandArgs": "para.justifycenter"
+                },
+                {
+                    "id": "justifyright",
+                    "hidden": false,
+                    "index": 6,
+                    "cssClass": "qk_button_bg_justifyright",
+                    "command": "execCommand",
+                    "commandArgs": "para.justifyright"
+                },
+                {
+                    "id": "justifyfull",
+                    "hidden": false,
+                    "index": 7,
+                    "cssClass": "qk_button_bg_justifyfull",
+                    "command": "execCommand",
+                    "commandArgs": "para.justifyfull"
+                }
+            ]
+        },
+
+        {
+            "id": "cursor",
+            "hidden": false,
+            "label": "Cursor",
+            "index": 6,
+            "items": [
+                {
+                    "id": "navlineup",
+                    "hidden": false,
+                    "index": 0,
+                    "cssClass": "qk_button_bg_navlineup",
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.up",
+                    "repeat": true
+                },
+                {
+                    "id": "navlinestart",
+                    "hidden": false,
+                    "index": 1,
+                    "cssClass": "qk_button_bg_navlinestart",
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.start"
+                },
+                {
+                    "id": "navwordleft",
+                    "hidden": false,
+                    "index": 2,
+                    "cssClass": "qk_button_bg_navwordleft",
+                    "command": "execCommand",
+                    "commandArgs": "nav.word.prev",
+                    "repeat": true
+                },
+                {
+                    "id": "navcharleft",
+                    "hidden": false,
+                    "index": 3,
+                    "cssClass": "qk_button_bg_navcharleft",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.prev",
+                    "repeat": true
+                },
+                {
+                    "id": "navcharright",
+                    "hidden": false,
+                    "index": 4,
+                    "cssClass": "qk_button_bg_navcharright",
+                    "command": "execCommand",
+                    "commandArgs": "nav.char.next",
+                    "repeat": true
+                },
+                {
+                    "id": "navwordright",
+                    "hidden": false,
+                    "index": 5,
+                    "cssClass": "qk_button_bg_navwordright",
+                    "command": "execCommand",
+                    "commandArgs": "nav.word.next",
+                    "repeat": true
+                },
+                {
+                    "id": "navlineend",
+                    "hidden": false,
+                    "index": 6,
+                    "cssClass": "qk_button_bg_navlineend",
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.end"
+                },
+                {
+                    "id": "navlinedown",
+                    "hidden": false,
+                    "index": 7,
+                    "cssClass": "qk_button_bg_navlinedown",
+                    "command": "execCommand",
+                    "commandArgs": "nav.line.down",
+                    "repeat": true
+                },
+                {
+                    "id": "navandselect",
+                    "hidden": false,
+                    "index": 8,
+                    "type": "select",
+                    "label": "Select",
+                    "dataTag": "nav_and_select",
+                    "command": "execCommand",
+                    "commandArgs": "nav.select.toggle",
+                    "value": false
+                }
+            ]
+        },
+
+        {
+            "id": "help",
+            "hidden": false,
+            "label": "Help",
+            "index": 7,
+            "items": [
+                {
+                    "id": "info",
+                    "hidden": false,
+                    "index": 0,
+                    "cssClass": "qk_button_bg_infohelp",
+                    "command": "execCommand",
+                    "commandArgs": "info.help"
+                },
+                {
+                    "id": "releasenotes",
+                    "hidden": false,
+                    "index": 1,
+                    "cssClass": "qk_button_bg_releasenotes",
+                    "command": "execCommand",
+                    "commandArgs": "info.releasenotes"
+                },
+                {
+                    "id": "license",
+                    "hidden": false,
+                    "index": 2,
+                    "cssClass": "qk_button_bg_license",
+                    "command": "execCommand",
+                    "commandArgs": "info.license"
+                },
+                {
+                    "id": "statusbar",
+                    "hidden": false,
+                    "index": 3,
+                    "type": "select",
+                    "label": "Status",
+                    "dataTag": "toggle_status_bar",
+                    "command": "execCommand",
+                    "commandArgs": "ui.status.toggle",
+                    "value": "false"
+                }
+            ]
+        }
+    ],
+
+    "defaults": {
+        "active": false,
+        "hidden": true
+    }
+}
