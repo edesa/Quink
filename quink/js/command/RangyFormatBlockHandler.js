@@ -27,20 +27,35 @@ define([
         };
     };
 
+    RangyFormatBlockHandler.prototype.handleCollapsedRange = function (range, applier) {
+        var el = document.createElement('span'),
+            dummy = document.createTextNode(' '); // webkit hack
+        el.appendChild(dummy);
+        range.insertNode(el);
+        range.setEndAfter(el);
+        applier.toggleRange(range);
+        rangy.getSelection().setSingleRange(range);
+    };
+
     /**
      * Make sure that all the other possible css classes aren't applied to the selection before applying
      * the new one. This prevents one element having a number of css classes applied to it at the same time.
      */
     RangyFormatBlockHandler.prototype.applyCssClass = function(args) {
         var applier = this.APPLIER_MAP[args],
-            others;
+            range, others;
         if (applier) {
-            others = _.values(this.APPLIER_MAP);
-            others.splice(others.indexOf(applier), 1);
-            others.forEach(function(applr) {
-                applr.undoToSelection();
-            });
-            applier.toggleSelection();
+            range = rangy.getSelection().getRangeAt(0);
+            if (range.collapsed) {
+                this.handleCollapsedRange(range, applier);
+            } else {
+                others = _.values(this.APPLIER_MAP);
+                others.splice(others.indexOf(applier), 1);
+                others.forEach(function(applr) {
+                    applr.undoToSelection();
+                });
+                applier.toggleSelection();
+            }
         }
     };
 
