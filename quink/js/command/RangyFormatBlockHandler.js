@@ -5,10 +5,11 @@
  */
 
 define([
+    'Underscore',
     'rangy',
     'cssapplier',
     'util/PubSub'
-], function (rangy, cssapplier, PubSub) {
+], function (_, rangy, cssapplier, PubSub) {
     'use strict';
 
     var RangyFormatBlockHandler = function () {
@@ -26,12 +27,23 @@ define([
         };
     };
 
-    RangyFormatBlockHandler.prototype.applyCssClass = function (args) {
-        var applier = this.APPLIER_MAP[args];
+    /**
+     * Make sure that all the other possible css classes aren't applied to the selection before applying
+     * the new one. This prevents one element having a number of css classes applied to it at the same time.
+     */
+    RangyFormatBlockHandler.prototype.applyCssClass = function(args) {
+        var applier = this.APPLIER_MAP[args],
+            others;
         if (applier) {
+            others = _.values(this.APPLIER_MAP);
+            others.splice(others.indexOf(applier), 1);
+            others.forEach(function(applr) {
+                applr.undoToSelection();
+            });
             applier.toggleSelection();
         }
     };
+
 
     RangyFormatBlockHandler.prototype.execCmd = function (cmd, args) {
         var result = false;
