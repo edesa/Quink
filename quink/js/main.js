@@ -12,6 +12,7 @@ require.config({
         jquery: 'lib/jquery-1.10.2',
         rangy: 'lib/rangy-core',
         textrange: 'lib/rangy-textrange',
+        cssapplier: 'lib/rangy-cssclassapplier',
         Underscore: 'lib/underscore'
     },
 
@@ -22,7 +23,8 @@ require.config({
         'rangy': {
             exports: 'rangy'
         },
-        'textrange': [ 'rangy' ]
+        'textrange': [ 'rangy' ],
+        'cssapplier': [ 'rangy' ]
     }
 });
 
