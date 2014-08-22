@@ -214,15 +214,15 @@ define([
         this.lastCommandState = state;
         this.toolbar.find('[data-cmd=execCommand]').each(function () {
             var btn = $(this),
-                cmdAr = btn.attr('data-cmd-args').split(' '),
-                cmd = cmdAr[0],
+                cmdAr = btn.attr('data-cmd-args').split('.'),
+                cmd = cmdAr[1],
                 st = state[cmd],
                 func, args;
             if (st !== undefined) {
                 if (typeof st === 'boolean') {
                     func = st ? btn.addClass : btn.removeClass;
                 } else {
-                    args = cmdAr[1];
+                    args = cmdAr[2];
                     func = args === st ? btn.addClass : btn.removeClass;
                 }
                 func.call(btn, 'qk_button_active');
