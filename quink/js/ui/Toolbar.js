@@ -9,6 +9,7 @@ define([
     'Underscore',
     'jquery',
     'rangy',
+    'ui/PopupMenu',
     'ui/ToolbarProvider',
     'util/Event',
     'util/FastTap',
@@ -17,7 +18,7 @@ define([
     'util/Env',
     'util/ViewportRelative',
     'hithandler/HitHandler'
-], function (_, $, rangy, ToolbarProvider, Event, FastTap, Draggable, PubSub, Env, ViewportRelative, HitHandler) {
+], function (_, $, rangy, PopupMenu, ToolbarProvider, Event, FastTap, Draggable, PubSub, Env, ViewportRelative, HitHandler) {
     'use strict';
 
     var Toolbar = function () {
@@ -151,6 +152,16 @@ define([
 
     Toolbar.prototype.openPluginFromToolbar = function (event, pluginId) {
         PubSub.publish('command.exec', 'insert.' + pluginId);
+    };
+
+    Toolbar.prototype.showApplyStyleMenu = function (event) {
+        var hit = Event.isTouch ? event.changedTouches[0] : event,
+            menu = this.styleMenu;
+        // menu.css({
+        //     'top': hit.pageY,
+        //     'left': hit.pageX
+        // }).appendTo('body').removeClass('qk_hidden');
+        menu.show(hit.pageX, hit.pageY);
     };
 
     /**
@@ -421,12 +432,29 @@ define([
         this.onCommandState(this.lastCommandState);
     };
 
+    Toolbar.prototype.createStyleMenuOpts = function (stylesTpl, styles) {
+        var tpl = _.template(stylesTpl),
+            menuOptsStr = tpl(styles);
+            // menuOptsStr = tpl(styles).replace(/,([^,]*)$/, '$1');
+        return JSON.parse(menuOptsStr);
+    };
+
+    Toolbar.prototype.onStylesMenuSelect = function (selectedDef, menu) {
+        var selected = selectedDef.value;
+        console.log('styles menu selected: ' + selected);
+        if (selected === 'cancel') {
+            menu.hide();
+        }
+    };
+
     /**
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
-    Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml) {
-        var html;
+    Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml, styles, styleTpl) {
+        var stylesDef = this.createStyleMenuOpts(styleTpl[0], styles[0]),
+            html;
         this.insertMenuHtml = imHtml[0];
+        this.styleMenu = new PopupMenu(stylesDef, this.onStylesMenuSelect, true);
         this.toolbarProvider = new ToolbarProvider(tbTpl[0], tbDef[0]);
         html = this.toolbarProvider.createToolbar(QUINK.toolbar || {});
         this.willInitToolbar = true;
@@ -436,7 +464,9 @@ define([
     Toolbar.prototype.downloadResources = function () {
         var downloads = $.when($.get(Env.resource('toolbarDef.json')),
                             $.get(Env.resource('toolbarTpl.tpl')),
-                            $.get(Env.resource('insertmenu.html')));
+                            $.get(Env.resource('insertmenu.html')),
+                            $.get(Env.resource('styles.json')),
+                            $.get(Env.resource('styleTpl.tpl')));
         downloads.done(this.onDownload.bind(this));
         downloads.fail(function () {
             console.log('toolbar download failed...');

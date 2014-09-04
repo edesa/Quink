@@ -108,7 +108,6 @@
                 },
                 {
                     "id": "showinsertmenu",
-                    "hidden": false,
                     "index": 2,
                     "elId": "qk_button_plugin_menu",
                     "cssClass": "qk_button_bg_insert",
@@ -187,6 +186,13 @@
                     "cssClass": "qk_button_bg_formatpre",
                     "command": "execCommand",
                     "commandArgs": "style.formatblock.pre"
+                },
+                {
+                    "id": "applyStyle",
+                    "hidden": false,
+                    "index": 8,
+                    "cssClass": "qk_select_bg_applystyle",
+                    "command": "showApplyStyleMenu"
                 }
             ]
         },

@@ -13,11 +13,11 @@ define([
 ], function (_, $, rangy, cssapplier, PubSub) {
     'use strict';
 
-    var RangyFormatBlockHandler = function () {
+    var ApplyStyleHandler = function () {
         this.createApplierMap();
     };
 
-    RangyFormatBlockHandler.prototype.CSS_CLASSES = [
+    ApplyStyleHandler.prototype.CSS_CLASSES = [
         'qk_h1',
         'qk_h2',
         'qk_h3',
@@ -26,7 +26,7 @@ define([
         'qk_h6'
     ];
 
-    RangyFormatBlockHandler.prototype.createApplierMap = function () {
+    ApplyStyleHandler.prototype.createApplierMap = function () {
         this.APPLIER_MAP = {
             'qk_h1': rangy.createCssClassApplier('qk_h1'),
             'qk_h2': rangy.createCssClassApplier('qk_h2'),
@@ -37,7 +37,7 @@ define([
         };
     };
 
-    RangyFormatBlockHandler.prototype.foo = function (range, applier) {
+    ApplyStyleHandler.prototype.foo = function (range, applier) {
         var el = document.createElement('span'),
             dummy = document.createTextNode(' '); // webkit hack
         el.appendChild(dummy);
@@ -47,7 +47,7 @@ define([
         rangy.getSelection().setSingleRange(range);
     };
 
-    RangyFormatBlockHandler.prototype.handleCollapsedRange = function (range, applier, cssClass) {
+    ApplyStyleHandler.prototype.handleCollapsedRange = function (range, applier, cssClass) {
         var el = range.startContainer;
         if (el.children && el.children.length === 1) {
             el = $(el);
@@ -60,7 +60,7 @@ define([
         }
     };
 
-    RangyFormatBlockHandler.prototype.removeCssClassesNot = function (el, cssClass) {
+    ApplyStyleHandler.prototype.removeCssClassesNot = function (el, cssClass) {
         var others = _.without(this.CSS_CLASSES, cssClass);
         others.forEach(function (cls) {
             el.removeClass(cls);
@@ -71,7 +71,7 @@ define([
      * Make sure that all the other possible css classes aren't applied to the selection before applying
      * the new one. This prevents one element having a number of css classes applied to it at the same time.
      */
-    RangyFormatBlockHandler.prototype.applyCssClass = function (header) {
+    ApplyStyleHandler.prototype.applyCssClass = function (header) {
         var cssClass = 'qk_' + header,
             applier = this.APPLIER_MAP[cssClass],
             range, others;
@@ -91,9 +91,8 @@ define([
     };
 
 
-    RangyFormatBlockHandler.prototype.execCmd = function (cmd, args) {
+    ApplyStyleHandler.prototype.execCmd = function (cmd, args) {
         var result = false;
-        console.log('RangyFormatBlockHandler not implemented.');
         this.applyCssClass(args);
         PubSub.publish('command.executed', {
             cmd: cmd,
@@ -102,5 +101,5 @@ define([
         });
     };
 
-    return RangyFormatBlockHandler;
+    return ApplyStyleHandler;
 });
