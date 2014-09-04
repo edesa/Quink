@@ -5,12 +5,14 @@
  */
 
 define([
+    'command/ApplyStyleHandler',
     'command/EditCommandHandler'
-], function (EditCommandHandler) {
+], function (ApplyStyleHandler, EditCommandHandler) {
     'use strict';
 
     var EditCommandMsgAdapter = function () {
-        this.handler = new EditCommandHandler();
+        this.defaultHandler = new EditCommandHandler();
+        this.applyStyleHandler = new ApplyStyleHandler();
     };
 
     EditCommandMsgAdapter.prototype.ACCEPTED_IDS = [
@@ -20,14 +22,19 @@ define([
         'style'
     ];
 
+    EditCommandMsgAdapter.prototype.getHandler = function (id, cmd) {
+        return id === 'style' && cmd === 'apply' ? this.applyStyleHandler : this.defaultHandler;
+    };
+
     EditCommandMsgAdapter.prototype.handle = function (msg) {
         var ar = msg.split('.'),
             id = ar[0],
             cmd = ar[1],
             args = ar[2] || null,
-            handled;
+            handler, handled;
         if (this.ACCEPTED_IDS.indexOf(id.toLowerCase()) >= 0) {
-            this.handler.execCmd(cmd, args);
+            handler = this.getHandler(id, cmd);
+            handler.execCmd(cmd, args);
             handled = true;
         }
         return handled;

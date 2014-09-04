@@ -435,16 +435,15 @@ define([
     Toolbar.prototype.createStyleMenuOpts = function (stylesTpl, styles) {
         var tpl = _.template(stylesTpl),
             menuOptsStr = tpl(styles);
-            // menuOptsStr = tpl(styles).replace(/,([^,]*)$/, '$1');
         return JSON.parse(menuOptsStr);
     };
 
-    Toolbar.prototype.onStylesMenuSelect = function (selectedDef, menu) {
+    Toolbar.prototype.onStyleMenuSelect = function (selectedDef, menu) {
         var selected = selectedDef.value;
-        console.log('styles menu selected: ' + selected);
-        if (selected === 'cancel') {
-            menu.hide();
+        if (selected !== 'cancel') {
+            PubSub.publish('command.exec', 'style.apply.' + selected);
         }
+        menu.hide();
     };
 
     /**
@@ -454,7 +453,7 @@ define([
         var stylesDef = this.createStyleMenuOpts(styleTpl[0], styles[0]),
             html;
         this.insertMenuHtml = imHtml[0];
-        this.styleMenu = new PopupMenu(stylesDef, this.onStylesMenuSelect, true);
+        this.styleMenu = new PopupMenu(stylesDef, this.onStyleMenuSelect, true);
         this.toolbarProvider = new ToolbarProvider(tbTpl[0], tbDef[0]);
         html = this.toolbarProvider.createToolbar(QUINK.toolbar || {});
         this.willInitToolbar = true;

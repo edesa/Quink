@@ -14,30 +14,19 @@ define([
     'use strict';
 
     var ApplyStyleHandler = function () {
-        this.createApplierMap();
+        this.applierMap = {};
     };
 
-    ApplyStyleHandler.prototype.CSS_CLASSES = [
-        'qk_h1',
-        'qk_h2',
-        'qk_h3',
-        'qk_h4',
-        'qk_h5',
-        'qk_h6'
-    ];
-
-    ApplyStyleHandler.prototype.createApplierMap = function () {
-        this.APPLIER_MAP = {
-            'qk_h1': rangy.createCssClassApplier('qk_h1'),
-            'qk_h2': rangy.createCssClassApplier('qk_h2'),
-            'qk_h3': rangy.createCssClassApplier('qk_h3'),
-            'qk_h4': rangy.createCssClassApplier('qk_h4'),
-            'qk_h5': rangy.createCssClassApplier('qk_h5'),
-            'qk_h6': rangy.createCssClassApplier('qk_h6')
-        };
+    ApplyStyleHandler.prototype.getApplier = function (style) {
+        var applier = this.applierMap[style];
+        if (!applier) {
+            applier = rangy.createCssClassApplier(style);
+            this.applierMap[style] = applier;
+        }
+        return applier;
     };
 
-    ApplyStyleHandler.prototype.foo = function (range, applier) {
+    ApplyStyleHandler.prototype.applyStyleToEmptyRange = function (range, applier) {
         var el = document.createElement('span'),
             dummy = document.createTextNode(' '); // webkit hack
         el.appendChild(dummy);
@@ -52,52 +41,29 @@ define([
         if (el.children && el.children.length === 1) {
             el = $(el);
             if (!el.hasClass(cssClass)) {
-                this.removeCssClassesNot(el, cssClass);
                 el.addClass(cssClass);
             }
         } else {
-            this.foo(range, applier);
+            this.applyStyleToEmptyRange(range, applier);
         }
     };
 
-    ApplyStyleHandler.prototype.removeCssClassesNot = function (el, cssClass) {
-        var others = _.without(this.CSS_CLASSES, cssClass);
-        others.forEach(function (cls) {
-            el.removeClass(cls);
-        });
-    };
-
-    /**
-     * Make sure that all the other possible css classes aren't applied to the selection before applying
-     * the new one. This prevents one element having a number of css classes applied to it at the same time.
-     */
-    ApplyStyleHandler.prototype.applyCssClass = function (header) {
-        var cssClass = 'qk_' + header,
-            applier = this.APPLIER_MAP[cssClass],
-            range, others;
-        if (applier) {
+    ApplyStyleHandler.prototype.applyCssClass = function (style) {
+        var applier = this.getApplier(style),
             range = rangy.getSelection().getRangeAt(0);
-            if (range.collapsed) {
-                this.handleCollapsedRange(range, applier, cssClass);
-            } else {
-                others = _.values(this.APPLIER_MAP);
-                others.splice(others.indexOf(applier), 1);
-                others.forEach(function (applr) {
-                    applr.undoToSelection();
-                });
-                applier.toggleSelection();
-            }
+        if (range.collapsed) {
+            this.handleCollapsedRange(range, applier, style);
+        } else {
+            applier.toggleSelection();
         }
     };
-
 
     ApplyStyleHandler.prototype.execCmd = function (cmd, args) {
-        var result = false;
         this.applyCssClass(args);
         PubSub.publish('command.executed', {
             cmd: cmd,
             args: args,
-            result: result
+            result: true
         });
     };
 

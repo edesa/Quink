@@ -26,6 +26,7 @@ define([
             selectedDef = _.find(this.menuDef.options, function (def) {
                 return def.value === id;
             });
+        event.preventDefault(); // stops the menu being focused
         this.callback(selectedDef, this);
     };
 
@@ -37,7 +38,7 @@ define([
 
     PopupMenu.prototype.createMenu = function (def) {
         var markup = $(this.menuTpl(def));
-        markup.on(Event.eventName('end'), this.MENU_ITEM_SELECTOR, this.onSelect.bind(this));
+        markup.on(Event.eventName('start'), this.MENU_ITEM_SELECTOR, this.onSelect.bind(this));
         return markup;
     };
 
