@@ -444,18 +444,37 @@ define([
         menu.hide();
     };
 
+    Toolbar.prototype.initApplyStyleMenu = function (styleTpl, styles) {
+        var styleNames = this.stylesheetMgr.getSelectors(),
+            btn = this.toolbar.find('#qk_button_applystyle'),
+            stylesDef;
+        if (styleNames.length > 0) {
+            stylesDef = this.createStyleMenuOpts(styleTpl, styles);
+            this.styleMenu = new PopupMenu(stylesDef, this.onStyleMenuSelect, true);
+            btn.removeClass('qk_hidden');
+        } else {
+            btn.addClass('qk_hidden');
+        }
+    };
+
+    /*
+    Toolbar.prototype.checkShowSubmit = function () {
+        var submitBtn = this.toolbar.find('[data-cmd-args="persist.submit"]'),
+            func = !!Env.getSubmitUrl() ? submitBtn.removeClass : submitBtn.addClass;
+        func.call(submitBtn, 'qk_hidden');
+    };
+    */
     /**
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
     Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml, styles, styleTpl) {
-        var stylesDef = this.createStyleMenuOpts(styleTpl[0], styles[0]),
-            html;
+        var html;
         this.insertMenuHtml = imHtml[0];
-        this.styleMenu = new PopupMenu(stylesDef, this.onStyleMenuSelect, true);
         this.toolbarProvider = new ToolbarProvider(tbTpl[0], tbDef[0]);
         html = this.toolbarProvider.createToolbar(QUINK.toolbar || {});
         this.willInitToolbar = true;
         this.processToolbar(html, this.insertMenuHtml);
+        this.initApplyStyleMenu(styleTpl[0], styles[0]);
     };
 
     Toolbar.prototype.downloadResources = function () {

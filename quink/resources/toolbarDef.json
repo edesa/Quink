@@ -189,8 +189,9 @@
                 },
                 {
                     "id": "applyStyle",
-                    "hidden": false,
+                    "hidden": true,
                     "index": 8,
+                    "elId": "qk_button_applystyle",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showApplyStyleMenu"
                 }

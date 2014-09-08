@@ -64,7 +64,7 @@ define([
      * or not.
      */
     StylesheetMgr.prototype.init = function (theUrl) {
-        var url = theUrl || Env.resource('styles.css'),
+        var url = theUrl || Env.getParam('styles') || Env.resource('styles.css'),
             stylesheet = this.getInlinedStyle(url),
             promise = stylesheet ? $.Deferred().resolve().promise() : this.getUserStylesheet(url),
             proxy = $.Deferred();
