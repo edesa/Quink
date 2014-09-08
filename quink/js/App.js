@@ -18,13 +18,14 @@ define([
     'ui/Toolbar',
     'util/Env',
     'util/FocusTracker',
-    'util/PubSub'
-], function ($, rangy, Command, PluginMgr, HitHandler, KeyHandlerMgr, Persist, Caret, CommandStateBar, Toolbar, Env, FocusTracker, PubSub) {
+    'util/PubSub',
+    'util/StylesheetMgr'
+], function ($, rangy, Command, PluginMgr, HitHandler, KeyHandlerMgr, Persist, Caret, CommandStateBar, Toolbar, Env, FocusTracker, PubSub, StylesheetMgr) {
     'use strict';
 
     function init() {
         var selector = '[contenteditable=true]',
-            tbDownloads, csbDownloads, pmDownloads, khmDownloads;
+            tbDownloads, csbDownloads, pmDownloads, khmDownloads, smDownloads;
         Persist.initFromAutoSave();
         rangy.init();
         Env.init();
@@ -35,9 +36,10 @@ define([
         HitHandler.init(selector);
         tbDownloads = Toolbar.init();
         pmDownloads = PluginMgr.init();
+        smDownloads = StylesheetMgr.init();
         Caret.init();
         Persist.init();
-        $.when(tbDownloads, csbDownloads, pmDownloads, khmDownloads).done(function () {
+        $.when(tbDownloads, csbDownloads, pmDownloads, khmDownloads, smDownloads).done(function () {
             if (typeof QUINK.ready === 'function') {
                 QUINK.ready(PubSub);
             }
