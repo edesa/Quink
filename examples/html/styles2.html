@@ -2,20 +2,28 @@
 <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
-        <title>Quink Example - user supplied styles in external file</title>
+        <title>Quink Example - user supplied styles in a style element</title>
         <script type="text/javascript">
             QUINK = {
                 params: {
                     toolbar: 'on',
-                    styles: 'example-styles.css'
+                    styles: '#user-styles'
                 }
             };
         </script>
         <script type="text/javascript" src="../../quink.js"></script>
+        <style id="user-styles">
+            .red {
+                background-color: red;
+            }
+            .green {
+                background-color: green;
+            }
+        </style>
     </head>
     <body>
         <div contenteditable="true">
-            Tap the apply styles button in the style tab of the toolbar. This produces the apply styles menu that offers a choice of styles that can be applied to the current selection.
+            Tap the apply styles button in the style tab of the toolbar. This produces the apply styles menu populated using the user supplied style node above.
         </div>
     </body>
 </html>

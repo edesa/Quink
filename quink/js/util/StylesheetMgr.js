@@ -32,9 +32,16 @@ define([
         return promise;
     };
 
+    /**
+     * Check if there's already a quink-inlined style element or a user supplied style node specified by the 'styles' param.
+     * If there is return the stylesheet.
+     */
     StylesheetMgr.prototype.getInlinedStyle = function () {
         var styles = $('style[' + this.QUINK_ADDED_ATTR + ']'),
             stylesheet;
+        if (styles.length === 0) {
+            styles = $(Env.getParam('styles'));
+        }
         if (styles.length > 0) {
             stylesheet = styles[0].sheet;
             this.stylesheet = stylesheet;
@@ -63,11 +70,16 @@ define([
      * Returns a promise that will succeed regardless of whether there's a user defined stylesheet
      * or not.
      */
-    StylesheetMgr.prototype.init = function (theUrl) {
-        var url = theUrl || Env.getParam('styles') || Env.resource('styles.css'),
-            stylesheet = this.getInlinedStyle(url),
-            promise = stylesheet ? $.Deferred().resolve().promise() : this.getUserStylesheet(url),
-            proxy = $.Deferred();
+    StylesheetMgr.prototype.init = function () {
+        var stylesheet = this.getInlinedStyle(),
+            url, promise, proxy;
+        if (!stylesheet) {
+            url = Env.getParam('styles') || Env.resource('styles.css');
+            promise = this.getUserStylesheet(url);
+        } else {
+            promise = $.Deferred().resolve().promise();
+        }
+        proxy = $.Deferred();
         promise.done(this.createUserStyleList.bind(this)).always(function () {
             proxy.resolve();
         });
