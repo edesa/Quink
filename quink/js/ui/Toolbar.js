@@ -21,7 +21,8 @@ define([
 ], function (_, $, rangy, PopupMenu, ToolbarProvider, Event, FastTap, Draggable, PubSub, Env, ViewportRelative, HitHandler) {
     'use strict';
 
-    var Toolbar = function () {
+    var Toolbar = function (stylesheetMgr) {
+        this.stylesheetMgr = stylesheetMgr;
         HitHandler.register(this, true);
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
     };
@@ -157,10 +158,6 @@ define([
     Toolbar.prototype.showApplyStyleMenu = function (event) {
         var hit = Event.isTouch ? event.changedTouches[0] : event,
             menu = this.styleMenu;
-        // menu.css({
-        //     'top': hit.pageY,
-        //     'left': hit.pageX
-        // }).appendTo('body').removeClass('qk_hidden');
         menu.show(hit.pageX, hit.pageY);
     };
 
@@ -434,14 +431,15 @@ define([
 
     Toolbar.prototype.createStyleMenuOpts = function (stylesTpl, styles) {
         var tpl = _.template(stylesTpl),
-            menuOptsStr = tpl(styles);
+            menuOptsStr = tpl({styles: this.stylesheetMgr.getSelectors()});
+            // menuOptsStr = tpl(styles);
         return JSON.parse(menuOptsStr);
     };
 
     Toolbar.prototype.onStyleMenuSelect = function (selectedDef, menu) {
         var selected = selectedDef.value;
         if (selected !== 'cancel') {
-            PubSub.publish('command.exec', 'apply' + selected);
+            PubSub.publish('command.exec', 'style.apply.' + selected);
         }
         menu.hide();
     };
@@ -489,8 +487,8 @@ define([
 
     var toolbar;
 
-    function init() {
-        toolbar = new Toolbar();
+    function init(stylesheetMgr) {
+        toolbar = new Toolbar(stylesheetMgr);
         QUINK.configureToolbar = toolbar.configureToolbar.bind(toolbar);
         return toolbar.downloadResources();
     }

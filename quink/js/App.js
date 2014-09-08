@@ -25,6 +25,7 @@ define([
 
     function init() {
         var selector = '[contenteditable=true]',
+            stylesheetMgr,
             tbDownloads, csbDownloads, pmDownloads, khmDownloads, smDownloads;
         Persist.initFromAutoSave();
         rangy.init();
@@ -34,9 +35,10 @@ define([
         Command.init();
         csbDownloads = CommandStateBar.create();
         HitHandler.init(selector);
-        tbDownloads = Toolbar.init();
+        stylesheetMgr = new StylesheetMgr();
+        smDownloads = stylesheetMgr.init();
+        tbDownloads = Toolbar.init(stylesheetMgr);
         pmDownloads = PluginMgr.init();
-        smDownloads = StylesheetMgr.init();
         Caret.init();
         Persist.init();
         $.when(tbDownloads, csbDownloads, pmDownloads, khmDownloads, smDownloads).done(function () {

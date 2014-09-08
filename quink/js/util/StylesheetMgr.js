@@ -63,8 +63,8 @@ define([
      * Returns a promise that will succeed regardless of whether there's a user defined stylesheet
      * or not.
      */
-    StylesheetMgr.prototype.init = function () {
-        var url = Env.resource('styles.css'),
+    StylesheetMgr.prototype.init = function (theUrl) {
+        var url = theUrl || Env.resource('styles.css'),
             stylesheet = this.getInlinedStyle(url),
             promise = stylesheet ? $.Deferred().resolve().promise() : this.getUserStylesheet(url),
             proxy = $.Deferred();
@@ -78,10 +78,5 @@ define([
         return this.selectors;
     };
 
-    var theInstance = new StylesheetMgr();
-
-    return {
-        init: theInstance.init.bind(theInstance),
-        getSelectors: theInstance.getSelectors.bind(theInstance)
-    };
+    return StylesheetMgr;
 });
