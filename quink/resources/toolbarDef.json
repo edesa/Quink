@@ -191,7 +191,7 @@
                     "id": "applyStyle",
                     "hidden": false,
                     "index": 8,
-                    "cssClass": "qk_select_bg_applystyle",
+                    "cssClass": "qk_button_bg_applystyle",
                     "command": "showApplyStyleMenu"
                 }
             ]

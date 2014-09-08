@@ -266,6 +266,9 @@
 .qk_button_bg_save {
     background-image: url(../images/extra-save.png);
 }
+.qk_button_bg_applystyle {
+    background-image: url(../images/future-possibilities-highlight.png);
+}
 .qk_button_active {
     background-color: #DADADA;
 }
