@@ -430,9 +430,9 @@ define([
         this.onCommandState(this.lastCommandState);
     };
 
-    Toolbar.prototype.createStyleMenuOpts = function (stylesTpl, styles) {
+    Toolbar.prototype.createStyleMenuOpts = function (stylesTpl, styleNames) {
         var tpl = _.template(stylesTpl),
-            menuOptsStr = tpl({styles: this.stylesheetMgr.getSelectors()});
+            menuOptsStr = tpl({styles: styleNames});
         return JSON.parse(menuOptsStr);
     };
 
@@ -449,7 +449,7 @@ define([
             btn = this.toolbar.find('#qk_button_applystyle'),
             stylesDef;
         if (styleNames.length > 0) {
-            stylesDef = this.createStyleMenuOpts(styleTpl, styles);
+            stylesDef = this.createStyleMenuOpts(styleTpl, styleNames);
             this.styleMenu = new PopupMenu(stylesDef, this.onStyleMenuSelect, true);
             btn.removeClass('qk_hidden');
         } else {
