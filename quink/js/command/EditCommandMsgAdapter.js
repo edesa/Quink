@@ -12,7 +12,7 @@ define([
 
     var EditCommandMsgAdapter = function () {
         this.defaultHandler = new EditCommandHandler();
-        this.applyStyleHandler = new ApplyStyleHandler();
+        this.applyStyleHandler = ApplyStyleHandler.getInstance();
     };
 
     EditCommandMsgAdapter.prototype.ACCEPTED_IDS = [

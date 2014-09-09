@@ -5,12 +5,11 @@
  */
 
 define([
-    'Underscore',
     'jquery',
     'rangy',
     'cssapplier',
     'util/PubSub'
-], function (_, $, rangy, cssapplier, PubSub) {
+], function ($, rangy, cssapplier, PubSub) {
     'use strict';
 
     var ApplyStyleHandler = function () {
@@ -67,5 +66,18 @@ define([
         });
     };
 
-    return ApplyStyleHandler;
+    var theInstance;
+
+    function getInstance() {
+        var instance = theInstance;
+        if (!instance) {
+            theInstance = new ApplyStyleHandler();
+            instance = theInstance;
+        }
+        return instance;
+    }
+
+    return {
+        getInstance: getInstance
+    };
 });
