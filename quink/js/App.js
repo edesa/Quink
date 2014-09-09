@@ -35,7 +35,7 @@ define([
         Command.init();
         csbDownloads = CommandStateBar.create();
         HitHandler.init(selector);
-        stylesheetMgr = new StylesheetMgr();
+        stylesheetMgr = StylesheetMgr.create();
         smDownloads = stylesheetMgr.init();
         tbDownloads = Toolbar.init(stylesheetMgr);
         pmDownloads = PluginMgr.init();
