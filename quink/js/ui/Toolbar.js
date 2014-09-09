@@ -422,17 +422,17 @@ define([
         }
     };
 
-    Toolbar.prototype.processToolbar = function (html, insertMenuHtml) {
+    Toolbar.prototype.processToolbar = function (html) {
         this.toolbar = $(html).appendTo('body');
         this.afterToolbarCreated();
-        this.onDownloadInsertMenu(insertMenuHtml);
+        this.onDownloadInsertMenu(this.insertMenuHtml);
+        this.initApplyStyleMenu(this.stylesTpl, this.styles);
         this.onCommandState(this.lastCommandState);
     };
 
     Toolbar.prototype.createStyleMenuOpts = function (stylesTpl, styles) {
         var tpl = _.template(stylesTpl),
             menuOptsStr = tpl({styles: this.stylesheetMgr.getSelectors()});
-            // menuOptsStr = tpl(styles);
         return JSON.parse(menuOptsStr);
     };
 
@@ -457,24 +457,18 @@ define([
         }
     };
 
-    /*
-    Toolbar.prototype.checkShowSubmit = function () {
-        var submitBtn = this.toolbar.find('[data-cmd-args="persist.submit"]'),
-            func = !!Env.getSubmitUrl() ? submitBtn.removeClass : submitBtn.addClass;
-        func.call(submitBtn, 'qk_hidden');
-    };
-    */
     /**
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
-    Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml, styles, styleTpl) {
+    Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml, styles, stylesTpl) {
         var html;
         this.insertMenuHtml = imHtml[0];
+        this.stylesTpl = stylesTpl[0];
+        this.styles = styles[0];
         this.toolbarProvider = new ToolbarProvider(tbTpl[0], tbDef[0]);
         html = this.toolbarProvider.createToolbar(QUINK.toolbar || {});
         this.willInitToolbar = true;
-        this.processToolbar(html, this.insertMenuHtml);
-        this.initApplyStyleMenu(styleTpl[0], styles[0]);
+        this.processToolbar(html);
     };
 
     Toolbar.prototype.downloadResources = function () {
@@ -500,7 +494,7 @@ define([
         }
         this.willInitToolbar = true;
         html = provider.createToolbar(def);
-        this.processToolbar(html, this.insertMenuHtml);
+        this.processToolbar(html);
         return lastDef;
     };
 
