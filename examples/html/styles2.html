@@ -8,6 +8,14 @@
                 params: {
                     toolbar: 'on',
                     styles: '#user-styles'
+                },
+                ready: function () {
+                    QUINK.configureToolbar({
+                       groups: [{
+                           id: 'style',
+                           active: true
+                       }],
+                    });
                 }
             };
         </script>
