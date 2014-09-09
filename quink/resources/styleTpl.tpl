@@ -3,7 +3,8 @@
         <% _.each(styles, function(style, index, styles) { %>
             {
                 "label": "<%= style %>",
-                "value": "<%= style %>"
+                "value": "<%= style %>",
+                "cssClass": "<%= style %>"
             },
         <% }); %>
         {
