@@ -16,13 +16,14 @@ define([
         this.menuDef = menuDef;
         this.callback = callback;
         this.isMultiSelect = isMultiSelect;
+        this.hiddenCss = isMultiSelect ? 'qk_invisible' : 'qk_hidden';
         this.downloadTpl();
     };
 
     PopupMenu.prototype.MENU_ITEM_SELECTOR = '.qk_popup_menu_item';
 
     PopupMenu.prototype.updateState = function (markup, state) {
-        markup.find('.qk_popup_menu_item[id="' + state + '"] .qk_popup_menu_item_state').toggleClass('qk_invisible');
+        markup.find('.qk_popup_menu_item[id="' + state + '"] .qk_popup_menu_item_state').toggleClass(this.hiddenCss);
     };
 
     PopupMenu.prototype.onSelect = function (event) {
@@ -32,8 +33,13 @@ define([
                 return def.value === id;
             });
         event.preventDefault(); // stops the menu being focused
-        this.updateState(this.menu, selectedDef.value);
+        if (this.isMultiSelect && selectedDef.value !== 'close') {
+            this.updateState(this.menu, selectedDef.value);
+        }
         this.callback(selectedDef, this);
+        if (!this.isMultiSelect || selectedDef.value === 'close') {
+            this.hide();
+        }
     };
 
     PopupMenu.prototype.downloadTpl = function () {
@@ -48,13 +54,14 @@ define([
                 stateEl = itemEl.find('.qk_popup_menu_item_state'),
                 id = itemEl.attr('id'),
                 func = menuState.indexOf(id) >= 0 ? stateEl.removeClass : stateEl.addClass;
-            func.call(stateEl, 'qk_invisible');
+            func.call(stateEl, this.hiddenCss);
         });
     };
 
     PopupMenu.prototype.createMenu = function (def) {
         var markup = $(this.menuTpl(def));
         markup.on(Event.eventName('start'), this.MENU_ITEM_SELECTOR, this.onSelect.bind(this));
+        markup.find('.qk_popup_menu_item_state').addClass(this.hiddenCss);
         return markup;
     };
 

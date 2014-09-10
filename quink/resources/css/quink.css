@@ -375,9 +375,7 @@ button {
 }
 .qk_popup_menu_item_state {
     float: right;
-}
-.qk_popup_menu_item_label {
-    margin-right: 20px;
+    margin-left: 20px;
 }
 .qk_info_container {
     position: fixed;

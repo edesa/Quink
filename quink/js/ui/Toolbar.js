@@ -438,12 +438,10 @@ define([
         return JSON.parse(menuOptsStr);
     };
 
-    Toolbar.prototype.onStyleMenuSelect = function (selectedDef, menu) {
+    Toolbar.prototype.onStyleMenuSelect = function (selectedDef) {
         var selected = selectedDef.value;
         if (selected !== 'close') {
             PubSub.publish('command.exec', 'style.apply.' + selected);
-        } else {
-            menu.hide();
         }
     };
 
