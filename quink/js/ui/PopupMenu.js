@@ -49,12 +49,13 @@ define([
     };
 
     PopupMenu.prototype.applyState = function (markup, menuState) {
+        var hiddenCss = this.hiddenCss;
         markup.find('.qk_popup_menu_item').each(function () {
             var itemEl = $(this),
                 stateEl = itemEl.find('.qk_popup_menu_item_state'),
                 id = itemEl.attr('id'),
                 func = menuState.indexOf(id) >= 0 ? stateEl.removeClass : stateEl.addClass;
-            func.call(stateEl, this.hiddenCss);
+            func.call(stateEl, hiddenCss);
         });
     };
 
