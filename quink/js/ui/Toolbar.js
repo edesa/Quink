@@ -281,7 +281,8 @@ define([
     Toolbar.prototype.addToolbarTabListeners = function () {
         var toolbar = this;
         $('.qk_toolbar_tab_button').each(function () {
-            FastTap.fastTapNoFocus(this, toolbar.cmdHandler.bind(toolbar));
+            // FastTap.fastTapNoFocus(this, toolbar.cmdHandler.bind(toolbar));
+            FastTap.fastTap(this, toolbar.cmdHandler, toolbar);
         });
     };
 

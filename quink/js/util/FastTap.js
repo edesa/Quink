@@ -184,10 +184,11 @@ define([
      * Fast tap without restoring the focus and selection when the handler function
      * is executed.
      */
-    function fastTapNoFocus(el, handler, context) {
-        var func = context ? handler.bind(context) : handler;
-        create(el, func, false, false, false);
-    }
+    // function fastTapNoFocus(el, handler, context) {
+    //     var func = context ? handler.bind(context) : handler;
+    //     // create(el, func, false, false, false);
+    //     create(el, func, true, false, false);
+    // }
 
     /**
      * Assumes this isn't called between a touchstart and touchend event, so only
@@ -225,7 +226,7 @@ define([
     return {
         create: create,
         fastTap: fastTap,
-        fastTapNoFocus: fastTapNoFocus,
+        // fastTapNoFocus: fastTapNoFocus,
         noTap: noTap,
         doubleTap: doubleTap
     };
