@@ -373,6 +373,12 @@ button {
 .qk_popup_menu_item:last-child {
     border-bottom-width: 0px;
 }
+.qk_popup_menu_item_state {
+    float: right;
+}
+.qk_popup_menu_item_label {
+    margin-right: 20px;
+}
 .qk_info_container {
     position: fixed;
     left: 5%;

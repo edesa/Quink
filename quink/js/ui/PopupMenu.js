@@ -36,19 +36,30 @@ define([
         }.bind(this));
     };
 
+    PopupMenu.prototype.applyState = function (markup, menuState) {
+        markup.find('.qk_popup_menu_item').each(function () {
+            var itemEl = $(this),
+                stateEl = itemEl.find('.qk_popup_menu_item_state'),
+                id = itemEl.attr('id'),
+                func = menuState.indexOf(id) >= 0 ? stateEl.removeClass : stateEl.addClass;
+            func.call(stateEl, 'qk_hidden');
+        });
+    };
+
     PopupMenu.prototype.createMenu = function (def) {
         var markup = $(this.menuTpl(def));
         markup.on(Event.eventName('start'), this.MENU_ITEM_SELECTOR, this.onSelect.bind(this));
         return markup;
     };
 
-    PopupMenu.prototype.show = function (x, y) {
+    PopupMenu.prototype.show = function (x, y, menuState) {
         var menu = this.menu;
         if (!menu) {
             this.menu = this.createMenu(this.menuDef);
             menu = this.menu;
             menu.appendTo('body');
         }
+        this.applyState(menu, menuState);
         menu.css({
             top: y,
             left: x

@@ -5,11 +5,12 @@
  */
 
 define([
+    'Underscore',
     'jquery',
     'rangy',
     'cssapplier',
     'util/PubSub'
-], function ($, rangy, cssapplier, PubSub) {
+], function (_, $, rangy, cssapplier, PubSub) {
     'use strict';
 
     var ApplyStyleHandler = function () {
@@ -64,6 +65,14 @@ define([
             args: args,
             result: true
         });
+    };
+
+    ApplyStyleHandler.prototype.isApplied = function (styles) {
+        var appliedStyles = _.filter(styles, function (style) {
+            var applier = this.getApplier(style);
+            return applier.isAppliedToSelection();
+        }.bind(this));
+        return appliedStyles;
     };
 
     var theInstance;

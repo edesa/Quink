@@ -9,6 +9,7 @@ define([
     'Underscore',
     'jquery',
     'rangy',
+    'command/ApplyStyleHandler',
     'ui/PopupMenu',
     'ui/ToolbarProvider',
     'util/Event',
@@ -18,7 +19,7 @@ define([
     'util/Env',
     'util/ViewportRelative',
     'hithandler/HitHandler'
-], function (_, $, rangy, PopupMenu, ToolbarProvider, Event, FastTap, Draggable, PubSub, Env, ViewportRelative, HitHandler) {
+], function (_, $, rangy, ApplyStyleHandler, PopupMenu, ToolbarProvider, Event, FastTap, Draggable, PubSub, Env, ViewportRelative, HitHandler) {
     'use strict';
 
     var Toolbar = function (stylesheetMgr) {
@@ -157,8 +158,9 @@ define([
 
     Toolbar.prototype.showApplyStyleMenu = function (event) {
         var hit = Event.isTouch ? event.changedTouches[0] : event,
-            menu = this.styleMenu;
-        menu.show(hit.pageX, hit.pageY);
+            menu = this.styleMenu,
+            styleState = ApplyStyleHandler.getInstance().isApplied(this.stylesheetMgr.getSelectors());
+        menu.show(hit.pageX, hit.pageY, styleState);
     };
 
     /**
