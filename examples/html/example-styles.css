@@ -1,32 +1,56 @@
 /* Css classes added here will be offered as options in the apply style menu. */
 
-.h1 {
+.Title {
     font-weight: bold;
     font-size: 2em;
 }
-.h2 {
+.Heading {
     font-weight: bold;
     font-size: 1.5em;
 }
-.h3 {
+.SubHeading {
     font-weight: bold;
     font-size: 1.17em;
 }
-.h4 {
+.Bold {
     font-weight: bold;
-    font-size: 1em;
 }
-.h5 {
-    font-weight: bold;
-    font-size: 0.83em;
+.Italic {
+    font-style: italic;
 }
-.h6 {
-    font-weight: bold;
-    font-size: 0.67em;
+.Arial {
+    font-family: Arial, Helvetica, sans-serif;
 }
-.red {
+.Comic_Sans_MS {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+}
+.Arial_Black {
+    font-family: "Arial Black", Gadget, sans-serif;
+}
+.Impact {
+    font-family: Impact, Charcoal, sans-serif;
+}
+.Copperplate {
+  font-family:  Copperplate, "Copperplate Gothic Light", fantasy;
+}
+.Brush_Script {
+  font-family:  "Brush Script MT", cursive;
+}
+.Courier {
+    font-family: "Courier New", Courier, monospace;
+}
+.Times_New_Roman {
+    font-family: "Times New Roman", Times, serif;
+}
+.Stroke_Red {
+    color: red;
+}
+.Stroke_Blue {
+    color: blue;
+}
+.Highlight_Red {
     background-color: red;
 }
-.green {
+.Highlight_Green {
     background-color: green;
 }
