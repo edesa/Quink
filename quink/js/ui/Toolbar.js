@@ -440,10 +440,11 @@ define([
 
     Toolbar.prototype.onStyleMenuSelect = function (selectedDef, menu) {
         var selected = selectedDef.value;
-        if (selected !== 'cancel') {
+        if (selected !== 'close') {
             PubSub.publish('command.exec', 'style.apply.' + selected);
+        } else {
+            menu.hide();
         }
-        menu.hide();
     };
 
     Toolbar.prototype.initApplyStyleMenu = function (styleTpl, styles) {

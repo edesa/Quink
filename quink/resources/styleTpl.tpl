@@ -8,8 +8,8 @@
             },
         <% }); %>
         {
-            "label": "cancel",
-            "value": "cancel"
+            "label": "close",
+            "value": "close"
         }
     ]
 }

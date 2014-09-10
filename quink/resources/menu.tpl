@@ -8,7 +8,7 @@
         %>
         <div class="<%= classes %>" id="<%= opt.value %>">
             <span class="qk_popup_menu_item_label"><%= opt.label %></span>
-            <span class="qk_popup_menu_item_state qk_hidden">&#10004;</span>
+            <span class="qk_popup_menu_item_state qk_invisible">&#10004;</span>
         </div>
     <% }); %>
 </div>

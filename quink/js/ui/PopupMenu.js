@@ -12,13 +12,24 @@ define([
 ], function (_, $, Event, Env) {
     'use strict';
 
-    var PopupMenu = function (menuDef, callback) {
+    var PopupMenu = function (menuDef, callback, isMultiSelect) {
         this.menuDef = menuDef;
         this.callback = callback;
+        this.isMultiSelect = isMultiSelect;
         this.downloadTpl();
     };
 
     PopupMenu.prototype.MENU_ITEM_SELECTOR = '.qk_popup_menu_item';
+
+    // PopupMenu.prototype.updateState = function (markup, state) {
+    //     var item = markup.find('.qk_popup_menu_item[id="' + state + '"]'),
+    //         stateEl = item.find('.qk_popup_menu_item_state');
+    //     stateEl.toggleClass('qk_invisible');
+    // };
+
+    PopupMenu.prototype.updateState = function (markup, state) {
+        markup.find('.qk_popup_menu_item[id="' + state + '"] .qk_popup_menu_item_state').toggleClass('qk_invisible');
+    };
 
     PopupMenu.prototype.onSelect = function (event) {
         var menuItem = $(event.target).closest(this.MENU_ITEM_SELECTOR),
@@ -27,6 +38,7 @@ define([
                 return def.value === id;
             });
         event.preventDefault(); // stops the menu being focused
+        this.updateState(this.menu, selectedDef.value);
         this.callback(selectedDef, this);
     };
 
@@ -42,7 +54,7 @@ define([
                 stateEl = itemEl.find('.qk_popup_menu_item_state'),
                 id = itemEl.attr('id'),
                 func = menuState.indexOf(id) >= 0 ? stateEl.removeClass : stateEl.addClass;
-            func.call(stateEl, 'qk_hidden');
+            func.call(stateEl, 'qk_invisible');
         });
     };
 
@@ -59,7 +71,9 @@ define([
             menu = this.menu;
             menu.appendTo('body');
         }
-        this.applyState(menu, menuState);
+        if (this.isMultiSelect) {
+            this.applyState(menu, menuState);
+        }
         menu.css({
             top: y,
             left: x
