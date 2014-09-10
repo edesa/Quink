@@ -21,12 +21,6 @@ define([
 
     PopupMenu.prototype.MENU_ITEM_SELECTOR = '.qk_popup_menu_item';
 
-    // PopupMenu.prototype.updateState = function (markup, state) {
-    //     var item = markup.find('.qk_popup_menu_item[id="' + state + '"]'),
-    //         stateEl = item.find('.qk_popup_menu_item_state');
-    //     stateEl.toggleClass('qk_invisible');
-    // };
-
     PopupMenu.prototype.updateState = function (markup, state) {
         markup.find('.qk_popup_menu_item[id="' + state + '"] .qk_popup_menu_item_state').toggleClass('qk_invisible');
     };
