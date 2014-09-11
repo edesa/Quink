@@ -7,9 +7,10 @@
 define([
     'Underscore',
     'jquery',
+    'ui/Mask',
     'util/Event',
     'util/Env'
-], function (_, $, Event, Env) {
+], function (_, $, Mask, Event, Env) {
     'use strict';
 
     var PopupMenu = function (menuDef, callback, isMultiSelect) {
@@ -59,17 +60,17 @@ define([
         });
     };
 
-    PopupMenu.prototype.createMask = function () {
-        return $('<div>').addClass('qk_mask')
-            .css('opacity', '0')
-            .on('touchmove', function (event) {
-                event.preventDefault();
-            })
-            .on(Event.eventName('start'), function (event) {
-                event.preventDefault();
-                this.hide();
-            }.bind(this));
-    };
+    // PopupMenu.prototype.createMask = function () {
+    //     return $('<div>').addClass('qk_mask')
+    //         .css('opacity', '0')
+    //         .on('touchmove', function (event) {
+    //             event.preventDefault();
+    //         })
+    //         .on(Event.eventName('start'), function (event) {
+    //             event.preventDefault();
+    //             this.hide();
+    //         }.bind(this));
+    // };
 
     PopupMenu.prototype.createMenu = function (def) {
         var markup = $(this.menuTpl(def));
@@ -83,13 +84,15 @@ define([
         if (!menu) {
             this.menu = this.createMenu(this.menuDef);
             menu = this.menu;
-            this.mask = this.createMask();
+            // this.mask = this.createMask();
+            this.mask = new Mask(this.hide.bind(this));
             menu.appendTo('body');
         }
         if (this.isMultiSelect) {
             this.applyState(menu, menuState);
         }
-        this.mask.appendTo('body');
+        // this.mask.appendTo('body');
+        this.mask.show();
         menu.css({
             top: y,
             left: x
@@ -99,7 +102,8 @@ define([
 
     PopupMenu.prototype.hide = function () {
         this.menu.addClass('qk_hidden');
-        this.mask.detach();
+        // this.mask.detach();
+        this.mask.hide();
     };
 
     return PopupMenu;
