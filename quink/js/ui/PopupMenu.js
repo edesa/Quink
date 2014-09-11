@@ -60,18 +60,6 @@ define([
         });
     };
 
-    // PopupMenu.prototype.createMask = function () {
-    //     return $('<div>').addClass('qk_mask')
-    //         .css('opacity', '0')
-    //         .on('touchmove', function (event) {
-    //             event.preventDefault();
-    //         })
-    //         .on(Event.eventName('start'), function (event) {
-    //             event.preventDefault();
-    //             this.hide();
-    //         }.bind(this));
-    // };
-
     PopupMenu.prototype.createMenu = function (def) {
         var markup = $(this.menuTpl(def));
         markup.on(Event.eventName('start'), this.MENU_ITEM_SELECTOR, this.onSelect.bind(this));
@@ -84,14 +72,12 @@ define([
         if (!menu) {
             this.menu = this.createMenu(this.menuDef);
             menu = this.menu;
-            // this.mask = this.createMask();
-            this.mask = new Mask(this.hide.bind(this));
+            this.mask = new Mask(this.hide.bind(this), 0);
             menu.appendTo('body');
         }
         if (this.isMultiSelect) {
             this.applyState(menu, menuState);
         }
-        // this.mask.appendTo('body');
         this.mask.show();
         menu.css({
             top: y,
@@ -102,7 +88,6 @@ define([
 
     PopupMenu.prototype.hide = function () {
         this.menu.addClass('qk_hidden');
-        // this.mask.detach();
         this.mask.hide();
     };
 

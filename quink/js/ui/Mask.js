@@ -21,7 +21,7 @@ define([
                 event.preventDefault();
             })
             .on(Event.eventName('start'), this.onTap.bind(this));
-        if (this.opacity) {
+        if (this.opacity !== undefined) {
             mask.css('opacity', this.opacity);
         }
         return mask;
