@@ -48,5 +48,15 @@ define([
         mask.appendTo('body');
     };
 
-    return Mask;
+    function create(onHide, opacity) {
+        var instance = new Mask(onHide, opacity);
+        return {
+            show: instance.show.bind(instance),
+            hide: instance.hide.bind(instance)
+        };
+    }
+
+    return {
+        create: create
+    };
 });

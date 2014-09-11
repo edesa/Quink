@@ -72,7 +72,7 @@ define([
         if (!menu) {
             this.menu = this.createMenu(this.menuDef);
             menu = this.menu;
-            this.mask = new Mask(this.hide.bind(this), 0);
+            this.mask = Mask.create(this.hide.bind(this), 0);
             menu.appendTo('body');
         }
         if (this.isMultiSelect) {
