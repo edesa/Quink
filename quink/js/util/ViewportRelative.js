@@ -14,6 +14,13 @@ define([
     }
 
     /**
+     * WebKit/Blink seems to use document.body, but FireFox uses document.documentElement.scrollTop.
+     */
+    function getScrollTop() {
+        return document.documentElement.scrollTop || document.body.scrollTop || 0;
+    }
+
+    /**
      * Implements something like css position: fixed, which is a fixed postion relative to
      * the viewport. Css can't be used on its own as iOS ignores position: fixed when the
      * keyboard is active.
@@ -54,7 +61,7 @@ define([
     ViewportRelative.prototype.makeRelative = function () {
         var bst, pos;
         if (this.el.is(':visible')) {
-            bst = $('body').scrollTop();
+            bst = getScrollTop();
             if (!this.position) {
                 this.position = pos = {
                     top: parseInt(this.el.css('top'), 10) - bst
@@ -72,7 +79,7 @@ define([
      */
     ViewportRelative.prototype.adjust = function () {
         this.position  = this.position || {};
-        this.position.top = parseInt(this.el.css('top'), 10) - $('body').scrollTop();
+        this.position.top = parseInt(this.el.css('top'), 10) - getScrollTop();
     };
 
     ViewportRelative.prototype.onDragEnd = function (draggable) {
@@ -93,7 +100,7 @@ define([
      */
     FixedPosition.prototype.adjust = function () {
         var top = parseInt(this.el.css('top'), 10);
-        this.el.css('top', top - $('body').scrollTop());
+        this.el.css('top', top - getScrollTop());
     };
 
     function create(selOrEl, pos) {

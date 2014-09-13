@@ -45,6 +45,8 @@ define([
             this.mask = this.createMask();
             mask = this.mask;
         }
+        // Pure css approach doesn't work on iOS
+        mask.height($(document).height());
         mask.appendTo('body');
     };
 

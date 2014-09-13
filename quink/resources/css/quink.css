@@ -355,7 +355,7 @@ button {
     right: 0px;
 }
 .qk_popup_menu {
-    position: absolute;
+    position: fixed;
     z-index: 1000;
     padding: 0px;
     font-family: 'Lucida Grande';
@@ -431,7 +431,7 @@ button {
     overflow: hidden;
 }
 .qk_mask {
-    position: fixed;
+    position: absolute;
     left: 0px;
     top: 0px;
     right: 0px;

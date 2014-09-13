@@ -9,8 +9,9 @@ define([
     'jquery',
     'ui/Mask',
     'util/Event',
-    'util/Env'
-], function (_, $, Mask, Event, Env) {
+    'util/Env',
+    'util/ViewportRelative'
+], function (_, $, Mask, Event, Env, ViewportRelative) {
     'use strict';
 
     var PopupMenu = function (menuDef, callback, isMultiSelect) {
@@ -68,12 +69,17 @@ define([
     };
 
     PopupMenu.prototype.show = function (x, y, menuState) {
-        var menu = this.menu;
+        var menu = this.menu,
+            created;
         if (!menu) {
             this.menu = this.createMenu(this.menuDef);
             menu = this.menu;
             this.mask = Mask.create(this.hide.bind(this), 0);
             menu.appendTo('body');
+            this.vpMenu = ViewportRelative.create(menu, {
+                top: y
+            });
+            created = true;
         }
         if (this.isMultiSelect) {
             this.applyState(menu, menuState);
@@ -83,6 +89,7 @@ define([
             top: y,
             left: x
         });
+        this.vpMenu.adjust();
         menu.removeClass('qk_hidden');
     };
 
