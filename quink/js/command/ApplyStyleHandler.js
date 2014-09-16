@@ -67,11 +67,17 @@ define([
         });
     };
 
+    /**
+     * applier.isAppliedToSelection appears to return true when there is no selection.
+     */
     ApplyStyleHandler.prototype.isApplied = function (styles) {
-        var appliedStyles = _.filter(styles, function (style) {
-            var applier = this.getApplier(style);
-            return applier.isAppliedToSelection();
-        }.bind(this));
+        var appliedStyles = [];
+        if (rangy.getSelection().rangeCount > 0) {
+            appliedStyles = _.filter(styles, function (style) {
+                var applier = this.getApplier(style);
+                return applier.isAppliedToSelection();
+            }.bind(this));
+        }
         return appliedStyles;
     };
 
