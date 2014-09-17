@@ -14,12 +14,13 @@ define([
 ], function (_, $, Mask, Event, Env, ViewportRelative) {
     'use strict';
 
+    var menuTpl;
+
     var PopupMenu = function (menuDef, callback, isMultiSelect) {
         this.menuDef = menuDef;
         this.callback = callback;
         this.isMultiSelect = isMultiSelect;
         this.hiddenCss = isMultiSelect ? 'qk_invisible' : 'qk_hidden';
-        this.downloadTpl();
     };
 
     PopupMenu.prototype.MENU_ITEM_SELECTOR = '.qk_popup_menu_item';
@@ -31,7 +32,7 @@ define([
     PopupMenu.prototype.onSelect = function (event) {
         var menuItem = $(event.target).closest(this.MENU_ITEM_SELECTOR),
             id = menuItem.attr('id'),
-            selectedDef = _.find(this.menuDef.options, function (def) {
+            selectedDef = _.find(this.menuDef, function (def) {
                 return def.value === id;
             });
         event.preventDefault(); // stops the menu being focused
@@ -44,11 +45,11 @@ define([
         }
     };
 
-    PopupMenu.prototype.downloadTpl = function () {
-        $.get(Env.resource('menu.tpl')).done(function (tpl) {
-            this.menuTpl = _.template(tpl);
-        }.bind(this));
-    };
+    // PopupMenu.prototype.downloadTpl = function () {
+    //     $.get(Env.resource('menu.tpl')).done(function (tpl) {
+    //         this.menuTpl = _.template(tpl);
+    //     }.bind(this));
+    // };
 
     PopupMenu.prototype.applyState = function (markup, menuState) {
         var hiddenCss = this.hiddenCss;
@@ -62,7 +63,7 @@ define([
     };
 
     PopupMenu.prototype.createMenu = function (def) {
-        var markup = $(this.menuTpl(def));
+        var markup = $(menuTpl({options: def}));
         markup.on(Event.eventName('start'), this.MENU_ITEM_SELECTOR, this.onSelect.bind(this));
         markup.find('.qk_popup_menu_item_state').addClass(this.hiddenCss);
         return markup;
@@ -98,5 +99,18 @@ define([
         this.mask.hide();
     };
 
-    return PopupMenu;
+    function create(menuDef, callback, isMultiSelect) {
+        return new PopupMenu(menuDef, callback, isMultiSelect);
+    }
+
+    function init() {
+        return $.get(Env.resource('menu.tpl')).done(function (tpl) {
+            menuTpl = _.template(tpl);
+        });
+    }
+
+    return {
+        create: create,
+        init: init
+    };
 });

@@ -9,13 +9,38 @@
                     toolbar: 'on',
                     styles: 'example-styles.css'
                 },
-                ready: function () {
+                ready: function (PubSub) {
                     QUINK.configureToolbar({
                        groups: [{
                            id: 'style',
                            active: true
                        }],
                     });
+                    var names;
+                    require(['util/StylesheetMgr'], function (StylesheetMgr) {
+                        names = StylesheetMgr.getInstance().getSelectors();
+                    });
+                    QUINK.getFontStyleValues = function () {
+                        var result = names.slice();
+                        result.push('close');
+                        return result;
+                    };
+                    QUINK.getFontStyleLabels = function (value) {
+                        return {
+                            label: value.replace(/_/g, ' '),
+                            cssClass: value
+                        };
+                    };
+                    QUINK.getFontStyleState = function () {
+                        return [];
+                    };
+                    QUINK.onFontStyleSelect = function (selectedDef) {
+                        var selected = selectedDef.value;
+                        console.log('font style select!');
+                        if (selected !== 'close') {
+                            PubSub.publish('command.exec', 'style.apply.' + selected);
+                        }
+                    };
                 }
             };
         </script>

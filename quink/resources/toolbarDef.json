@@ -193,7 +193,8 @@
                     "index": 8,
                     "elId": "qk_button_applystyle",
                     "cssClass": "qk_button_bg_applystyle",
-                    "command": "showApplyStyleMenu"
+                    "command": "showMenu",
+                    "commandArgs": "getFontStyleValues, getFontStyleLabels, getFontStyleState, onFontStyleSelect"
                 }
             ]
         },

@@ -163,6 +163,48 @@ define([
         menu.show(hit.pageX, hit.pageY, styleState);
     };
 
+    Toolbar.prototype.createMenuDef = function (valueFuncName, labelFuncName) {
+        var values = this.execFunc(valueFuncName);
+        return _.map(values, function (val) {
+            var obj = this.execFunc(labelFuncName, [val]),
+                result;
+            if (_.isString(obj)) {
+                result = {
+                    value: val,
+                    label: obj
+                };
+            } else {
+                obj.value = val;
+                result = obj;
+            }
+            return result;
+        }.bind(this));
+    };
+
+    Toolbar.prototype.createMenu = function (valueFuncName, labelFuncName, callbackFuncName) {
+        var def = this.createMenuDef(valueFuncName, labelFuncName);
+        return PopupMenu.create(def, function () {
+            return this.execFunc(callbackFuncName, arguments);
+        }.bind(this), true);
+    };
+
+    Toolbar.prototype.showMenu = function (event, args) {
+        var hit = Event.isTouch ? event.changedTouches[0] : event,
+            funcNames = args && _.map(args.split(','), function (name) {
+                return name.trim();
+            }),
+            state;
+        if (funcNames) {
+            if (!this.menu) {
+                this.menu = this.createMenu(funcNames[0], funcNames[1], funcNames[3]);
+            }
+            state = this.execFunc(funcNames[2]);
+            this.menu.show(hit.pageX, hit.pageY, state);
+        } else {
+            console.log('Invalid menu definition');
+        }
+    };
+
     /**
      * For commands that are going to use the browser's execCommand.
      */
@@ -175,12 +217,18 @@ define([
      * first of which is the event object.
      */
     Toolbar.prototype.execFunc = function (id, args) {
-        var func = this[id];
-        if (typeof func === 'function') {
-            func.apply(this, args);
+        function inContext(ctx, name) {
+            return typeof ctx[name] === 'function' && ctx[name].bind(ctx);
+        }
+
+        var func = inContext(this, id) || inContext(QUINK, id) || inContext(window, id),
+            result;
+        if (func) {
+            result = func.apply(this, args);
         } else {
             console.log('no function: ' + id);
         }
+        return result;
     };
 
     /**
@@ -428,10 +476,11 @@ define([
         this.toolbar = $(html).appendTo('body');
         this.afterToolbarCreated();
         this.onDownloadInsertMenu(this.insertMenuHtml);
-        this.initApplyStyleMenu(this.stylesTpl, this.styles);
+        // this.initApplyStyleMenu(this.stylesTpl, this.stylesheetMgr.getSelectors());
         this.onCommandState(this.lastCommandState);
     };
 
+    /*
     Toolbar.prototype.createStyleMenuOpts = function (stylesTpl, styleNames) {
         var tpl = _.template(stylesTpl),
             menuOptsStr = tpl({styles: styleNames});
@@ -445,27 +494,26 @@ define([
         }
     };
 
-    Toolbar.prototype.initApplyStyleMenu = function (styleTpl, styles) {
-        var styleNames = this.stylesheetMgr.getSelectors(),
-            btn = this.toolbar.find('#qk_button_applystyle'),
+    Toolbar.prototype.initApplyStyleMenu = function (styleTpl, styleNames) {
+        var btn = this.toolbar.find('#qk_button_applystyle'),
             stylesDef;
         if (styleNames.length > 0) {
             stylesDef = this.createStyleMenuOpts(styleTpl, styleNames);
-            this.styleMenu = new PopupMenu(stylesDef, this.onStyleMenuSelect, true);
+            this.styleMenu = PopupMenu.create(stylesDef, this.onStyleMenuSelect, true);
             btn.removeClass('qk_hidden');
         } else {
             btn.addClass('qk_hidden');
         }
     };
+    */
 
     /**
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
-    Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml, styles, stylesTpl) {
+    Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml, stylesTpl) {
         var html;
         this.insertMenuHtml = imHtml[0];
         this.stylesTpl = stylesTpl[0];
-        this.styles = styles[0];
         this.toolbarProvider = new ToolbarProvider(tbTpl[0], tbDef[0]);
         html = this.toolbarProvider.createToolbar(QUINK.toolbar || {});
         this.willInitToolbar = true;
@@ -474,10 +522,9 @@ define([
 
     Toolbar.prototype.downloadResources = function () {
         var downloads = $.when($.get(Env.resource('toolbarDef.json')),
-                            $.get(Env.resource('toolbarTpl.tpl')),
-                            $.get(Env.resource('insertmenu.html')),
-                            $.get(Env.resource('styles.json')),
-                            $.get(Env.resource('styleTpl.tpl')));
+            $.get(Env.resource('toolbarTpl.tpl')),
+            $.get(Env.resource('insertmenu.html')),
+            $.get(Env.resource('styleTpl.tpl')));
         downloads.done(this.onDownload.bind(this));
         downloads.fail(function () {
             console.log('toolbar download failed...');

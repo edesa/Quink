@@ -5,9 +5,10 @@
  */
 
 define([
+    'Underscore',
     'jquery',
     'util/Env'
-], function ($, Env) {
+], function (_, $, Env) {
     'use strict';
 
     var StylesheetMgr = function () {
@@ -67,6 +68,12 @@ define([
         return stylesheet;
     };
 
+    StylesheetMgr.prototype.getMatchingSelectors = function (regex) {
+        return _.filter(this.getSelectors, function (name) {
+            return regex.test(name);
+        });
+    };
+
     /**
      * selectorOrUrl can be either a selector for a style element in the document or a url for a stylesheet. If there's
      * no selectorOrUrl the 'styles' url parameter will be checked and failing that the resource styles.css will be used.
@@ -90,19 +97,37 @@ define([
         return proxy;
     };
 
-    StylesheetMgr.prototype.getSelectors = function () {
-        return this.selectors;
+    StylesheetMgr.prototype.getSelectors = function (regex) {
+        var result;
+        if (regex) {
+            result = this.getMatchingSelectors(regex);
+        } else {
+            result = this.selectors;
+        }
+        return result;
     };
 
-    function create() {
-        var mgr = new StylesheetMgr();
-        return {
-            init: mgr.init.bind(mgr),
-            getSelectors: mgr.getSelectors.bind(mgr)
-        };
+    var theInstance;
+
+    function getInstance() {
+        if (!theInstance) {
+            theInstance = new StylesheetMgr();
+        }
+        return theInstance;
     }
 
     return {
-        create: create
+        getInstance: getInstance
     };
+    // function create() {
+    //     var mgr = new StylesheetMgr();
+    //     return {
+    //         init: mgr.init.bind(mgr),
+    //         getSelectors: mgr.getSelectors.bind(mgr)
+    //     };
+    // }
+    //
+    // return {
+    //     create: create
+    // };
 });
