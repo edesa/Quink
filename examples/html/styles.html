@@ -3,48 +3,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
         <title>Quink Example - user supplied styles in external file</title>
-        <script type="text/javascript">
-            QUINK = {
-                params: {
-                    toolbar: 'on',
-                    styles: 'example-styles.css'
-                },
-                ready: function (PubSub) {
-                    QUINK.configureToolbar({
-                       groups: [{
-                           id: 'style',
-                           active: true
-                       }],
-                    });
-                    var StyleMgr, StyleHandler;
-                    require(['util/StylesheetMgr', 'command/ApplyStyleHandler'], function (StylesheetMgr, ApplyStyleHandler) {
-                        StyleMgr = StylesheetMgr;
-                        StyleHandler = ApplyStyleHandler;
-                    });
-                    QUINK.getFontStyleValues = function () {
-                        var result = StyleMgr.getInstance().getSelectors().slice();
-                        result.push('close');
-                        return result;
-                    };
-                    QUINK.getFontStyleLabels = function (value) {
-                        return {
-                            label: value.replace(/_/g, ' '),
-                            cssClass: value
-                        };
-                    };
-                    QUINK.getFontStyleState = function () {
-                        return StyleHandler.getInstance().isApplied(StyleMgr.getInstance().getSelectors());
-                    };
-                    QUINK.onFontStyleSelect = function (selectedDef) {
-                        var selected = selectedDef.value;
-                        console.log('font style select!');
-                        if (selected !== 'close') {
-                            PubSub.publish('command.exec', 'style.apply.' + selected);
-                        }
-                    };
-                }
-            };
-        </script>
+        <script type="text/javascript" src="../scripts/styles.js"></script>
         <script type="text/javascript" src="../../quink.js"></script>
     </head>
     <body>
