@@ -53,12 +53,6 @@ define([
         }
     };
 
-    // PopupMenu.prototype.downloadTpl = function () {
-    //     $.get(Env.resource('menu.tpl')).done(function (tpl) {
-    //         this.menuTpl = _.template(tpl);
-    //     }.bind(this));
-    // };
-
     PopupMenu.prototype.applyState = function (markup, menuState) {
         var hiddenCss = this.hiddenCss;
         markup.find('.qk_popup_menu_item').each(function () {
