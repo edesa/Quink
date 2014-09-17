@@ -156,12 +156,12 @@ define([
         PubSub.publish('command.exec', 'insert.' + pluginId);
     };
 
-    Toolbar.prototype.showApplyStyleMenu = function (event) {
-        var hit = Event.isTouch ? event.changedTouches[0] : event,
-            menu = this.styleMenu,
-            styleState = ApplyStyleHandler.getInstance().isApplied(this.stylesheetMgr.getSelectors());
-        menu.show(hit.pageX, hit.pageY, styleState);
-    };
+    // Toolbar.prototype.showApplyStyleMenu = function (event) {
+    //     var hit = Event.isTouch ? event.changedTouches[0] : event,
+    //         menu = this.styleMenu,
+    //         styleState = ApplyStyleHandler.getInstance().isApplied(this.stylesheetMgr.getSelectors());
+    //     menu.show(hit.pageX, hit.pageY, styleState);
+    // };
 
     Toolbar.prototype.createMenuDef = function (valueFuncName, labelFuncName) {
         var values = this.execFunc(valueFuncName);
