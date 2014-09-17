@@ -156,13 +156,6 @@ define([
         PubSub.publish('command.exec', 'insert.' + pluginId);
     };
 
-    // Toolbar.prototype.showApplyStyleMenu = function (event) {
-    //     var hit = Event.isTouch ? event.changedTouches[0] : event,
-    //         menu = this.styleMenu,
-    //         styleState = ApplyStyleHandler.getInstance().isApplied(this.stylesheetMgr.getSelectors());
-    //     menu.show(hit.pageX, hit.pageY, styleState);
-    // };
-
     Toolbar.prototype.createMenuDef = function (valueFuncName, labelFuncName) {
         var values = this.execFunc(valueFuncName);
         return _.map(values, function (val) {
@@ -217,11 +210,10 @@ define([
      * first of which is the event object.
      */
     Toolbar.prototype.execFunc = function (id, args) {
-        function inContext(ctx, name) {
-            return typeof ctx[name] === 'function' && ctx[name].bind(ctx);
-        }
-
-        var func = inContext(this, id) || inContext(QUINK, id) || inContext(window, id),
+        var inContext = function (ctx, name) {
+                return typeof ctx[name] === 'function' && ctx[name].bind(ctx);
+            },
+            func = inContext(this, id) || inContext(QUINK, id) || inContext(window, id),
             result;
         if (func) {
             result = func.apply(this, args);
