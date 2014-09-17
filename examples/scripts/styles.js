@@ -14,7 +14,8 @@ QUINK = {
     ready: function (PubSub) {
         'use strict';
 
-        var StyleMgr, StyleHandler;
+        var fontStyles = [],
+            StyleMgr, StyleHandler;
 
         require(['util/StylesheetMgr', 'command/ApplyStyleHandler'], function (StylesheetMgr, ApplyStyleHandler) {
             StyleMgr = StylesheetMgr;
@@ -28,12 +29,23 @@ QUINK = {
             }],
         });
 
+        /**
+         * From the user supplied style sheet return the selector text for all styles that have the word 'font'
+         * in their rule text and are at class level.
+         */
         QUINK.getFontStyleValues = function () {
-            var result = StyleMgr.getInstance().getSelectors().slice();
-            result.push('close');
-            return result;
+            var sheet = StyleMgr.getInstance().getStylesheet();
+            Array.prototype.forEach.call(sheet.cssRules, function (rule) {
+                if (/^\..*font/i.test(rule.cssText)) {
+                    fontStyles.push(rule.selectorText.replace(/^./, ''));
+                }
+            });
+            return fontStyles;
         };
 
+        /**
+         * Replace underscores with spaces and make the menu style the menu entries.
+         */
         QUINK.getFontStyleLabels = function (value) {
             return {
                 label: value.replace(/_/g, ' '),
@@ -42,7 +54,7 @@ QUINK = {
         };
 
         QUINK.getFontStyleState = function () {
-            return StyleHandler.getInstance().isApplied(StyleMgr.getInstance().getSelectors());
+            return StyleHandler.getInstance().isApplied(fontStyles);
         };
 
         QUINK.onFontStyleSelect = function (selectedDef) {

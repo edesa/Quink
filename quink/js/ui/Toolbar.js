@@ -157,7 +157,7 @@ define([
     };
 
     Toolbar.prototype.createMenuDef = function (valueFuncName, labelFuncName) {
-        var values = this.execFunc(valueFuncName);
+        var values = this.execFunc(valueFuncName) || [];
         return _.map(values, function (val) {
             var obj = this.execFunc(labelFuncName, [val]),
                 result;

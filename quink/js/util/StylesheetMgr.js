@@ -12,7 +12,6 @@ define([
     'use strict';
 
     var StylesheetMgr = function () {
-        this.selectors = [];
     };
 
     StylesheetMgr.prototype.QUINK_ADDED_ATTR = 'data-quink-inlined';
@@ -34,23 +33,6 @@ define([
     };
 
     /**
-     * Creates an array of the names of the css rules that apply to css classes.
-     */
-    StylesheetMgr.prototype.createUserStyleList = function () {
-        var stylesheet = this.stylesheet,
-            rules = stylesheet.cssRules || stylesheet.rules,
-            length = rules.length,
-            i, rule;
-        for (i = 0; i < length; i++) {
-            rule = rules[i];
-            // Is this a rule for a css class (i.e. starts with a '.')
-            if (rule.selectorText && rule.style && /^\.+/.test(rule.selectorText)) {
-                this.selectors.push(rule.selectorText.substr(1));
-            }
-        }
-    };
-
-    /**
      * Check if there's already a quink-inlined style element or a user supplied style node specified by the
      * 'styles' param. If there is return the stylesheet.
      */
@@ -66,12 +48,6 @@ define([
             this.stylesheet = stylesheet;
         }
         return stylesheet;
-    };
-
-    StylesheetMgr.prototype.getMatchingSelectors = function (regex) {
-        return _.filter(this.getSelectors, function (name) {
-            return regex.test(name);
-        });
     };
 
     /**
@@ -91,20 +67,14 @@ define([
             promise = $.Deferred().resolve().promise();
         }
         proxy = $.Deferred();
-        promise.done(this.createUserStyleList.bind(this)).always(function () {
+        promise.always(function () {
             proxy.resolve();
         });
         return proxy;
     };
 
-    StylesheetMgr.prototype.getSelectors = function (regex) {
-        var result;
-        if (regex) {
-            result = this.getMatchingSelectors(regex);
-        } else {
-            result = this.selectors;
-        }
-        return result;
+    StylesheetMgr.prototype.getStylesheet = function () {
+        return this.stylesheet;
     };
 
     var theInstance;
