@@ -21,9 +21,17 @@ define([
         this.callback = callback;
         this.isMultiSelect = isMultiSelect;
         this.hiddenCss = isMultiSelect ? 'qk_invisible' : 'qk_hidden';
+        this.addCloseDef(this.menuDef, this.isMultiSelect);
     };
 
     PopupMenu.prototype.MENU_ITEM_SELECTOR = '.qk_popup_menu_item';
+
+    PopupMenu.prototype.addCloseDef = function (menuDef, isMultiSelect) {
+        menuDef.push({
+            label: isMultiSelect ? 'close' : 'cancel',
+            value: 'close'
+        });
+    };
 
     PopupMenu.prototype.updateState = function (markup, state) {
         markup.find('.qk_popup_menu_item[id="' + state + '"] .qk_popup_menu_item_state').toggleClass(this.hiddenCss);
