@@ -174,13 +174,17 @@ define([
         }.bind(this));
     };
 
-    Toolbar.prototype.createMenu = function (valueFuncName, labelFuncName, callbackFuncName) {
+    Toolbar.prototype.createMenu = function (valueFuncName, labelFuncName, callbackFuncName, isMultiSelect) {
         var def = this.createMenuDef(valueFuncName, labelFuncName);
         return PopupMenu.create(def, function () {
             return this.execFunc(callbackFuncName, arguments);
-        }.bind(this), true);
+        }.bind(this), isMultiSelect);
     };
 
+    /**
+     * args is a comma separated string. The first four parts are the names of functions that will be used to
+     * create the popup menu. The final (optional) substring is 'true' if the menu is to be multi select.
+     */
     Toolbar.prototype.showMenu = function (event, args) {
         var hit = Event.isTouch ? event.changedTouches[0] : event,
             funcNames = args && _.map(args.split(','), function (name) {
@@ -189,7 +193,7 @@ define([
             state;
         if (funcNames) {
             if (!this.menu) {
-                this.menu = this.createMenu(funcNames[0], funcNames[1], funcNames[3]);
+                this.menu = this.createMenu(funcNames[0], funcNames[1], funcNames[3], /^true$/i.test(funcNames[4]));
             }
             state = this.execFunc(funcNames[2]);
             this.menu.show(hit.pageX, hit.pageY, state);
