@@ -194,7 +194,7 @@
                     "elId": "qk_button_applystylefont",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showMenu",
-                    "commandArgs": "getFontStyleValues, getStyleLabels, getFontStyleState, onStyleSelect, true"
+                    "commandArgs": "getFontStyleValues, getStyleLabels, getFontStyleState, onStyleSelect"
                 },
                 {
                     "id": "applyStyleStroke",
@@ -203,7 +203,7 @@
                     "elId": "qk_button_applystylestroke",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showMenu",
-                    "commandArgs": "getStrokeStyleValues, getStyleLabels, getStrokeStyleState, onStyleSelect, true"
+                    "commandArgs": "getStrokeStyleValues, getStyleLabels, getStrokeStyleState, onStyleSelect"
                 },
                 {
                     "id": "applyStyleBackground",
@@ -212,7 +212,7 @@
                     "elId": "qk_button_applystylebackground",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showMenu",
-                    "commandArgs": "getBackgroundStyleValues, getStyleLabels, getBackgroundStyleState, onStyleSelect, true"
+                    "commandArgs": "getBackgroundStyleValues, getStyleLabels, getBackgroundStyleState, onStyleSelect"
                 }
             ]
         },

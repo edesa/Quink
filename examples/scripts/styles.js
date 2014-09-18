@@ -101,10 +101,12 @@ QUINK = {
         /**
          * Callback usedfor both style menus.
          */
-        QUINK.onStyleSelect = function (selectedDef) {
-            var selected = selectedDef.value;
-            if (selected !== 'close') {
-                PubSub.publish('command.exec', 'style.apply.' + selected);
+        QUINK.onStyleSelect = function (newValue, oldValue) {
+            if (newValue !== 'close') {
+                if (newValue !== oldValue) {
+                    PubSub.publish('command.exec', 'style.apply.' + oldValue);
+                }
+                PubSub.publish('command.exec', 'style.apply.' + newValue);
             }
         };
 

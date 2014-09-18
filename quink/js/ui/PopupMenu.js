@@ -21,7 +21,9 @@ define([
         this.callback = callback;
         this.stateFunc = stateFunc;
         this.isMultiSelect = isMultiSelect;
-        this.hiddenCss = isMultiSelect ? 'qk_invisible' : 'qk_hidden';
+        // this.hiddenCss = isMultiSelect ? 'qk_invisible' : 'qk_hidden';
+        this.hiddenCss = 'qk_invisible';
+        this.state = [];
         this.addCloseDef(this.menuDef, this.isMultiSelect);
     };
 
@@ -43,12 +45,19 @@ define([
             id = menuItem.attr('id'),
             selectedDef = _.find(this.menuDef, function (def) {
                 return def.value === id;
-            });
+            }),
+            prevState;
         event.preventDefault(); // stops the menu being focused
-        if (this.isMultiSelect && selectedDef.value !== 'close') {
+        // if (this.isMultiSelect && selectedDef.value !== 'close') {
+        if (selectedDef.value !== 'close') {
             this.updateState(this.menu, selectedDef.value);
         }
-        this.callback(selectedDef, this);
+        // if (this.isMultiSelect) {
+        //     this.callback(selectedDef.value);
+        // } else {
+        prevState = (!this.isMultiSelect) ? this.state[0] : undefined;
+        this.callback(selectedDef.value, prevState);
+        // }
         if (!this.isMultiSelect || selectedDef.value === 'close') {
             this.hide();
         }
@@ -73,8 +82,7 @@ define([
     };
 
     PopupMenu.prototype.show = function (x, y) {
-        var menu = this.menu,
-            created;
+        var menu = this.menu;
         if (!menu) {
             this.menu = this.createMenu(this.menuDef);
             menu = this.menu;
@@ -83,11 +91,9 @@ define([
             this.vpMenu = ViewportRelative.create(menu, {
                 top: y
             });
-            created = true;
         }
-        if (this.isMultiSelect) {
-            this.applyState(menu, this.stateFunc());
-        }
+        this.state = this.stateFunc();
+        this.applyState(menu, this.state);
         this.mask.show();
         menu.css({
             top: y,
@@ -100,6 +106,7 @@ define([
     PopupMenu.prototype.hide = function () {
         this.menu.addClass('qk_hidden');
         this.mask.hide();
+        this.state = [];
     };
 
     function create(menuDef, stateFunc, callback, isMultiSelect) {
