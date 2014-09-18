@@ -16,6 +16,7 @@ QUINK = {
 
         var fontStyles = [],
             strokeStyles = [],
+            backgroundStyles = [],
             StyleMgr, StyleHandler;
 
         require(['util/StylesheetMgr', 'command/ApplyStyleHandler'], function (StylesheetMgr, ApplyStyleHandler) {
@@ -26,13 +27,27 @@ QUINK = {
         QUINK.configureToolbar({
             groups: [{
                 id: 'style',
-                active: true
+                active: true,
+                hidden: false,
+                items: [{
+                    "id": "applyStyleFont",
+                    "hidden": false
+                }, {
+                    "id": "applyStyleStroke",
+                    "hidden": false
+                }, {
+                    "id": "applyStyleBackground",
+                    "hidden": false
+                }]
             }],
+            defaults: {
+                hidden: true
+            },
         });
 
         /**
-         * From the user supplied style sheet return the selector text for all styles that have the word 'font'
-         * in their rule text and are at class level.
+         * From the user supplied style sheet return the selector text for all styles that have the words 'font-style'
+         * or 'font-family' in their rule text and are at class level.
          */
         QUINK.getFontStyleValues = function () {
             var sheet = StyleMgr.getInstance().getStylesheet();
@@ -63,6 +78,24 @@ QUINK = {
 
         QUINK.getStrokeStyleState = function () {
             return StyleHandler.getInstance().isApplied(strokeStyles);
+        };
+
+        /**
+         * From the user supplied style sheet return the selector text for all styles that have the word 'background'
+         * in their rule text and are at class level.
+         */
+        QUINK.getBackgroundStyleValues = function () {
+            var sheet = StyleMgr.getInstance().getStylesheet();
+            Array.prototype.forEach.call(sheet.cssRules, function (rule) {
+                if (/^\..*background/i.test(rule.cssText)) {
+                    backgroundStyles.push(rule.selectorText.replace(/^./, ''));
+                }
+            });
+            return backgroundStyles;
+        };
+
+        QUINK.getBackgroundStyleState = function () {
+            return StyleHandler.getInstance().isApplied(backgroundStyles);
         };
 
         /**

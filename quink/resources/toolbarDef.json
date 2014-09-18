@@ -199,11 +199,20 @@
                 {
                     "id": "applyStyleStroke",
                     "hidden": true,
-                    "index": 8,
+                    "index": 9,
                     "elId": "qk_button_applystylestroke",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showMenu",
                     "commandArgs": "getStrokeStyleValues, getStyleLabels, getStrokeStyleState, onStyleSelect, true"
+                },
+                {
+                    "id": "applyStyleBackground",
+                    "hidden": true,
+                    "index": 10,
+                    "elId": "qk_button_applystylebackground",
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showMenu",
+                    "commandArgs": "getBackgroundStyleValues, getStyleLabels, getBackgroundStyleState, onStyleSelect, true"
                 }
             ]
         },
