@@ -16,9 +16,10 @@ define([
 
     var menuTpl;
 
-    var PopupMenu = function (menuDef, callback, isMultiSelect) {
+    var PopupMenu = function (menuDef, stateFunc, callback, isMultiSelect) {
         this.menuDef = menuDef;
         this.callback = callback;
+        this.stateFunc = stateFunc;
         this.isMultiSelect = isMultiSelect;
         this.hiddenCss = isMultiSelect ? 'qk_invisible' : 'qk_hidden';
         this.addCloseDef(this.menuDef, this.isMultiSelect);
@@ -71,7 +72,7 @@ define([
         return markup;
     };
 
-    PopupMenu.prototype.show = function (x, y, menuState) {
+    PopupMenu.prototype.show = function (x, y) {
         var menu = this.menu,
             created;
         if (!menu) {
@@ -85,7 +86,7 @@ define([
             created = true;
         }
         if (this.isMultiSelect) {
-            this.applyState(menu, menuState);
+            this.applyState(menu, this.stateFunc());
         }
         this.mask.show();
         menu.css({
@@ -101,8 +102,8 @@ define([
         this.mask.hide();
     };
 
-    function create(menuDef, callback, isMultiSelect) {
-        return new PopupMenu(menuDef, callback, isMultiSelect);
+    function create(menuDef, stateFunc, callback, isMultiSelect) {
+        return new PopupMenu(menuDef, stateFunc, callback, isMultiSelect);
     }
 
     function init() {

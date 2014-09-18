@@ -188,13 +188,22 @@
                     "commandArgs": "style.formatblock.pre"
                 },
                 {
-                    "id": "applyStyle",
+                    "id": "applyStyleFont",
                     "hidden": true,
                     "index": 8,
-                    "elId": "qk_button_applystyle",
+                    "elId": "qk_button_applystylefont",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showMenu",
-                    "commandArgs": "getFontStyleValues, getFontStyleLabels, getFontStyleState, onFontStyleSelect"
+                    "commandArgs": "getFontStyleValues, getStyleLabels, getFontStyleState, onStyleSelect, true"
+                },
+                {
+                    "id": "applyStyleStroke",
+                    "hidden": true,
+                    "index": 8,
+                    "elId": "qk_button_applystylestroke",
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showMenu",
+                    "commandArgs": "getStrokeStyleValues, getStyleLabels, getStrokeStyleState, onStyleSelect, true"
                 }
             ]
         },

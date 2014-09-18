@@ -9,21 +9,22 @@ define([
     'Underscore',
     'jquery',
     'rangy',
-    'command/ApplyStyleHandler',
     'ui/PopupMenu',
     'ui/ToolbarProvider',
+    'util/Draggable',
     'util/Event',
     'util/FastTap',
-    'util/Draggable',
+    'util/Func',
     'util/PubSub',
     'util/Env',
     'util/ViewportRelative',
     'hithandler/HitHandler'
-], function (_, $, rangy, ApplyStyleHandler, PopupMenu, ToolbarProvider, Event, FastTap, Draggable, PubSub, Env, ViewportRelative, HitHandler) {
+], function (_, $, rangy, PopupMenu, ToolbarProvider, Draggable, Event, FastTap, Func, PubSub, Env, ViewportRelative, HitHandler) {
     'use strict';
 
     var Toolbar = function (stylesheetMgr) {
         this.stylesheetMgr = stylesheetMgr;
+        this.menus = {};
         HitHandler.register(this, true);
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
     };
@@ -157,9 +158,12 @@ define([
     };
 
     Toolbar.prototype.createMenuDef = function (valueFuncName, labelFuncName) {
-        var values = this.execFunc(valueFuncName) || [];
+        // var values = this.execFunc(valueFuncName) || [];
+        var values = Func.exec(this, valueFuncName) || [];
+            // labelFunc = Func.get(this, labelFuncName);
         return _.map(values, function (val) {
-            var obj = this.execFunc(labelFuncName, [val]),
+            var obj = Func.exec(this, labelFuncName, val),
+            // var obj = this.execFunc(labelFuncName, [val]),
                 result;
             if (_.isString(obj)) {
                 result = {
@@ -174,29 +178,47 @@ define([
         }.bind(this));
     };
 
-    Toolbar.prototype.createMenu = function (valueFuncName, labelFuncName, callbackFuncName, isMultiSelect) {
+    Toolbar.prototype.createMenu = function (valueFuncName, labelFuncName, stateFuncName, callbackFuncName, isMultiSelect) {
         var def = this.createMenuDef(valueFuncName, labelFuncName);
-        return PopupMenu.create(def, function () {
-            return this.execFunc(callbackFuncName, arguments);
-        }.bind(this), isMultiSelect);
+        return PopupMenu.create(def, Func.getBound(this, stateFuncName), Func.getBound(this, callbackFuncName), isMultiSelect);
+        // return PopupMenu.create(def, function () {
+        //     return Func.exec(this, callbackFuncName, arguments);
+        // }.bind(this), isMultiSelect);
     };
 
     /**
      * args is a comma separated string. The first four parts are the names of functions that will be used to
      * create the popup menu. The final (optional) substring is 'true' if the menu is to be multi select.
      */
-    Toolbar.prototype.showMenu = function (event, args) {
-        var hit = Event.isTouch ? event.changedTouches[0] : event,
-            funcNames = args && _.map(args.split(','), function (name) {
+    // Toolbar.prototype.showMenu = function (event, argsStr) {
+    //     var id = $(event.target).closest('.qk_button').attr('id'),
+    //         menu = MenuMgr.get(id),
+    //         hit = Event.isTouch ? event.changedTouches[0] : event,
+    //         args;
+    //     if (!menu) {
+    //         args = _.map(argsStr.split(','), function (name) {
+    //             return name.trim();
+    //         });
+    //         menu = MenuMgr.create(id, args[0], args[1], args[2], args[3], /^true$/i.test(args[4]));
+    //     }
+    //     menu.show(hit.pageX, hit.pageY);
+    // };
+
+    Toolbar.prototype.showMenu = function (event, argsStr) {
+        var id = $(event.target).closest('.qk_button').attr('id'),
+            hit = Event.isTouch ? event.changedTouches[0] : event,
+            args = argsStr && _.map(argsStr.split(','), function (name) {
                 return name.trim();
             }),
-            state;
-        if (funcNames) {
-            if (!this.menu) {
-                this.menu = this.createMenu(funcNames[0], funcNames[1], funcNames[3], /^true$/i.test(funcNames[4]));
+            menu = this.menus[id];
+            // state;
+        if (args) {
+            if (!menu) {
+                menu = this.createMenu(args[0], args[1], args[2], args[3], /^true$/i.test(args[4]));
+                this.menus[id] = menu;
             }
-            state = this.execFunc(funcNames[2]);
-            this.menu.show(hit.pageX, hit.pageY, state);
+            // state = this.execFunc(funcNames[2]);
+            menu.show(hit.pageX, hit.pageY);
         } else {
             console.log('Invalid menu definition');
         }
@@ -209,23 +231,23 @@ define([
         PubSub.publish('command.exec', msg);
     };
 
-    /**
-     * Execute a function. Id is the function name and args is an array of arguments the
-     * first of which is the event object.
-     */
-    Toolbar.prototype.execFunc = function (id, args) {
-        var inContext = function (ctx, name) {
-                return typeof ctx[name] === 'function' && ctx[name].bind(ctx);
-            },
-            func = inContext(this, id) || inContext(QUINK, id) || inContext(window, id),
-            result;
-        if (func) {
-            result = func.apply(this, args);
-        } else {
-            console.log('no function: ' + id);
-        }
-        return result;
-    };
+    // /**
+    //  * Execute a function. Id is the function name and args is an array of arguments the
+    //  * first of which is the event object.
+    //  */
+    // Toolbar.prototype.execFunc = function (id, args) {
+    //     var inContext = function (ctx, name) {
+    //             return typeof ctx[name] === 'function' && ctx[name].bind(ctx);
+    //         },
+    //         func = inContext(this, id) || inContext(QUINK, id) || inContext(window, id),
+    //         result;
+    //     if (func) {
+    //         result = func.apply(this, args);
+    //     } else {
+    //         console.log('no function: ' + id);
+    //     }
+    //     return result;
+    // };
 
     /**
      * Executes commands based on the event.
@@ -238,7 +260,8 @@ define([
             cmd = el.attr('data-cmd'),
             cmdArgs = el.attr('data-cmd-args');
         if (cmd) {
-            this.execFunc(cmd.trim(), [event, cmdArgs]);
+            // this.execFunc(cmd.trim(), [event, cmdArgs]);
+            Func.exec(this, cmd.trim(), event, cmdArgs);
         } else {
             console.log('no data-cmd attribute');
         }

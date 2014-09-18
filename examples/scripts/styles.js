@@ -15,6 +15,7 @@ QUINK = {
         'use strict';
 
         var fontStyles = [],
+            strokeStyles = [],
             StyleMgr, StyleHandler;
 
         require(['util/StylesheetMgr', 'command/ApplyStyleHandler'], function (StylesheetMgr, ApplyStyleHandler) {
@@ -36,32 +37,54 @@ QUINK = {
         QUINK.getFontStyleValues = function () {
             var sheet = StyleMgr.getInstance().getStylesheet();
             Array.prototype.forEach.call(sheet.cssRules, function (rule) {
-                if (/^\..*font/i.test(rule.cssText)) {
+                if (/^\..*(font-style|font-family)/i.test(rule.cssText)) {
                     fontStyles.push(rule.selectorText.replace(/^./, ''));
                 }
             });
             return fontStyles;
         };
 
+        QUINK.getFontStyleState = function () {
+            return StyleHandler.getInstance().isApplied(fontStyles);
+        };
+
         /**
-         * Replace underscores with spaces and make the menu style the menu entries.
+         * Returns the selectors that start with the word 'stroke' from the user stylesheet.
          */
-        QUINK.getFontStyleLabels = function (value) {
+        QUINK.getStrokeStyleValues = function () {
+            var sheet = StyleMgr.getInstance().getStylesheet();
+            Array.prototype.forEach.call(sheet.cssRules, function (rule) {
+                if (/^\.stroke/i.test(rule.selectorText)) {
+                    strokeStyles.push(rule.selectorText.replace(/^./, ''));
+                }
+            });
+            return strokeStyles;
+        };
+
+        QUINK.getStrokeStyleState = function () {
+            return StyleHandler.getInstance().isApplied(strokeStyles);
+        };
+
+        /**
+         * Callback usedfor both style menus.
+         */
+        QUINK.onStyleSelect = function (selectedDef) {
+            var selected = selectedDef.value;
+            if (selected !== 'close') {
+                PubSub.publish('command.exec', 'style.apply.' + selected);
+            }
+        };
+
+        /**
+         * Replace underscores with spaces and make the menu style the menu entries. Used in both style
+         * menus.
+         */
+        QUINK.getStyleLabels = function (value) {
             return {
                 label: value.replace(/_/g, ' '),
                 cssClass: value
             };
         };
 
-        QUINK.getFontStyleState = function () {
-            return StyleHandler.getInstance().isApplied(fontStyles);
-        };
-
-        QUINK.onFontStyleSelect = function (selectedDef) {
-            var selected = selectedDef.value;
-            if (selected !== 'close') {
-                PubSub.publish('command.exec', 'style.apply.' + selected);
-            }
-        };
     }
 };
