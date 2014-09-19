@@ -14,13 +14,20 @@ define([
     'use strict';
 
     /**
+     * By default style menu item labels are the style name with any underscores replaced by spaces.
+     */
+    function defaultLabelFunc(style) {
+        return style.replace(/_/g, ' ');
+    }
+
+    /**
      * Creates and returns a menu item definition given a css rule.
      */
-    function createStyleDef(rule) {
+    function createStyleDef(rule, labelFunc) {
         var style = rule.selectorText.replace(/^./, '');
         return {
             value: style,
-            label: style.replace(/_/g, ' '),
+            label: labelFunc(style),
             cssClass: style
         };
     }
@@ -30,18 +37,19 @@ define([
      * filter are handed to createStyleDef. An array of the objects returned from createStyleDef is returned
      * from this function.
      */
-    function mapFilter(stylesheet, filter) {
+    function mapFilter(stylesheet, filter, labelFunc) {
         var result = [];
         Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
             if (filter(rule)) {
-                result.push(createStyleDef(rule));
+                result.push(createStyleDef(rule, labelFunc));
             }
         });
         return result;
     }
 
-    function createDefs(ruleFilterName) {
-        return mapFilter(StylesheetMgr.getInstance().getStylesheet(), Func.getBound({}, ruleFilterName));
+    function createDefs(ruleFilterName, labelFuncName) {
+        var labelFunc = Func.getBound({}, labelFuncName) || defaultLabelFunc;
+        return mapFilter(StylesheetMgr.getInstance().getStylesheet(), Func.getBound({}, ruleFilterName), labelFunc);
     }
 
     function onSelect(newValue, oldValue) {
@@ -59,8 +67,12 @@ define([
         }));
     }
 
-    function create(defsFuncName, isMultiSelect) {
-        var defs = createDefs(defsFuncName);
+    /**
+     * Only the first argument is required. If the label function is falsey a default is used and multiselect
+     * defaults to false.
+     */
+    function create(defsFuncName, labelFuncName, isMultiSelect) {
+        var defs = createDefs(defsFuncName, labelFuncName);
         return PopupMenu.create(defs, getState, onSelect, isMultiSelect);
     }
 

@@ -184,11 +184,18 @@ define([
 
     /*
      * argsStr contains a comma separated string with the substrings that split into the arguments to the
-     * anonymous function.
+     * anonymous function. Only the first argument is required with a further 2 being optional.
      */
     Toolbar.prototype.showStyleMenu = function (event, argsStr) {
-        this.doShowMenu(event, argsStr, function (defsFuncName, isMultiSelectStr) {
-            return StyleMenuProvider.create(defsFuncName, /^true$/i.test(isMultiSelectStr));
+        this.doShowMenu(event, argsStr, function (defsFuncName, arg2, arg3) {
+            var isMultiSelectStr, labelFuncName;
+            if (/^(true|false)$/i.test(arg2)) {
+                isMultiSelectStr = arg2;
+            } else {
+                labelFuncName = arg2;
+                isMultiSelectStr = arg3;
+            }
+            return StyleMenuProvider.create(defsFuncName, labelFuncName, /^true$/i.test(isMultiSelectStr));
         });
     };
 

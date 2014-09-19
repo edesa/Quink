@@ -43,7 +43,7 @@ QUINK = {
                     "elId": "qk_button_applystylebackground",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showStyleMenu",
-                    "commandArgs": "backgroundStyleRuleFilter"
+                    "commandArgs": "backgroundStyleRuleFilter, backgroundStyleLabel"
                 }]
             }],
             defaults: {
@@ -70,6 +70,13 @@ QUINK = {
          */
         QUINK.backgroundStyleRuleFilter = function (rule) {
             return /^\..*background/i.test(rule.cssText);
+        };
+
+        /**
+         * Remove the leading 'highlight_' from the menu items for the background menu.
+         */
+        QUINK.backgroundStyleLabel = function (style) {
+            return style.replace(/^highlight_(.*)/i, '$1');
         };
     }
 };
