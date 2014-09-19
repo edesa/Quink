@@ -44,10 +44,6 @@ define([
         return mapFilter(StylesheetMgr.getInstance().getStylesheet(), Func.getBound({}, ruleFilterName));
     }
 
-    // function createDefs(defsFuncName) {
-    //     return Func.exec({}, defsFuncName, StylesheetMgr.getInstance().getStylesheet());
-    // }
-
     function onSelect(newValue, oldValue) {
         if (newValue !== 'close') {
             if (newValue !== oldValue) {
