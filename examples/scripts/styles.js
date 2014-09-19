@@ -64,30 +64,54 @@ QUINK = {
         }
 
         /**
+         * Runs through all of the rules in the stylesheet invoking filter on each one. Those that pass the
+         * filter are handed to createStyleDef. An array of the objects returned from createStyleDef is returned
+         * from this function.
+         */
+        function filterInvoke(stylesheet, filter) {
+            var result = [];
+            Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
+                if (filter(rule)) {
+                    result.push(createStyleDef(rule));
+                }
+            });
+            return result;
+        }
+
+        /**
          * From the user supplied style sheet return the selector text for all styles that have the words 'font-style'
          * or 'font-family' in their rule text and are at class level.
          */
         QUINK.getFontStyleDefs = function (stylesheet) {
-            var fontStyles = [];
-            Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
-                if (/^\..*(font-style|font-family)/i.test(rule.cssText)) {
-                    fontStyles.push(createStyleDef(rule));
-                }
+            return filterInvoke(stylesheet, function (rule) {
+                return /^\..*(font-style|font-family)/i.test(rule.cssText);
             });
-            return fontStyles;
         };
+
+        // QUINK.getFontStyleDefs = function (stylesheet) {
+        //     var fontStyles = [];
+        //     Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
+        //         if (/^\..*(font-style|font-family)/i.test(rule.cssText)) {
+        //             fontStyles.push(createStyleDef(rule));
+        //         }
+        //     });
+        //     return fontStyles;
+        // };
 
         /**
          * Returns the selectors that start with the word 'stroke' from the user stylesheet.
          */
         QUINK.getStrokeStyleDefs = function (stylesheet) {
-            var strokeStyles = [];
-            Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
-                if (/^\.stroke/i.test(rule.selectorText)) {
-                    strokeStyles.push(createStyleDef(rule));
-                }
+            return filterInvoke(stylesheet, function (rule) {
+                return /^\.stroke/i.test(rule.selectorText);
             });
-            return strokeStyles;
+            // var strokeStyles = [];
+            // Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
+            //     if (/^\.stroke/i.test(rule.selectorText)) {
+            //         strokeStyles.push(createStyleDef(rule));
+            //     }
+            // });
+            // return strokeStyles;
         };
 
         /**
@@ -95,13 +119,16 @@ QUINK = {
          * in their rule text and are at class level.
          */
         QUINK.getBackgroundStyleDefs = function (stylesheet) {
-            var backgroundStyles = [];
-            Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
-                if (/^\..*background/i.test(rule.cssText)) {
-                    backgroundStyles.push(createStyleDef(rule));
-                }
+            return filterInvoke(stylesheet, function (rule) {
+                return /^\..*background/i.test(rule.cssText);
             });
-            return backgroundStyles;
+            // var backgroundStyles = [];
+            // Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
+            //     if (/^\..*background/i.test(rule.cssText)) {
+            //         backgroundStyles.push(createStyleDef(rule));
+            //     }
+            // });
+            // return backgroundStyles;
         };
     }
 };
