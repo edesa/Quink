@@ -36,8 +36,8 @@ QUINK = {
                     "index": 8,
                     "elId": "qk_button_applystylefont",
                     "cssClass": "qk_button_bg_applystyle",
-                    "command": "showMenu",
-                    "commandArgs": "getFontStyleDefs, getStyleState, onStyleSelect"
+                    "command": "showStyleMenu",
+                    "commandArgs": "getNewFontStyleDefs"
                 }, {
                     "id": "applyStyleStroke",
                     "hidden": false,
@@ -133,6 +133,16 @@ QUINK = {
                 }
                 PubSub.publish('command.exec', 'style.apply.' + newValue);
             }
+        };
+
+        QUINK.getNewFontStyleDefs = function (stylesheet) {
+            var fontStyles = [];
+            Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
+                if (/^\..*(font-style|font-family)/i.test(rule.cssText)) {
+                    fontStyles.push(createStyleDef(rule));
+                }
+            });
+            return fontStyles;
         };
     }
 };

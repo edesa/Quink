@@ -10,6 +10,7 @@ define([
     'jquery',
     'rangy',
     'ui/PopupMenu',
+    'ui/StyleMenuProvider',
     'ui/ToolbarProvider',
     'util/Draggable',
     'util/Event',
@@ -19,7 +20,7 @@ define([
     'util/Env',
     'util/ViewportRelative',
     'hithandler/HitHandler'
-], function (_, $, rangy, PopupMenu, ToolbarProvider, Draggable, Event, FastTap, Func, PubSub, Env, ViewportRelative, HitHandler) {
+], function (_, $, rangy, PopupMenu, StyleMenuProvider, ToolbarProvider, Draggable, Event, FastTap, Func, PubSub, Env, ViewportRelative, HitHandler) {
     'use strict';
 
     var Toolbar = function (stylesheetMgr) {
@@ -157,31 +158,105 @@ define([
         PubSub.publish('command.exec', 'insert.' + pluginId);
     };
 
-    Toolbar.prototype.createMenu = function (defsFuncName, stateFuncName, callbackFuncName, isMultiSelect) {
-        var def = Func.exec(this, defsFuncName);
-        return PopupMenu.create(def, Func.getBound(this, stateFuncName), Func.getBound(this, callbackFuncName), isMultiSelect);
-    };
+    // Toolbar.prototype.createMenu = function (defsFuncName, stateFuncName, callbackFuncName, isMultiSelect) {
+    //     var def = Func.exec(this, defsFuncName);
+    //     return PopupMenu.create(def, Func.getBound(this, stateFuncName), Func.getBound(this, callbackFuncName), isMultiSelect);
+    // };
 
     /**
-     * args is a comma separated string. The first four parts are the names of functions that will be used to
+     * args is a comma separated string. The first three parts are the names of functions that will be used to
      * create the popup menu. The final (optional) substring is 'true' if the menu is to be multi select.
      */
-    Toolbar.prototype.showMenu = function (event, argsStr) {
+    // Toolbar.prototype.showMenu = function (event, argsStr) {
+    //     var id = $(event.target).closest('.qk_button').attr('id'),
+    //         hit = Event.isTouch ? event.changedTouches[0] : event,
+    //         menu = this.menus[id],
+    //         args;
+    //     if (!menu) {
+    //         if (argsStr) {
+    //             args = _.map(argsStr.split(','), function (name) {
+    //                 return name.trim();
+    //             });
+    //             menu = this.createMenu(args[0], args[1], args[2], /^true$/i.test(args[3]));
+    //             this.menus[id] = menu;
+    //         } else {
+    //             throw new Error('Invalid menu definition');
+    //         }
+    //     }
+    //     menu.show(hit.pageX, hit.pageY);
+    // };
+
+    // Toolbar.prototype.showStyleMenu = function (event, argsStr) {
+    //     var id = $(event.target).closest('.qk_button').attr('id'),
+    //         hit = Event.isTouch ? event.changedTouches[0] : event,
+    //         args = argsStr && _.map(argsStr.split(','), function (name) {
+    //             return name.trim();
+    //         }),
+    //         menu = this.menus[id];
+    //     if (args) {
+    //         if (!menu) {
+    //             menu = StyleMenuProvider.create(args[0], /^true$/i.test(args[1]));
+    //             // menu = this.createStyleMenu(args[0], /^true$/i.test(args[1]));
+    //             this.menus[id] = menu;
+    //         }
+    //         menu.show(hit.pageX, hit.pageY);
+    //     } else {
+    //         console.log('Invalid menu definition');
+    //     }
+    // };
+
+    // Toolbar.prototype.showStyleMenu = function (event, argsStr) {
+    //     var id = $(event.target).closest('.qk_button').attr('id'),
+    //         hit = Event.isTouch ? event.changedTouches[0] : event,
+    //         args = argsStr && _.map(argsStr.split(','), function (name) {
+    //             return name.trim();
+    //         }),
+    //         menu = this.menus[id];
+    //     if (args) {
+    //         if (!menu) {
+    //             menu = StyleMenuProvider.create(args[0], /^true$/i.test(args[1]));
+    //             // menu = this.createStyleMenu(args[0], /^true$/i.test(args[1]));
+    //             this.menus[id] = menu;
+    //         }
+    //         menu.show(hit.pageX, hit.pageY);
+    //     } else {
+    //         console.log('Invalid menu definition');
+    //     }
+    // };
+
+    Toolbar.prototype.doShowMenu = function (event, argsStr, createMenuFunc) {
         var id = $(event.target).closest('.qk_button').attr('id'),
             hit = Event.isTouch ? event.changedTouches[0] : event,
-            args = argsStr && _.map(argsStr.split(','), function (name) {
-                return name.trim();
-            }),
-            menu = this.menus[id];
-        if (args) {
-            if (!menu) {
-                menu = this.createMenu(args[0], args[1], args[2], /^true$/i.test(args[3]));
+            menu = this.menus[id],
+            args;
+        if (!menu) {
+            if (argsStr) {
+                args = _.map(argsStr.split(','), function (name) {
+                    return name.trim();
+                });
+                menu = createMenuFunc.apply(this, args);
+                // menu = createMenuFunc(args);
+                // menu = this.createMenu(args[0], args[1], args[2], /^true$/i.test(args[3]));
                 this.menus[id] = menu;
+            } else {
+                throw new Error('Invalid menu definition');
             }
-            menu.show(hit.pageX, hit.pageY);
-        } else {
-            console.log('Invalid menu definition');
         }
+        menu.show(hit.pageX, hit.pageY);
+    };
+
+    Toolbar.prototype.showStyleMenu = function (event, argsStr) {
+        this.doShowMenu(event, argsStr, function (defsFuncName, isMultiSelectStr) {
+            return StyleMenuProvider.create(defsFuncName, /^true$/i.test(isMultiSelectStr));
+        });
+    };
+
+    Toolbar.prototype.showMenu = function (event, argsStr) {
+        this.doShowMenu(event, argsStr, function (defsFuncName, stateFuncName, onSelectFuncName, isMultiSelectStr) {
+            // return this.createMenu(args[0], args[1], args[2], /^true$/i.test(args[3]));
+            var def = Func.exec(this, defsFuncName);
+            return PopupMenu.create(def, Func.getBound(this, stateFuncName), Func.getBound(this, onSelectFuncName), /^true$/i.test(isMultiSelectStr));
+        }.bind(this));
     };
 
     /**
