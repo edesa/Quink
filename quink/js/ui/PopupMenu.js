@@ -21,13 +21,12 @@ define([
         this.callback = callback;
         this.stateFunc = stateFunc;
         this.isMultiSelect = isMultiSelect;
-        // this.hiddenCss = isMultiSelect ? 'qk_invisible' : 'qk_hidden';
-        this.hiddenCss = 'qk_invisible';
         this.state = [];
         this.addCloseDef(this.menuDef, this.isMultiSelect);
     };
 
     PopupMenu.prototype.MENU_ITEM_SELECTOR = '.qk_popup_menu_item';
+    PopupMenu.prototype.HIDDEN_CSS = 'qk_invisible';
 
     PopupMenu.prototype.addCloseDef = function (menuDef, isMultiSelect) {
         menuDef.push({
@@ -37,7 +36,7 @@ define([
     };
 
     PopupMenu.prototype.updateState = function (markup, state) {
-        markup.find('.qk_popup_menu_item[id="' + state + '"] .qk_popup_menu_item_state').toggleClass(this.hiddenCss);
+        markup.find('.qk_popup_menu_item[id="' + state + '"] .qk_popup_menu_item_state').toggleClass(this.HIDDEN_CSS);
     };
 
     PopupMenu.prototype.onSelect = function (event) {
@@ -48,36 +47,31 @@ define([
             }),
             prevState;
         event.preventDefault(); // stops the menu being focused
-        // if (this.isMultiSelect && selectedDef.value !== 'close') {
         if (selectedDef.value !== 'close') {
             this.updateState(this.menu, selectedDef.value);
         }
-        // if (this.isMultiSelect) {
-        //     this.callback(selectedDef.value);
-        // } else {
         prevState = (!this.isMultiSelect) ? this.state[0] : undefined;
         this.callback(selectedDef.value, prevState);
-        // }
         if (!this.isMultiSelect || selectedDef.value === 'close') {
             this.hide();
         }
     };
 
     PopupMenu.prototype.applyState = function (markup, menuState) {
-        var hiddenCss = this.hiddenCss;
+        var HIDDEN_CSS = this.HIDDEN_CSS;
         markup.find('.qk_popup_menu_item').each(function () {
             var itemEl = $(this),
                 stateEl = itemEl.find('.qk_popup_menu_item_state'),
                 id = itemEl.attr('id'),
                 func = menuState.indexOf(id) >= 0 ? stateEl.removeClass : stateEl.addClass;
-            func.call(stateEl, hiddenCss);
+            func.call(stateEl, HIDDEN_CSS);
         });
     };
 
     PopupMenu.prototype.createMenu = function (def) {
         var markup = $(menuTpl({options: def}));
         markup.on(Event.eventName('start'), this.MENU_ITEM_SELECTOR, this.onSelect.bind(this));
-        markup.find('.qk_popup_menu_item_state').addClass(this.hiddenCss);
+        markup.find('.qk_popup_menu_item_state').addClass(this.HIDDEN_CSS);
         return markup;
     };
 
@@ -92,7 +86,7 @@ define([
                 top: y
             });
         }
-        this.state = this.stateFunc();
+        this.state = this.stateFunc(this.menuDef);
         this.applyState(menu, this.state);
         this.mask.show();
         menu.css({

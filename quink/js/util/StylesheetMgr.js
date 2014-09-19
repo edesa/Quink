@@ -89,15 +89,4 @@ define([
     return {
         getInstance: getInstance
     };
-    // function create() {
-    //     var mgr = new StylesheetMgr();
-    //     return {
-    //         init: mgr.init.bind(mgr),
-    //         getSelectors: mgr.getSelectors.bind(mgr)
-    //     };
-    // }
-    //
-    // return {
-    //     create: create
-    // };
 });

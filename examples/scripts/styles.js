@@ -37,7 +37,7 @@ QUINK = {
                     "elId": "qk_button_applystylefont",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showMenu",
-                    "commandArgs": "getFontStyleValues, getStyleLabels, getFontStyleState, onStyleSelect"
+                    "commandArgs": "getFontStyleDefs, getStyleState, onStyleSelect"
                 }, {
                     "id": "applyStyleStroke",
                     "hidden": false,
@@ -45,7 +45,7 @@ QUINK = {
                     "elId": "qk_button_applystylestroke",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showMenu",
-                    "commandArgs": "getStrokeStyleValues, getStyleLabels, getStrokeStyleState, onStyleSelect"
+                    "commandArgs": "getStrokeStyleDefs, getStyleState, onStyleSelect"
                 }, {
                     "id": "applyStyleBackground",
                     "hidden": false,
@@ -53,7 +53,7 @@ QUINK = {
                     "elId": "qk_button_applystylebackground",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showMenu",
-                    "commandArgs": "getBackgroundStyleValues, getStyleLabels, getBackgroundStyleState, onStyleSelect"
+                    "commandArgs": "getBackgroundStyleDefs, getStyleState, onStyleSelect"
                 }]
             }],
             defaults: {
@@ -61,61 +61,67 @@ QUINK = {
             }
         });
 
+        function createStyleDef(rule) {
+            var style = rule.selectorText.replace(/^./, '');
+            return {
+                value: style,
+                label: style.replace(/_/g, ' '),
+                cssClass: style
+            };
+        }
+
         /**
          * From the user supplied style sheet return the selector text for all styles that have the words 'font-style'
          * or 'font-family' in their rule text and are at class level.
          */
-        QUINK.getFontStyleValues = function () {
+        QUINK.getFontStyleDefs = function () {
             var sheet = StyleMgr.getInstance().getStylesheet();
             Array.prototype.forEach.call(sheet.cssRules, function (rule) {
                 if (/^\..*(font-style|font-family)/i.test(rule.cssText)) {
-                    fontStyles.push(rule.selectorText.replace(/^./, ''));
+                    fontStyles.push(createStyleDef(rule));
                 }
             });
             return fontStyles;
         };
 
-        QUINK.getFontStyleState = function () {
-            return StyleHandler.getInstance().isApplied(fontStyles);
-        };
-
         /**
          * Returns the selectors that start with the word 'stroke' from the user stylesheet.
          */
-        QUINK.getStrokeStyleValues = function () {
+        QUINK.getStrokeStyleDefs = function () {
             var sheet = StyleMgr.getInstance().getStylesheet();
             Array.prototype.forEach.call(sheet.cssRules, function (rule) {
                 if (/^\.stroke/i.test(rule.selectorText)) {
-                    strokeStyles.push(rule.selectorText.replace(/^./, ''));
+                    strokeStyles.push(createStyleDef(rule));
                 }
             });
             return strokeStyles;
-        };
-
-        QUINK.getStrokeStyleState = function () {
-            return StyleHandler.getInstance().isApplied(strokeStyles);
         };
 
         /**
          * From the user supplied style sheet return the selector text for all styles that have the word 'background'
          * in their rule text and are at class level.
          */
-        QUINK.getBackgroundStyleValues = function () {
+        QUINK.getBackgroundStyleDefs = function () {
             var sheet = StyleMgr.getInstance().getStylesheet();
             Array.prototype.forEach.call(sheet.cssRules, function (rule) {
                 if (/^\..*background/i.test(rule.cssText)) {
-                    backgroundStyles.push(rule.selectorText.replace(/^./, ''));
+                    backgroundStyles.push(createStyleDef(rule));
                 }
             });
             return backgroundStyles;
         };
 
-        QUINK.getBackgroundStyleState = function () {
-            return StyleHandler.getInstance().isApplied(backgroundStyles);
+        /**
+         * Returns the styles that are active in the current selection. Used for all style menus.
+         */
+        QUINK.getStyleState = function (menuDefs) {
+            return StyleHandler.getInstance().isApplied(menuDefs.map(function (def) {
+                return def.value;
+            }));
         };
 
         /**
-         * Callback usedfor both style menus.
+         * Callback used for all style menus.
          */
         QUINK.onStyleSelect = function (newValue, oldValue) {
             if (newValue !== 'close') {
@@ -125,17 +131,5 @@ QUINK = {
                 PubSub.publish('command.exec', 'style.apply.' + newValue);
             }
         };
-
-        /**
-         * Replace underscores with spaces and make the menu style the menu entries. Used in both style
-         * menus.
-         */
-        QUINK.getStyleLabels = function (value) {
-            return {
-                label: value.replace(/_/g, ' '),
-                cssClass: value
-            };
-        };
-
     }
 };

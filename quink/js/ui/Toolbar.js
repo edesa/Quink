@@ -157,26 +157,8 @@ define([
         PubSub.publish('command.exec', 'insert.' + pluginId);
     };
 
-    Toolbar.prototype.createMenuDef = function (valueFuncName, labelFuncName) {
-        var values = Func.exec(this, valueFuncName) || [];
-        return _.map(values, function (val) {
-            var obj = Func.exec(this, labelFuncName, val),
-                result;
-            if (_.isString(obj)) {
-                result = {
-                    value: val,
-                    label: obj
-                };
-            } else {
-                obj.value = val;
-                result = obj;
-            }
-            return result;
-        }.bind(this));
-    };
-
-    Toolbar.prototype.createMenu = function (valueFuncName, labelFuncName, stateFuncName, callbackFuncName, isMultiSelect) {
-        var def = this.createMenuDef(valueFuncName, labelFuncName);
+    Toolbar.prototype.createMenu = function (defsFuncName, stateFuncName, callbackFuncName, isMultiSelect) {
+        var def = Func.exec(this, defsFuncName);
         return PopupMenu.create(def, Func.getBound(this, stateFuncName), Func.getBound(this, callbackFuncName), isMultiSelect);
     };
 
@@ -193,7 +175,7 @@ define([
             menu = this.menus[id];
         if (args) {
             if (!menu) {
-                menu = this.createMenu(args[0], args[1], args[2], args[3], /^true$/i.test(args[4]));
+                menu = this.createMenu(args[0], args[1], args[2], /^true$/i.test(args[3]));
                 this.menus[id] = menu;
             }
             menu.show(hit.pageX, hit.pageY);
