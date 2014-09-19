@@ -13,9 +13,40 @@ define([
 ], function (ApplyStyleHandler, PopupMenu, Func, PubSub, StylesheetMgr) {
     'use strict';
 
-    function createDefs(defsFuncName) {
-        return Func.exec({}, defsFuncName, StylesheetMgr.getInstance().getStylesheet());
+    /**
+     * Creates and returns a menu item definition given a css rule.
+     */
+    function createStyleDef(rule) {
+        var style = rule.selectorText.replace(/^./, '');
+        return {
+            value: style,
+            label: style.replace(/_/g, ' '),
+            cssClass: style
+        };
     }
+
+    /**
+     * Runs through all of the rules in the stylesheet invoking filter on each one. Those that pass the
+     * filter are handed to createStyleDef. An array of the objects returned from createStyleDef is returned
+     * from this function.
+     */
+    function mapFilter(stylesheet, filter) {
+        var result = [];
+        Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
+            if (filter(rule)) {
+                result.push(createStyleDef(rule));
+            }
+        });
+        return result;
+    }
+
+    function createDefs(ruleFilterName) {
+        return mapFilter(StylesheetMgr.getInstance().getStylesheet(), Func.getBound({}, ruleFilterName));
+    }
+
+    // function createDefs(defsFuncName) {
+    //     return Func.exec({}, defsFuncName, StylesheetMgr.getInstance().getStylesheet());
+    // }
 
     function onSelect(newValue, oldValue) {
         if (newValue !== 'close') {
