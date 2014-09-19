@@ -15,16 +15,6 @@ QUINK = {
     ready: function () {
         'use strict';
 
-        // var fontStyles = [],
-        //     strokeStyles = [],
-        //     backgroundStyles = [],
-        //     StyleMgr, StyleHandler;
-
-        // require(['util/StylesheetMgr', 'command/ApplyStyleHandler'], function (StylesheetMgr, ApplyStyleHandler) {
-        //     StyleMgr = StylesheetMgr;
-        //     StyleHandler = ApplyStyleHandler;
-        // });
-
         QUINK.configureToolbar({
             groups: [{
                 id: 'style',
@@ -77,15 +67,15 @@ QUINK = {
          * From the user supplied style sheet return the selector text for all styles that have the words 'font-style'
          * or 'font-family' in their rule text and are at class level.
          */
-        // QUINK.getFontStyleDefs = function () {
-        //     var sheet = StyleMgr.getInstance().getStylesheet();
-        //     Array.prototype.forEach.call(sheet.cssRules, function (rule) {
-        //         if (/^\..*(font-style|font-family)/i.test(rule.cssText)) {
-        //             fontStyles.push(createStyleDef(rule));
-        //         }
-        //     });
-        //     return fontStyles;
-        // };
+        QUINK.getFontStyleDefs = function (stylesheet) {
+            var fontStyles = [];
+            Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
+                if (/^\..*(font-style|font-family)/i.test(rule.cssText)) {
+                    fontStyles.push(createStyleDef(rule));
+                }
+            });
+            return fontStyles;
+        };
 
         /**
          * Returns the selectors that start with the word 'stroke' from the user stylesheet.
@@ -112,47 +102,6 @@ QUINK = {
                 }
             });
             return backgroundStyles;
-        };
-
-        // QUINK.getBackgroundStyleDefs = function () {
-        //     var sheet = StyleMgr.getInstance().getStylesheet();
-        //     Array.prototype.forEach.call(sheet.cssRules, function (rule) {
-        //         if (/^\..*background/i.test(rule.cssText)) {
-        //             backgroundStyles.push(createStyleDef(rule));
-        //         }
-        //     });
-        //     return backgroundStyles;
-        // };
-
-        /**
-         * Returns the styles that are active in the current selection. Used for all style menus.
-         */
-        // QUINK.getStyleState = function (menuDefs) {
-        //     return StyleHandler.getInstance().isApplied(menuDefs.map(function (def) {
-        //         return def.value;
-        //     }));
-        // };
-
-        /**
-         * Callback used for all style menus.
-         */
-        // QUINK.onStyleSelect = function (newValue, oldValue) {
-        //     if (newValue !== 'close') {
-        //         if (newValue !== oldValue) {
-        //             PubSub.publish('command.exec', 'style.apply.' + oldValue);
-        //         }
-        //         PubSub.publish('command.exec', 'style.apply.' + newValue);
-        //     }
-        // };
-
-        QUINK.getFontStyleDefs = function (stylesheet) {
-            var fontStyles = [];
-            Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
-                if (/^\..*(font-style|font-family)/i.test(rule.cssText)) {
-                    fontStyles.push(createStyleDef(rule));
-                }
-            });
-            return fontStyles;
         };
     }
 };
