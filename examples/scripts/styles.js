@@ -31,18 +31,33 @@ QUINK = {
                 hidden: false,
                 items: [{
                     "id": "applyStyleFont",
-                    "hidden": false
+                    "hidden": false,
+                    "index": 8,
+                    "elId": "qk_button_applystylefont",
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showMenu",
+                    "commandArgs": "getFontStyleValues, getStyleLabels, getFontStyleState, onStyleSelect"
                 }, {
                     "id": "applyStyleStroke",
-                    "hidden": false
+                    "hidden": false,
+                    "index": 9,
+                    "elId": "qk_button_applystylestroke",
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showMenu",
+                    "commandArgs": "getStrokeStyleValues, getStyleLabels, getStrokeStyleState, onStyleSelect"
                 }, {
                     "id": "applyStyleBackground",
-                    "hidden": false
+                    "hidden": false,
+                    "index": 10,
+                    "elId": "qk_button_applystylebackground",
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showMenu",
+                    "commandArgs": "getBackgroundStyleValues, getStyleLabels, getBackgroundStyleState, onStyleSelect"
                 }]
             }],
             defaults: {
                 hidden: true
-            },
+            }
         });
 
         /**
