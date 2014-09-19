@@ -113,8 +113,9 @@ define([
     /**
      * Updates srcItems to reflect the changes specified in editItems.
      */
-    ToolbarProvider.prototype.mergeItems = function (srcGroups, srcItems, editItems) {
-        editItems.forEach(function (editItem) {
+    ToolbarProvider.prototype.mergeItems = function (srcGroups, srcGroup, editGroup) {
+        var srcItems = srcGroup.items;
+        editGroup.items.forEach(function (editItem) {
             var srcItem = this.findItem(srcGroups, srcItems, editItem.id);
             if (srcItem) {
                 if (editItem.index !== undefined) {
@@ -122,7 +123,8 @@ define([
                 }
                 this.updateObject(srcItem, editItem, true);
             } else {
-                console.log('unable to find item with id: ' + editItem.id);
+                srcGroup.items.push($.extend({}, editItem));
+                this.orderObjects(srcItems, 0, editItem.index);
             }
         }, this);
     };
@@ -153,7 +155,7 @@ define([
                 srcGrp.items = [];
                 src.push(srcGrp);
                 if (editGrp.items) {
-                    this.mergeItems(src, srcGrp.items, editGrp.items);
+                    this.mergeItems(src, srcGrp, editGrp);
                 }
             } else {
                 if (editGrp.index !== undefined) {
@@ -161,7 +163,7 @@ define([
                 }
                 this.updateObject(srcGrp, editGrp, true);
                 if (editGrp.items) {
-                    this.mergeItems(src, srcGrp.items, editGrp.items);
+                    this.mergeItems(src, srcGrp, editGrp);
                 }
             }
         }, this);

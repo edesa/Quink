@@ -27,6 +27,7 @@
         <button class="page-button" id="btn2alt">config 2 alt</button>
         <button class="page-button" id="btn3">config 3</button>
         <button class="page-button" id="btn4">config 4</button>
+        <button class="page-button" id="btn5">config 5</button>
         <button class="page-button" id="btnreset">default config</button>
         <script type="text/javascript">
         QUINK.ready = function () {
@@ -174,6 +175,25 @@
                     }
                 }
             },
+            c5 = {
+                groups: [{
+                    id: 'style',
+                    active: true,
+                    hidden: false,
+                    items: [{
+                        "id": "test",
+                        "hidden": false,
+                        "index": 8,
+                        "elId": "qk_button_applystylefont",
+                        "cssClass": "qk_button_bg_applystyle",
+                        "command": "mytest",
+                        "commandArgs": "fred, the, mole"
+                    }]
+                }],
+                defaults: {
+                    hidden: true
+                }
+            },
             origConfig;
             document.querySelector('#btn1').addEventListener('click', function () {
                 var cfg = QUINK.configureToolbar(c1);
@@ -195,11 +215,20 @@
                 var cfg = QUINK.configureToolbar(c4);
                 origConfig = origConfig || cfg;
             });
+            document.querySelector('#btn5').addEventListener('click', function () {
+                var cfg = QUINK.configureToolbar(c5);
+                origConfig = origConfig || cfg;
+            });
             document.querySelector('#btnreset').addEventListener('click', function () {
                 if (origConfig) {
                     QUINK.configureToolbar(origConfig);
                 }
             });
+            QUINK.mytest = function () {
+                Array.prototype.forEach.call(arguments, function (arg) {
+                    console.log('arg: ' + arg);
+                });
+            };
         };
         </script>
     <body>
