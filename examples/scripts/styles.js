@@ -9,6 +9,7 @@ QUINK = {
     params: {
         toolbar: 'on',
         styles: 'example-styles.css'
+        // styles: '#user-styles' - a selector that should select a style node within the document.
     },
 
     ready: function (PubSub) {
