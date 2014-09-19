@@ -61,6 +61,9 @@ QUINK = {
             }
         });
 
+        /**
+         * Creates and returns a menu item definition given a css rule.
+         */
         function createStyleDef(rule) {
             var style = rule.selectorText.replace(/^./, '');
             return {
