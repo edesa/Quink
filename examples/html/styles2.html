@@ -11,13 +11,31 @@
                 },
                 ready: function () {
                     QUINK.configureToolbar({
-                       groups: [{
-                           id: 'style',
-                           active: true
-                       }],
+                        groups: [{
+                            id: 'style',
+                            active: true,
+                            hidden: false,
+                            items: [{
+                                "id": "applyStyleStroke",
+                                "hidden": false,
+                                "cssClass": "qk_button_bg_applystyle",
+                                "command": "showStyleMenu",
+                                "commandArgs": "ruleFilter"
+                            }]
+                        }],
+                        defaults: {
+                            hidden: true
+                        }
                     });
-                }
-            };
+
+                    /**
+                     * The style menu will contain every style in the stylesheet.
+                     */
+                    QUINK.ruleFilter = function () {
+                        return true;
+                    };
+            }
+        }
         </script>
         <script type="text/javascript" src="../../quink.js"></script>
         <style id="user-styles">
@@ -30,7 +48,6 @@
         </style>
     </head>
     <body>
-        This example no longer works... see styles.html for one that does.
         <div contenteditable="true">
             Tap the apply styles button in the style tab of the toolbar. This produces the apply styles menu populated using the style node in the document.
         </div>
