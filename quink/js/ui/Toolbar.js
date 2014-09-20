@@ -168,6 +168,9 @@ define([
             hit = Event.isTouch ? event.changedTouches[0] : event,
             menu = this.menus[id],
             args;
+        if (!id) {
+            throw new Error('Invalid menu def (menu button json needs elId)');
+        }
         if (!menu) {
             if (argsStr) {
                 args = _.map(argsStr.split(','), function (name) {
