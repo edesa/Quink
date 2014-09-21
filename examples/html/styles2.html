@@ -21,7 +21,7 @@
                                 "elId": "stylemenu",
                                 "cssClass": "qk_button_bg_applystyle",
                                 "command": "showStyleMenu",
-                                "commandArgs": "ruleFilter"
+                                "commandArgs": "ruleFilter, styleLabel"
                             }]
                         }],
                         defaults: {
@@ -35,22 +35,29 @@
                     QUINK.ruleFilter = function () {
                         return true;
                     };
+
+                    /**
+                     * Remove the leading 'highlight_' from the menu items for the background menu.
+                     */
+                    QUINK.styleLabel = function (style) {
+                        return style.replace(/^highlight_(.*)/i, '$1');
+                    };
             }
         }
         </script>
         <script type="text/javascript" src="../../quink.js"></script>
         <style id="user-styles">
-            .red {
+            .highlight_red {
                 background-color: red;
             }
-            .green {
+            .highlight_green {
                 background-color: green;
             }
         </style>
     </head>
     <body>
         <div contenteditable="true">
-            Tap the apply styles button in the style tab of the toolbar. This produces the apply styles menu populated using the style node in the document.
+            Tap the apply styles button in the style tab of the toolbar. This produces the apply styles menu populated using the style node in the document. This example also shows the use of a function to provide the style menu item labels.
         </div>
     </body>
 </html>
