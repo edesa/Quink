@@ -54,3 +54,9 @@
 .Highlight_Green {
     background-color: green;
 }
+.Capitalise {
+    text-transform: capitalize;
+}
+.Upper_Case {
+    text-transform: uppercase;
+}

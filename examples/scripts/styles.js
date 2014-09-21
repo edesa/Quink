@@ -44,6 +44,14 @@ QUINK = {
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showStyleMenu",
                     "commandArgs": "backgroundStyleRuleFilter"
+                }, {
+                    "id": "applyStyleMulti",
+                    "hidden": false,
+                    "index": 11,
+                    "elId": "qk_button_applystylemulti",
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showStyleMenu",
+                    "commandArgs": "multiStyleRuleFilter, true"
                 }]
             }],
             defaults: {
@@ -70,6 +78,10 @@ QUINK = {
          */
         QUINK.backgroundStyleRuleFilter = function (rule) {
             return /^\..*background/i.test(rule.cssText);
+        };
+
+        QUINK.multiStyleRuleFilter = function (rule) {
+            return /^\..*text-transform/i.test(rule.cssText) || /\.(italic|bold)/i.test(rule.selectorText);
         };
     }
 };
