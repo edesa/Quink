@@ -24,7 +24,7 @@ define([
      * Creates and returns a menu item definition given a css rule.
      */
     function createStyleDef(rule, labelFunc) {
-        var style = rule.selectorText.replace(/^./, '');
+        var style = rule.selectorText.replace(/^\./, '');
         return {
             value: style,
             label: labelFunc(style),
@@ -52,12 +52,12 @@ define([
         return mapFilter(StylesheetMgr.getInstance().getStylesheet(), Func.getBound({}, ruleFilterName), labelFunc);
     }
 
-    function onSelect(newValue, oldValue) {
-        if (newValue !== 'close') {
-            if (newValue !== oldValue) {
-                PubSub.publish('command.exec', 'style.apply.' + oldValue);
-            }
-            PubSub.publish('command.exec', 'style.apply.' + newValue);
+    function onSelect(selected, deselected) {
+        if (selected) {
+            PubSub.publish('command.exec', 'style.apply.' + selected);
+        }
+        if (deselected) {
+            PubSub.publish('command.exec', 'style.apply.' + deselected);
         }
     }
 

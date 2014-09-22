@@ -4,44 +4,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
         <title>Quink Example - toolbar menu</title>
         <script type="text/javascript">
-            var Menu = function (isMultiSelect) {
-                this.isMultiSelect = isMultiSelect;
-                this.state = [];
-            }
-
-            Menu.prototype.create = function () {
-                return [{
-                    label: 'option1',
-                    value: '1'
-                }, {
-                    label: 'option 2',
-                    value: '2'
-                }, {
-                    label: 'option 3',
-                    value: '3'
-                }];
-            }
-            Menu.prototype.getState = function () {
-                return this.state;
-            }
-            Menu.prototype.onSelect = function (newValue, oldValue) {
-                if (newValue !== 'close') {
-                    if (this.isMultiSelect) {
-                        index = this.state.indexOf(newValue);
-                        if (index >= 0) {
-                            this.state.splice(index, 1);
-                        } else {
-                            this.state.push(newValue);
-                        }
-                    } else {
-                        if (newValue !== oldValue) {
-                            this.state[0] = newValue;
-                        } else {
-                            this.state.length = 0;
-                        }
-                    }
-                }
-            };
+            var singleState = [],
+                multiState = [];
 
             QUINK = {
                 params: {
@@ -76,29 +40,48 @@
                     });
 
                     QUINK.createSingleDefs = function () {
-                        this.singleMenu = new Menu();
-                        return this.singleMenu.create();
+                        return [{
+                            label: 'option1',
+                            value: '1'
+                        }, {
+                            label: 'option 2',
+                            value: '2'
+                        }, {
+                            label: 'option 3',
+                            value: '3'
+                        }];
                     };
 
                     QUINK.getSingleState = function () {
-                        return this.singleMenu.getState();
+                        return singleState;
                     };
 
-                    QUINK.onSingleSelect = function (newValue, oldValue) {
-                        this.singleMenu.onSelect(newValue, oldValue);
+                    QUINK.onSingleSelect = function (newValue, oldValue, state) {
+                        singleState = state;
                     };
 
                     QUINK.createMultiDefs = function () {
-                        this.multiMenu = new Menu(true);
-                        return this.multiMenu.create();
+                        return [{
+                            label: 'option A',
+                            value: 'A'
+                        }, {
+                            label: 'option B',
+                            value: 'B'
+                        }, {
+                            label: 'option C',
+                            value: 'C'
+                        }, {
+                            label: 'option D',
+                            value: 'D'
+                        }];
                     };
 
                     QUINK.getMultiState = function () {
-                        return this.multiMenu.getState();
+                        return multiState;
                     };
 
-                    QUINK.onMultiSelect = function (newValue, oldValue) {
-                        this.multiMenu.onSelect(newValue, oldValue);
+                    QUINK.onMultiSelect = function (newValue, oldValue, state) {
+                        multiState = state;
                     };
                 }
             }

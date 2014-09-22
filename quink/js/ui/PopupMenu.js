@@ -35,8 +35,28 @@ define([
         });
     };
 
-    PopupMenu.prototype.updateState = function (markup, state) {
-        markup.find('.qk_popup_menu_item[id="' + state + '"] .qk_popup_menu_item_state').toggleClass(this.HIDDEN_CSS);
+    PopupMenu.prototype.updateUiState = function (markup, state) {
+        if (state) {
+            markup.find('.qk_popup_menu_item[id="' + state + '"] .qk_popup_menu_item_state').toggleClass(this.HIDDEN_CSS);
+        }
+    };
+
+    PopupMenu.prototype.updateState = function (state, newValue) {
+        var index = state.indexOf(newValue),
+            result = {};
+        if (index >= 0) {
+            state.splice(index, 1);
+            result.deselected = newValue;
+        } else {
+            if (this.isMultiSelect) {
+                state.push(newValue);
+            } else {
+                result.deselected = state[0];
+                state[0] = newValue;
+            }
+            result.selected = newValue;
+        }
+        return result;
     };
 
     PopupMenu.prototype.onSelect = function (event) {
@@ -45,14 +65,16 @@ define([
             selectedDef = _.find(this.menuDef, function (def) {
                 return def.value === id;
             }),
-            prevState;
+            newValue = selectedDef.value,
+            delta = {};
         event.preventDefault(); // stops the menu being focused
-        if (selectedDef.value !== 'close') {
-            this.updateState(this.menu, selectedDef.value);
+        if (newValue !== 'close') {
+            delta = this.updateState(this.state, newValue);
+            this.updateUiState(this.menu, delta.selected);
+            this.updateUiState(this.menu, delta.deselected);
         }
-        prevState = (!this.isMultiSelect) ? this.state[0] : undefined;
-        this.callback(selectedDef.value, prevState);
-        if (!this.isMultiSelect || selectedDef.value === 'close') {
+        this.callback(delta.selected, delta.deselected, this.state);
+        if (!this.isMultiSelect || newValue === 'close') {
             this.hide();
         }
     };
