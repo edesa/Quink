@@ -9,7 +9,6 @@ QUINK = {
     params: {
         toolbar: 'on',
         styles: 'example-styles.css'
-        // styles: '#user-styles' - a selector that should select a style node within the document.
     },
 
     ready: function () {
@@ -80,6 +79,9 @@ QUINK = {
             return /^\..*background/i.test(rule.cssText);
         };
 
+        /**
+         * Selects the text transformation rules plus italic and bold.
+         */
         QUINK.multiStyleRuleFilter = function (rule) {
             return /^\..*text-transform/i.test(rule.cssText) || /\.(italic|bold)/i.test(rule.selectorText);
         };
