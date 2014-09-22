@@ -6,21 +6,27 @@
 
 define([
     'jquery',
+    'ui/Mask',
     'util/Env',
     'util/Event',
     'util/FocusTracker',
     'util/PubSub',
     'util/DomUtil'
-], function ($, Env, Event, FocusTracker, PubSub, DomUtil) {
+], function ($, Mask, Env, Event, FocusTracker, PubSub, DomUtil) {
     'use strict';
 
     var InfoCommandHandler = function () {
         this.info = {};
-        this.mask = $('<div>').addClass('qk_mask')
-            .on('touchmove', function (event) {
-                event.preventDefault();
-            });
+        this.mask = Mask.create(this.onClose.bind(this));
         this.fetchContainerMarkup();
+    };
+
+    InfoCommandHandler.prototype.onClose = function () {
+        this.infoContainer.detach();
+        this.mask.hide();
+        $(document.body).removeClass('qk_no_scroll');
+        FocusTracker.restoreFocus();
+        PubSub.publish('info.closed');
     };
 
     /**
@@ -28,16 +34,11 @@ define([
      * be scrolled. The latter is an issue on iOS.
      */
     InfoCommandHandler.prototype.initInfoContainer = function (data) {
-        var me = this;
         this.infoContainer = $(data);
         this.infoContainer.find('.qk_info_close_button').on(Event.eventName('end'), function (event) {
             event.preventDefault();
-            me.infoContainer.detach();
-            me.mask.detach();
-            $(document.body).removeClass('qk_no_scroll');
-            FocusTracker.restoreFocus();
-            PubSub.publish('info.closed');
-        });
+            this.onClose();
+        }.bind(this));
         this.infoContainer.on('touchmove', function (event) {
             var content = $(event.delegateTarget).find('.qk_info_content');
             if (content[0].scrollHeight <= content.outerHeight()) {
@@ -85,7 +86,7 @@ define([
         var infoContainer;
         PubSub.publish('info.open', id);
         FocusTracker.removeFocus();
-        this.mask.appendTo('body');
+        this.mask.show();
         $(document.body).addClass('qk_no_scroll');
         infoContainer = this.infoContainer.find('.qk_info_content');
         infoContainer.html(this.getContent(id));
