@@ -135,7 +135,7 @@ define([
      * Sets the focus to the last editable that had the focus. Ensures that there is always
      * a range is the focused editable.
      */
-    FocusTracker.prototype.restoreFocus = function () {
+    FocusTracker.prototype.createFocus = function () {
         var editable = this.lastEditable,
             state = this.findState(editable),
             range = state.range;
@@ -147,6 +147,21 @@ define([
             state.range = range;
         }
         rangy.getSelection().setSingleRange(range);
+        return range;
+    };
+
+    /**
+     * Restores the focus to the last focused editable that has had a range. Will not create a range or focus
+     * an editable if the editable does not have a range so the return can be falsey.
+     */
+    FocusTracker.prototype.restoreFocus = function () {
+        var editable = this.lastEditable,
+            state = this.findState(editable),
+            range = state.range;
+        if (range) {
+            editable.focus();
+            rangy.getSelection().setSingleRange(range);
+        }
         return range;
     };
 
@@ -272,6 +287,7 @@ define([
     return {
         init: theInstance.init.bind(theInstance),
         restoreFocus: theInstance.restoreFocus.bind(theInstance),
+        createFocus: theInstance.createFocus.bind(theInstance),
         removeFocus: theInstance.removeFocus.bind(theInstance),
         getCurrentEditable: theInstance.getCurrentEditable.bind(theInstance)
     };

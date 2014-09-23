@@ -52,20 +52,19 @@ define([
         return handled;
     };
 
-    InsertCommandHandler.prototype.getRange = function () {
-        return FocusTracker.restoreFocus();
-    };
-
     /**
      * On the iPad there are cases where there is no saved range (e.g. manually slide the keyboard
      * out). In these cases the best that can be done is to programmatically create a range.
      */
     InsertCommandHandler.prototype.onPluginSave = function (data) {
-        var range = this.getRange();
-        Context.commit(data, range);
-        rangy.getSelection().setSingleRange(range);
-        PubSub.publish('editable.range', range);
-        Context.destroy();
+        var range = FocusTracker.restoreFocus();
+        try {
+            Context.commit(data, range);
+            rangy.getSelection().setSingleRange(range);
+            PubSub.publish('editable.range', range);
+        } finally {
+            Context.destroy();
+        }
     };
 
     InsertCommandHandler.prototype.onPluginCancel = function () {
@@ -78,7 +77,7 @@ define([
      */
     InsertCommandHandler.prototype.onTextInsert = function (text) {
         var range, node;
-        range = this.getRange();
+        range = FocusTracker.createFocus();
         node = document.createTextNode(text);
         if (!range.collapsed) {
             range.deleteContents();
@@ -95,7 +94,7 @@ define([
      */
     InsertCommandHandler.prototype.onHtmlInsert = function (html) {
         var range, nodes;
-        range = this.getRange();
+        range = FocusTracker.createFocus();
         if (!range.collapsed) {
             range.deleteContents();
         }
