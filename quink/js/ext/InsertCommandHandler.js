@@ -57,7 +57,7 @@ define([
      * out). In these cases the best that can be done is to programmatically create a range.
      */
     InsertCommandHandler.prototype.onPluginSave = function (data) {
-        var range = FocusTracker.restoreFocus();
+        var range = FocusTracker.createFocus();
         try {
             Context.commit(data, range);
             rangy.getSelection().setSingleRange(range);
