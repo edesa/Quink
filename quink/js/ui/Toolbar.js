@@ -148,11 +148,16 @@ define([
 
     Toolbar.prototype.showInsertMenu = function (event) {
         var hit = Event.isTouch ? event.changedTouches[0] : event;
-        this.insertMenu.css({
-            'top': hit.pageY,
-            'left': hit.pageX
-        }).appendTo('body').removeClass('qk_hidden');
+        this.insertMenu.show(hit.pageX, hit.pageY);
     };
+
+    // Toolbar.prototype.showInsertMenu = function (event) {
+    //     var hit = Event.isTouch ? event.changedTouches[0] : event;
+    //     this.insertMenu.css({
+    //         'top': hit.pageY,
+    //         'left': hit.pageX
+    //     }).appendTo('body').removeClass('qk_hidden');
+    // };
 
     Toolbar.prototype.openPluginFromToolbar = function (event, pluginId) {
         PubSub.publish('command.exec', 'insert.' + pluginId);
@@ -326,7 +331,8 @@ define([
         var hit, handled;
         if (event.hitType === 'double') {
             hit = Event.isTouch ? event.event.originalEvent.changedTouches[0] : event.event;
-            this.showToolbarAt(hit.pageX, hit.pageY);
+            // this.showToolbarAt(hit.pageX, hit.pageY);
+            this.showToolbarAt(0, document.documentElement.scrollTop || document.body.scrollTop || 0);
             this.vpToolbar.adjust();
             handled = true;
         }
@@ -337,27 +343,45 @@ define([
      * Plugins is an array of objects each of which contains a plugin id and a plugin name. Sort
      * the objects so that the menu is shown in ascending alphabetical order. 
      */
-    Toolbar.prototype.createInsertMenu = function (menu, plugins) {
+    Toolbar.prototype.createInsertMenu = function (plugins) {
+        var menuDefs = [];
         _.sortBy(plugins, function (def) {
             return def.name.toLowerCase();
         }).reverse().forEach(function (plugin) {
-            $('<div>').addClass('qk_popup_menu_item')
-                .attr('data-plugin-id', plugin.id)
-                .html(plugin.name)
-                .prependTo(menu);
+            menuDefs.push({
+                label: plugin.name,
+                value: plugin.id
+            });
         });
-        menu.on(Event.eventName('start'), function (event) {
-            // Prevents tapping on the menu from moving focus off the editable.
-            event.preventDefault();
-        });
-        menu.on(Event.eventName('end'), function (event) {
-            var id = $(event.target).attr('data-plugin-id');
-            if (id) {
-                PubSub.publish('command.exec', 'insert.' + id);
+        this.insertMenu = PopupMenu.create(menuDefs, function () {
+            return [];
+        }, function (selected) {
+            if (selected) {
+                PubSub.publish('command.exec', 'insert.' + selected);
             }
-            menu.addClass('qk_hidden').detach();
         });
     };
+    // Toolbar.prototype.createInsertMenu = function (menu, plugins) {
+    //     _.sortBy(plugins, function (def) {
+    //         return def.name.toLowerCase();
+    //     }).reverse().forEach(function (plugin) {
+    //         $('<div>').addClass('qk_popup_menu_item')
+    //             .attr('data-plugin-id', plugin.id)
+    //             .html(plugin.name)
+    //             .prependTo(menu);
+    //     });
+    //     menu.on(Event.eventName('start'), function (event) {
+    //         // Prevents tapping on the menu from moving focus off the editable.
+    //         event.preventDefault();
+    //     });
+    //     menu.on(Event.eventName('end'), function (event) {
+    //         var id = $(event.target).attr('data-plugin-id');
+    //         if (id) {
+    //             PubSub.publish('command.exec', 'insert.' + id);
+    //         }
+    //         menu.addClass('qk_hidden').detach();
+    //     });
+    // };
 
     Toolbar.prototype.addPluginsToToolbar = function (plugins) {
         var toolbar = this,
@@ -380,15 +404,16 @@ define([
      * Add plugins to the toolbar or the plugin (insert) menu as appropriate. If there are no
      * plugins added to the menu, don't display the plugin menu icon on the toolbar.
      */
-    Toolbar.prototype.processPluginData = function (pluginData, menu) {
+    Toolbar.prototype.processPluginData = function (pluginData) {
         var toolbarPlugins = _.filter(pluginData, function (item) {
                 return !!item.onToolbar;
             }),
             menuPlugins = _.difference(pluginData, toolbarPlugins);
         this.addPluginsToToolbar(toolbarPlugins);
         if (menuPlugins.length > 0) {
-            this.createInsertMenu(menu, menuPlugins);
-            this.toolbar.find('#qk_button_plugin_menu').removeClass('qk_hidden');
+            // this.createInsertMenu(menu, menuPlugins);
+            this.createInsertMenu(menuPlugins);
+            // this.toolbar.find('#qk_button_plugin_menu').removeClass('qk_hidden');
         } else {
             this.toolbar.find('#qk_button_plugin_menu').addClass('qk_hidden');
         }
@@ -396,9 +421,10 @@ define([
 
     Toolbar.prototype.onPluginNames = function (pluginData) {
         this.pluginNames = pluginData;
-        if (this.insertMenu) {
-            this.processPluginData(pluginData, this.insertMenu);
-        }
+        // if (this.insertMenu) {
+            // this.processPluginData(pluginData, this.insertMenu);
+            this.processPluginData(pluginData);
+        // }
     };
 
     Toolbar.prototype.checkShowSubmit = function () {
@@ -454,26 +480,28 @@ define([
         }
     };
 
-    Toolbar.prototype.onDownloadInsertMenu = function (data) {
-        this.insertMenu = $(data);
-        if (this.pluginNames) {
-            this.processPluginData(this.pluginNames, this.insertMenu);
-        }
-    };
+    // Toolbar.prototype.onDownloadInsertMenu = function (data) {
+    //     this.insertMenu = $(data);
+    //     if (this.pluginNames) {
+    //         this.processPluginData(this.pluginNames, this.insertMenu);
+    //     }
+    // };
 
     Toolbar.prototype.processToolbar = function (html) {
         this.toolbar = $(html).appendTo('body');
         this.afterToolbarCreated();
-        this.onDownloadInsertMenu(this.insertMenuHtml);
+        // this.onDownloadInsertMenu(this.insertMenuHtml);
+        if (this.pluginNames) {
+            this.processPluginData(this.pluginNames);
+        }
         this.onCommandState(this.lastCommandState);
     };
 
     /**
      * The insert menu download can't be processed until the toolbar download has been handled.
      */
-    Toolbar.prototype.onDownload = function (tbDef, tbTpl, imHtml, stylesTpl) {
+    Toolbar.prototype.onDownload = function (tbDef, tbTpl, stylesTpl) {
         var html;
-        this.insertMenuHtml = imHtml[0];
         this.stylesTpl = stylesTpl[0];
         this.toolbarProvider = new ToolbarProvider(tbTpl[0], tbDef[0]);
         html = this.toolbarProvider.createToolbar(QUINK.toolbar || {});
@@ -484,7 +512,6 @@ define([
     Toolbar.prototype.downloadResources = function () {
         var downloads = $.when($.get(Env.resource('toolbarDef.json')),
             $.get(Env.resource('toolbarTpl.tpl')),
-            $.get(Env.resource('insertmenu.html')),
             $.get(Env.resource('styleTpl.tpl')));
         downloads.done(this.onDownload.bind(this));
         downloads.fail(function () {
