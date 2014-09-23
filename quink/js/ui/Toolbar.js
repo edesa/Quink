@@ -151,14 +151,6 @@ define([
         this.insertMenu.show(hit.pageX, hit.pageY);
     };
 
-    // Toolbar.prototype.showInsertMenu = function (event) {
-    //     var hit = Event.isTouch ? event.changedTouches[0] : event;
-    //     this.insertMenu.css({
-    //         'top': hit.pageY,
-    //         'left': hit.pageX
-    //     }).appendTo('body').removeClass('qk_hidden');
-    // };
-
     Toolbar.prototype.openPluginFromToolbar = function (event, pluginId) {
         PubSub.publish('command.exec', 'insert.' + pluginId);
     };
@@ -361,27 +353,6 @@ define([
             }
         });
     };
-    // Toolbar.prototype.createInsertMenu = function (menu, plugins) {
-    //     _.sortBy(plugins, function (def) {
-    //         return def.name.toLowerCase();
-    //     }).reverse().forEach(function (plugin) {
-    //         $('<div>').addClass('qk_popup_menu_item')
-    //             .attr('data-plugin-id', plugin.id)
-    //             .html(plugin.name)
-    //             .prependTo(menu);
-    //     });
-    //     menu.on(Event.eventName('start'), function (event) {
-    //         // Prevents tapping on the menu from moving focus off the editable.
-    //         event.preventDefault();
-    //     });
-    //     menu.on(Event.eventName('end'), function (event) {
-    //         var id = $(event.target).attr('data-plugin-id');
-    //         if (id) {
-    //             PubSub.publish('command.exec', 'insert.' + id);
-    //         }
-    //         menu.addClass('qk_hidden').detach();
-    //     });
-    // };
 
     Toolbar.prototype.addPluginsToToolbar = function (plugins) {
         var toolbar = this,
@@ -411,9 +382,7 @@ define([
             menuPlugins = _.difference(pluginData, toolbarPlugins);
         this.addPluginsToToolbar(toolbarPlugins);
         if (menuPlugins.length > 0) {
-            // this.createInsertMenu(menu, menuPlugins);
             this.createInsertMenu(menuPlugins);
-            // this.toolbar.find('#qk_button_plugin_menu').removeClass('qk_hidden');
         } else {
             this.toolbar.find('#qk_button_plugin_menu').addClass('qk_hidden');
         }
@@ -421,10 +390,7 @@ define([
 
     Toolbar.prototype.onPluginNames = function (pluginData) {
         this.pluginNames = pluginData;
-        // if (this.insertMenu) {
-            // this.processPluginData(pluginData, this.insertMenu);
-            this.processPluginData(pluginData);
-        // }
+        this.processPluginData(pluginData);
     };
 
     Toolbar.prototype.checkShowSubmit = function () {
@@ -480,17 +446,9 @@ define([
         }
     };
 
-    // Toolbar.prototype.onDownloadInsertMenu = function (data) {
-    //     this.insertMenu = $(data);
-    //     if (this.pluginNames) {
-    //         this.processPluginData(this.pluginNames, this.insertMenu);
-    //     }
-    // };
-
     Toolbar.prototype.processToolbar = function (html) {
         this.toolbar = $(html).appendTo('body');
         this.afterToolbarCreated();
-        // this.onDownloadInsertMenu(this.insertMenuHtml);
         if (this.pluginNames) {
             this.processPluginData(this.pluginNames);
         }
