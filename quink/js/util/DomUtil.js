@@ -145,33 +145,73 @@ define([
      * On Android Chrome the window height changes when the keyboard slides in which is why the test
      * is now for iOS and not for a touch device.
      */
+    // function getMaxVisibleHeight(isNavScroll) {
+    //     var win = $(window),
+    //         height = win.height() + (!isNavScroll ? $(document).scrollTop() : 0),
+    //         result = height,
+    //         visArea;
+    //     if (Env.isIos() && !!document.activeElement && isNavScroll) {
+    //         visArea = height > win.width() ? 0.60 : 0.35;
+    //         result = height * visArea;
+    //     }
+    //     return result;
+    // }
+
     function getMaxVisibleHeight(isNavScroll) {
         var win = $(window),
-            height = win.height() + (!isNavScroll ? $(document).scrollTop() : 0),
-            result = height,
-            visArea;
+            height = win.height(),
+            factor;
         if (Env.isIos() && !!document.activeElement && isNavScroll) {
-            visArea = height > win.width() ? 0.60 : 0.35;
-            result = height * visArea;
+            factor = height > win.width() ? 0.60 : 0.35;
+            height *= factor;
+            // result = height * visArea;
         }
-        return result;
+        return height;
     }
 
     /**
-     * Returns the top and bottom coordinates for the visible part of the editable.
-    */
+     * Returns the top and bottom coordinates for the visible part of the editable in page coordinates.
+     */
     function getVisibleBounds(editable, isNavScroll) {
-        var cont = $(editable),
-            virtContTop, virtContBottom, visContTop, visContBottom;
-        virtContTop = cont.offset().top - $(document).scrollTop();
-        virtContBottom = virtContTop + cont.innerHeight();
-        visContTop = Math.max(virtContTop, 0);
-        visContBottom = Math.min(virtContBottom, getMaxVisibleHeight(isNavScroll));
+        var el = $(editable),
+            visTop = $(document).scrollTop(),
+            visBottom = visTop + getMaxVisibleHeight(isNavScroll),
+            top = Math.floor(Math.max(el.offset().top, visTop)),
+            bottom = Math.ceil(Math.min(el.offset().top + el.outerHeight(), visBottom));
         return {
-            top: visContTop,
-            bottom: visContBottom
+            top: top,
+            bottom: bottom
         };
     }
+
+    /**
+     * Returns the top and bottom coordinates for the visible part of the editable in client coordinates.
+     */
+    function getVisibleClientBounds(el, isNavScroll) {
+        var doc = $(document),
+            docScrollTop = doc.scrollTop(),
+            elTop = el.offset().top,
+            top = Math.floor(Math.max(0, elTop - docScrollTop)),
+            bottom = Math.ceil(Math.min(getMaxVisibleHeight(isNavScroll), elTop + el.innerHeight() - docScrollTop));
+        return {
+            top: top,
+            bottom: bottom
+        };
+    }
+
+    // function getVisibleBounds(editable, isNavScroll) {
+    //     var cont = $(editable),
+    //         virtContTop, virtContBottom, visContTop, visContBottom;
+    //     virtContTop = cont.offset().top - $(document).scrollTop();
+    //     virtContBottom = virtContTop + cont.innerHeight();
+    //     visContTop = Math.max(virtContTop, 0);
+    //     visContBottom = Math.min(virtContBottom, getMaxVisibleHeight(isNavScroll));
+    //     console.log('vis bounds (' + visContTop + ', ' + visContBottom + ')');
+    //     return {
+    //         top: visContTop,
+    //         bottom: visContBottom
+    //     };
+    // }
 
     return {
         popEl: popEl,
@@ -179,6 +219,8 @@ define([
         isWithinDocument: isWithinDocument,
         nlSome: nlSome,
         makeQuinkRelative: makeQuinkRelative,
-        getVisibleBounds: getVisibleBounds
+        getVisibleBounds: getVisibleBounds,
+        getVisibleClientBounds: getVisibleClientBounds
+        // getMaxVisibleHeight: getMaxVisibleHeight
     };
 });

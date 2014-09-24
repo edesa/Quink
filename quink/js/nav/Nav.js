@@ -319,45 +319,130 @@ define([
             clone = rge.cloneRange();
             rge = new LocRange(rge).locate();
         }
-        try {
-            this.makeRangeVisible(rge);
-        } finally {
-            if (clone) {
-                sel.setSingleRange(clone);
+        if (rge) {
+            try {
+                this.makeRangeVisible(rge);
+            } finally {
+                if (clone) {
+                    sel.setSingleRange(clone);
+                }
             }
         }
     };
 
     /**
      * Makes sure that the given range is visible. range is a LocRange object.
-     * On the iPad the document itself is scrolled because of the virtual keyboard.
+     * Coordinates are client based. The lowest y value that's visible will be either the top of the
+     * viewport or the top of the editable, taking any document scrolling into account. The greatest
+     * visible y value will be either the bottom of the viewport or the bottom of the editable again taking
+     * any document scrolling into account.
+     * There's a further wrinkle and that's to do with the virtual keyboard on touch devices. On some
+     * devices this will effectively move the bottom of the viewport up.
      */
     Nav.prototype.makeRangeVisible = function (range) {
-        var cont, body, visBounds,
-            rangeTop, contScrollTop, delta;
-        if (range) {
-            cont = $(this.getState().editable);
-            body = $('body');
-            visBounds = DomUtil.getVisibleBounds(cont, true);
-            rangeTop = range.getTop();
-            contScrollTop = cont.scrollTop();
-            if (rangeTop < visBounds.top) {
-                delta = Math.ceil(visBounds.top - rangeTop);
-                cont.scrollTop(contScrollTop - delta);
-                if (cont.scrollTop() !== contScrollTop - delta) {
-                    // Container didn't scroll enough, try the body
-                    body.scrollTop(body.scrollTop() - delta);
-                }
-            } else if (range.getBottom() > visBounds.bottom) {
-                delta = Math.ceil(range.getBottom() - visBounds.bottom);
-                cont.scrollTop(contScrollTop + delta);
-                if (cont.scrollTop() !== contScrollTop + delta) {
-                    // Container didn't scroll enough, try the body
-                    body.scrollTop(body.scrollTop() + delta);
+        var el = $(this.getState().editable),
+            doc = $(document),
+            rangeTop = Math.ceil(range.getTop()),
+            rangeBottom = Math.floor(range.getBottom()),
+            rangeHeight = rangeBottom - rangeTop,
+            visBounds = DomUtil.getVisibleClientBounds(el, true),
+            win, delta, bound, scrollTop;
+        bound = Math.floor(visBounds.top + rangeHeight);
+        console.log('range: ' + rangeTop + ' ' + rangeBottom);
+        console.log('vis bounds: ' + visBounds.top + ' ' + visBounds.bottom);
+        if (rangeTop <= bound) {
+            delta = bound - rangeTop;
+            console.log('scrolling... ' + bound + ' ' + delta);
+            scrollTop = el.scrollTop();
+            el.scrollTop(scrollTop - delta);
+            // if (range.getTop() <= bound) {
+            if (el.scrollTop() > scrollTop - delta) {
+                console.log('scrolling doc...');
+                doc.scrollTop(doc.scrollTop() - delta);
+            }
+        } else {
+            win = $(window);
+            bound = Math.ceil(visBounds.bottom - rangeHeight);
+            console.log('bottom bound ' + bound);
+            if (rangeBottom > bound) {
+                delta = rangeBottom - bound;
+                console.log('scrolling... ' + bound + ' ' + delta);
+                scrollTop = el.scrollTop();
+                el.scrollTop(scrollTop + delta);
+                if (el.scrollTop() < scrollTop + delta) {
+                    console.log('scrolling doc... ' + range.getBottom());
+                    doc.scrollTop(doc.scrollTop() + delta);
                 }
             }
         }
     };
+
+    // this seems to work...
+    // Nav.prototype.makeRangeVisible = function (range) {
+    //     var el = $(this.getState().editable),
+    //         doc = $(document),
+    //         rangeTop = Math.ceil(range.getTop()),
+    //         rangeBottom = Math.floor(range.getBottom()),
+    //         rangeHeight = rangeBottom - rangeTop,
+    //         win, delta, bound, oldScroll;
+    //     bound = Math.floor(Math.max(0, el.offset().top - doc.scrollTop()) + rangeHeight);
+    //     console.log('range: ' + rangeTop + ' ' + rangeBottom);
+    //     if (rangeTop <= bound) {
+    //         delta = bound - rangeTop;
+    //         console.log('scrolling... ' + bound + ' ' + delta);
+    //         el.scrollTop(el.scrollTop() - delta);
+    //         if (range.getTop() <= bound) {
+    //             console.log('scrolling doc...');
+    //             doc = $(document);
+    //             doc.scrollTop(doc.scrollTop() - delta);
+    //         }
+    //     } else {
+    //         win = $(window);
+    //         bound = Math.ceil(Math.min(DomUtil.getMaxVisibleHeight(true), el.offset().top + el.innerHeight() - doc.scrollTop()) - rangeHeight);
+    //         console.log('bottom bound ' + bound);
+    //         if (rangeBottom > bound) {
+    //             delta = rangeBottom - bound;
+    //             console.log('scrolling... ' + bound + ' ' + delta);
+    //             oldScroll = el.scrollTop();
+    //             el.scrollTop(oldScroll + delta);
+    //             if (el.scrollTop() < oldScroll + delta) {
+    //                 console.log('scrolling doc...');
+    //                 doc.scrollTop(doc.scrollTop() + delta);
+    //             }
+    //         }
+    //     }
+    // };
+
+    // Nav.prototype.makeRangeVisible = function (range) {
+    //     var cont, body, visBounds,
+    //         rangeTop, contScrollTop, delta;
+    //     if (range) {
+    //         cont = $(this.getState().editable);
+    //         // body = $('body');
+    //         body = $(document);
+    //         visBounds = DomUtil.getVisibleBounds(cont, true);
+    //         rangeTop = range.getTop();
+    //         contScrollTop = cont.scrollTop();
+    //         console.log('range top: ' + rangeTop + ' vis top: ' + visBounds.top);
+    //         if (rangeTop < visBounds.top) {
+    //             console.log('scrolling...');
+    //             delta = Math.ceil(visBounds.top - rangeTop);
+    //             cont.scrollTop(contScrollTop - delta);
+    //             if (cont.scrollTop() !== contScrollTop - delta) {
+    //                 // Container didn't scroll enough, try the body
+    //                 body.scrollTop(body.scrollTop() - delta);
+    //             }
+    //         } else if (range.getBottom() > visBounds.bottom) {
+    //             console.log('scrolling...');
+    //             delta = Math.ceil(range.getBottom() - visBounds.bottom);
+    //             cont.scrollTop(contScrollTop + delta);
+    //             if (cont.scrollTop() !== contScrollTop + delta) {
+    //                 // Container didn't scroll enough, try the body
+    //                 body.scrollTop(body.scrollTop() + delta);
+    //             }
+    //         }
+    //     }
+    // };
 
     /**
      * Vertical navigation with selection. The aim is to emulate the browser behaviour when doing the
