@@ -6,7 +6,7 @@
                 classes += ' ' + opt.cssClass;
             }
         %>
-        <div class="<%= classes %>" id="<%= opt.value %>">
+        <div class="<%= classes %>" data-value="<%= opt.value %>">
             <span class="qk_popup_menu_item_label"><%= opt.label %></span>
             <span class="qk_popup_menu_item_state">&#10004;</span>
         </div>

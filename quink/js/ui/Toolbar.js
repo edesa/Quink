@@ -206,7 +206,7 @@ define([
     Toolbar.prototype.showMenu = function (event, argsStr) {
         this.doShowMenu(event, argsStr, function (defsFuncName, stateFuncName, onSelectFuncName, isMultiSelectStr) {
             var def = Func.exec(this, defsFuncName);
-            return PopupMenu.create(def, Func.getBound(this, stateFuncName), Func.getBound(this, onSelectFuncName), /^true$/i.test(isMultiSelectStr));
+            return PopupMenu.create(def, Func.getBound(this, onSelectFuncName), Func.getBound(this, stateFuncName), /^true$/i.test(isMultiSelectStr));
         }.bind(this));
     };
 
@@ -290,7 +290,11 @@ define([
         });
     };
 
-    Toolbar.prototype.hideToolbar = function () {
+    Toolbar.prototype.hideToolbar = function (event) {
+        if (event) {
+            // Don't focus the toolbar
+            event.preventDefault();
+        }
         this.hideCurrentDialog();
         this.toolbar.addClass('qk_hidden');
         this.isVisible = false;
@@ -324,7 +328,8 @@ define([
         if (event.hitType === 'double') {
             hit = Event.isTouch ? event.event.originalEvent.changedTouches[0] : event.event;
             // this.showToolbarAt(hit.pageX, hit.pageY);
-            this.showToolbarAt(0, document.documentElement.scrollTop || document.body.scrollTop || 0);
+            // this.showToolbarAt(0, document.documentElement.scrollTop || document.body.scrollTop || 0);
+            this.showToolbarAt(0, $(document).scrollTop());
             this.vpToolbar.adjust();
             handled = true;
         }
@@ -345,9 +350,13 @@ define([
                 value: plugin.id
             });
         });
-        this.insertMenu = PopupMenu.create(menuDefs, function () {
-            return [];
-        }, function (selected) {
+        if (menuDefs.length) {
+            menuDefs.push({
+                value: 'close',
+                label: 'Cancel'
+            });
+        }
+        this.insertMenu = PopupMenu.create(menuDefs, function (selected) {
             if (selected) {
                 PubSub.publish('command.exec', 'insert.' + selected);
             }
@@ -390,7 +399,9 @@ define([
 
     Toolbar.prototype.onPluginNames = function (pluginData) {
         this.pluginNames = pluginData;
-        this.processPluginData(pluginData);
+        if (this.toolbar) {
+            this.processPluginData(pluginData);
+        }
     };
 
     Toolbar.prototype.checkShowSubmit = function () {
@@ -421,11 +432,12 @@ define([
     };
 
     Toolbar.prototype.showToolbar = function () {
-        var y = $(window).innerHeight() / 5,
-            x;
+        // var y = $(window).innerHeight() / 5,
+        //     x;
         this.toolbar.removeClass('qk_hidden');
-        x = Math.floor(($(document).innerWidth() - this.toolbar.width()) / 2);
-        this.showToolbarAt(x, y, true);
+        this.showToolbarAt(0, 0);
+        // x = Math.floor(($(document).innerWidth() - this.toolbar.width()) / 2);
+        // this.showToolbarAt(x, y, true);
     };
 
     Toolbar.prototype.initSubscriptions = function () {

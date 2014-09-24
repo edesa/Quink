@@ -16,28 +16,33 @@ define([
 
     var menuTpl;
 
-    var PopupMenu = function (menuDef, stateFunc, callback, isMultiSelect) {
+    var PopupMenu = function (menuDef, callback, stateFunc, isMultiSelect) {
         this.menuDef = menuDef;
         this.callback = callback;
         this.stateFunc = stateFunc;
         this.isMultiSelect = isMultiSelect;
         this.state = [];
-        this.addCloseDef(this.menuDef, this.isMultiSelect);
+        // this.addCloseDef(this.menuDef, this.isMultiSelect);
     };
 
     PopupMenu.prototype.MENU_ITEM_SELECTOR = '.qk_popup_menu_item';
     PopupMenu.prototype.HIDDEN_CSS = 'qk_invisible';
 
-    PopupMenu.prototype.addCloseDef = function (menuDef, isMultiSelect) {
-        menuDef.push({
-            label: isMultiSelect ? 'close' : 'cancel',
-            value: 'close'
-        });
-    };
+    // PopupMenu.prototype.addCloseDef = function (menuDef, isMultiSelect) {
+    //     var closeItem = _.find(menuDef, function (item) {
+    //         return item.value === 'close';
+    //     });
+    //     if (!closeItem) {
+    //         menuDef.push({
+    //             label: isMultiSelect ? 'close' : 'cancel',
+    //             value: 'close'
+    //         });
+    //     }
+    // };
 
     PopupMenu.prototype.updateUiState = function (markup, state) {
         if (state) {
-            markup.find('.qk_popup_menu_item[id="' + state + '"] .qk_popup_menu_item_state').toggleClass(this.HIDDEN_CSS);
+            markup.find('.qk_popup_menu_item[data-value="' + state + '"] .qk_popup_menu_item_state').toggleClass(this.HIDDEN_CSS);
         }
     };
 
@@ -61,7 +66,7 @@ define([
 
     PopupMenu.prototype.onSelect = function (event) {
         var menuItem = $(event.target).closest(this.MENU_ITEM_SELECTOR),
-            id = menuItem.attr('id'),
+            id = menuItem.attr('data-value'),
             selectedDef = _.find(this.menuDef, function (def) {
                 return def.value === id;
             }),
@@ -97,6 +102,29 @@ define([
         return markup;
     };
 
+    PopupMenu.prototype.doShowMenu = function (menu, x, y) {
+        var vpRight = document.documentElement.clientWidth || window.innerWidth || 0,
+            vpBottom = document.documentElement.clientHeight || window.height || 0,
+            hScroll = document.documentElement.scrollLeft || document.body.scrollLeft || 0,
+            vScroll = document.documentElement.scrollTop || document.body.scrollTop || 0;
+        menu.css({
+            top: -500,
+            left: -500
+        });
+        menu.removeClass('qk_hidden'); // so that the menu has a width
+        if (x + menu.outerWidth() > vpRight + hScroll) {
+            x -= menu.outerWidth();
+        }
+        if (y + menu.outerHeight() > vpBottom + vScroll) {
+            y -= menu.outerHeight();
+        }
+        menu.css({
+            top: y,
+            left: x
+        });
+        this.vpMenu.adjust();
+    };
+
     PopupMenu.prototype.show = function (x, y) {
         var menu = this.menu;
         if (!menu) {
@@ -108,15 +136,16 @@ define([
                 top: y
             });
         }
-        this.state = this.stateFunc(this.menuDef);
+        this.state = (this.stateFunc && this.stateFunc(this.menuDef)) || this.state;
         this.applyState(menu, this.state);
         this.mask.show();
-        menu.css({
-            top: y,
-            left: x
-        });
-        this.vpMenu.adjust();
-        menu.removeClass('qk_hidden');
+        this.doShowMenu(menu, x, y);
+        // menu.css({
+        //     top: y,
+        //     left: x
+        // });
+        // this.vpMenu.adjust();
+        // menu.removeClass('qk_hidden');
     };
 
     PopupMenu.prototype.hide = function () {
@@ -125,8 +154,12 @@ define([
         this.state = [];
     };
 
-    function create(menuDef, stateFunc, callback, isMultiSelect) {
-        return new PopupMenu(menuDef, stateFunc, callback, isMultiSelect);
+    PopupMenu.prototype.destroy = function () {
+        this.menu.remove();
+    };
+
+    function create(menuDef, callback, stateFunc, isMultiSelect) {
+        return new PopupMenu(menuDef, callback, stateFunc, isMultiSelect);
     }
 
     function init() {

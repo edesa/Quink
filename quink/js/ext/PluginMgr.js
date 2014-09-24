@@ -7,12 +7,13 @@
 define([
     'Underscore',
     'jquery',
-    'util/PubSub',
     'ext/PluginContext',
-    'util/Event',
+    'ui/PopupMenu',
+    'util/DomUtil',
     'util/Env',
-    'util/DomUtil'
-], function (_, $, PubSub, Context, Event, Env, DomUtil) {
+    'util/Event',
+    'util/PubSub'
+], function (_, $, Context, PopupMenu, DomUtil, Env, Event, PubSub) {
     'use strict';
 
     var PluginMgr = function () {
@@ -83,20 +84,20 @@ define([
         }));
     };
 
-    PluginMgr.prototype.onPluginCloseMenuHit = function (event) {
-        var id = event.target.id;
-        event.stopPropagation();
-        event.preventDefault();
-        switch (id) {
-        case 'qk_plugin_save':
-            Context.getDefinition().callbacks.save();
-            break;
-        case 'qk_plugin_exit':
-            Context.getDefinition().callbacks.exit();
-            break;
-        }
-        $(this).addClass('qk_hidden');
-    };
+    // PluginMgr.prototype.onPluginCloseMenuHit = function (event) {
+    //     var id = event.target.id;
+    //     event.stopPropagation();
+    //     event.preventDefault();
+    //     switch (id) {
+    //     case 'qk_plugin_save':
+    //         Context.getDefinition().callbacks.save();
+    //         break;
+    //     case 'qk_plugin_exit':
+    //         Context.getDefinition().callbacks.exit();
+    //         break;
+    //     }
+    //     $(this).addClass('qk_hidden');
+    // };
 
     /**
      * Maps possible lateral/vertical values into css classes.
@@ -195,27 +196,49 @@ define([
      * have to be explicitly set so that any settings applied in a previous invocation
      * that might have been for a close button in a different position aren't left in place.
      */
-    PluginMgr.prototype.createCloseBtnCallback = function (cfg) {
+    PluginMgr.prototype.createCloseBtnCallback = function () {
+        var menu = PopupMenu.create([{
+            label: 'Save',
+            value: 'save'
+        }, {
+            label: 'Continue',
+            value: 'continue'
+        }, {
+            label: 'Exit',
+            value: 'exit'
+        }], function (selected) {
+            if (selected === 'save' || selected === 'exit') {
+                Context.getDefinition().callbacks[selected]();
+                menu.destroy();
+            }
+        });
         return function (event) {
-            var hit = Event.isTouch ? event.originalEvent.changedTouches[0] : event,
-                css = {};
-            if (cfg.lateral.indexOf('right') >= 0) {
-                css.left = 'auto';
-                css.right = $(window).innerWidth() - hit.pageX;
-            } else {
-                css.left = hit.pageX;
-                css.right = 'auto';
-            }
-            if (cfg.vertical.indexOf('top') >= 0) {
-                css.top = hit.pageY;
-                css.bottom = 'auto';
-            } else {
-                css.top = 'auto';
-                css.bottom = $(window).innerHeight() - hit.pageY;
-            }
-            $('.qk_plugin_menu').removeClass('qk_hidden').css(css);
+            var hit = Event.isTouch ? event.originalEvent.changedTouches[0] : event;
+            menu.show(hit.pageX, hit.pageY);
         };
     };
+
+    // PluginMgr.prototype.createCloseBtnCallback = function (cfg) {
+    //     return function (event) {
+    //         var hit = Event.isTouch ? event.originalEvent.changedTouches[0] : event,
+    //             css = {};
+    //         if (cfg.lateral.indexOf('right') >= 0) {
+    //             css.left = 'auto';
+    //             css.right = $(window).innerWidth() - hit.pageX;
+    //         } else {
+    //             css.left = hit.pageX;
+    //             css.right = 'auto';
+    //         }
+    //         if (cfg.vertical.indexOf('top') >= 0) {
+    //             css.top = hit.pageY;
+    //             css.bottom = 'auto';
+    //         } else {
+    //             css.top = 'auto';
+    //             css.bottom = $(window).innerHeight() - hit.pageY;
+    //         }
+    //         $('.qk_plugin_menu').removeClass('qk_hidden').css(css);
+    //     };
+    // };
 
     /**
      * Removes any existing positional classes and adds ones for the passed in configuration.
@@ -240,7 +263,8 @@ define([
             evt = Event.eventName('end');
         this.addCloseBtnClasses(btn, cfg);
         btn.off(evt);
-        btn.on(evt, this.createCloseBtnCallback(cfg));
+        // btn.on(evt, this.createCloseBtnCallback(cfg));
+        btn.on(evt, this.createCloseBtnCallback());
     };
 
     /**
@@ -278,10 +302,10 @@ define([
         return this.getDefs()[id];
     };
 
-    PluginMgr.prototype.onDownloadMenu = function (data) {
-        var menu = $(data);
-        menu.appendTo('body').on(Event.eventName('end'), this.onPluginCloseMenuHit);
-    };
+    // PluginMgr.prototype.onDownloadMenu = function (data) {
+    //     var menu = $(data);
+    //     menu.appendTo('body').on(Event.eventName('end'), this.onPluginCloseMenuHit);
+    // };
 
     PluginMgr.prototype.onDownloadDefs = function (data) {
         this.pluginDefs = data.plugins;
@@ -345,8 +369,8 @@ define([
 
     PluginMgr.prototype.init = function () {
         return $.when(
-            $.get(Env.resource('plugins.json')).done(this.onDownloadDefs.bind(this)),
-            $.get(Env.resource('pluginmenu.html')).done(this.onDownloadMenu.bind(this))
+            $.get(Env.resource('plugins.json')).done(this.onDownloadDefs.bind(this))
+            // $.get(Env.resource('pluginmenu.html')).done(this.onDownloadMenu.bind(this))
         );
     };
 

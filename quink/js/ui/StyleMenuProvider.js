@@ -13,6 +13,12 @@ define([
 ], function (ApplyStyleHandler, PopupMenu, Func, PubSub, StylesheetMgr) {
     'use strict';
 
+    function addCloseItem(items, isMultiSelect) {
+        items.push({
+            value: 'close',
+            label: isMultiSelect ? 'close' : 'cancel'
+        });
+    }
     /**
      * By default style menu item labels are the style name with any underscores replaced by spaces.
      */
@@ -37,19 +43,20 @@ define([
      * filter are handed to createStyleDef. An array of the objects returned from createStyleDef is returned
      * from this function.
      */
-    function mapFilter(stylesheet, filter, labelFunc) {
+    function mapFilter(stylesheet, filter, labelFunc, isMultiSelect) {
         var result = [];
         Array.prototype.forEach.call(stylesheet.cssRules, function (rule) {
             if (filter(rule)) {
                 result.push(createStyleDef(rule, labelFunc));
             }
         });
+        addCloseItem(result, isMultiSelect);
         return result;
     }
 
-    function createDefs(ruleFilterName, labelFuncName) {
+    function createDefs(ruleFilterName, labelFuncName, isMultiSelect) {
         var labelFunc = Func.getBound({}, labelFuncName) || defaultLabelFunc;
-        return mapFilter(StylesheetMgr.getInstance().getStylesheet(), Func.getBound({}, ruleFilterName), labelFunc);
+        return mapFilter(StylesheetMgr.getInstance().getStylesheet(), Func.getBound({}, ruleFilterName), labelFunc, isMultiSelect);
     }
 
     function onSelect(selected, deselected) {
@@ -72,8 +79,8 @@ define([
      * defaults to false.
      */
     function create(defsFuncName, labelFuncName, isMultiSelect) {
-        var defs = createDefs(defsFuncName, labelFuncName);
-        return PopupMenu.create(defs, getState, onSelect, isMultiSelect);
+        var defs = createDefs(defsFuncName, labelFuncName, isMultiSelect);
+        return PopupMenu.create(defs, onSelect, getState, isMultiSelect);
     }
 
     return {
