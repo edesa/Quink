@@ -89,7 +89,7 @@ define([
         markup.find('.qk_popup_menu_item').each(function () {
             var itemEl = $(this),
                 stateEl = itemEl.find('.qk_popup_menu_item_state'),
-                id = itemEl.attr('id'),
+                id = itemEl.attr('data-value'),
                 func = menuState.indexOf(id) >= 0 ? stateEl.removeClass : stateEl.addClass;
             func.call(stateEl, HIDDEN_CSS);
         });
