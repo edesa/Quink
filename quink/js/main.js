@@ -9,7 +9,7 @@ require.config({
     // urlArgs: "bust=" + (new Date()).getTime(),
 
     paths: {
-        jquery: 'lib/jquery-1.10.2',
+        jquery: 'lib/jquery-2.1.1',
         rangy: 'lib/rangy-core',
         textrange: 'lib/rangy-textrange',
         cssapplier: 'lib/rangy-cssclassapplier',
