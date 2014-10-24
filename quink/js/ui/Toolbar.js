@@ -327,8 +327,6 @@ define([
         var hit, handled;
         if (event.hitType === 'double') {
             hit = Event.isTouch ? event.event.originalEvent.changedTouches[0] : event.event;
-            // this.showToolbarAt(hit.pageX, hit.pageY);
-            // this.showToolbarAt(0, document.documentElement.scrollTop || document.body.scrollTop || 0);
             this.showToolbarAt(0, $(document).scrollTop());
             this.vpToolbar.adjust();
             handled = true;
@@ -432,12 +430,8 @@ define([
     };
 
     Toolbar.prototype.showToolbar = function () {
-        // var y = $(window).innerHeight() / 5,
-        //     x;
         this.toolbar.removeClass('qk_hidden');
         this.showToolbarAt(0, 0);
-        // x = Math.floor(($(document).innerWidth() - this.toolbar.width()) / 2);
-        // this.showToolbarAt(x, y, true);
     };
 
     Toolbar.prototype.initSubscriptions = function () {

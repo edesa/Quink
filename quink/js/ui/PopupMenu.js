@@ -22,23 +22,10 @@ define([
         this.stateFunc = stateFunc;
         this.isMultiSelect = isMultiSelect;
         this.state = [];
-        // this.addCloseDef(this.menuDef, this.isMultiSelect);
     };
 
     PopupMenu.prototype.MENU_ITEM_SELECTOR = '.qk_popup_menu_item';
     PopupMenu.prototype.HIDDEN_CSS = 'qk_invisible';
-
-    // PopupMenu.prototype.addCloseDef = function (menuDef, isMultiSelect) {
-    //     var closeItem = _.find(menuDef, function (item) {
-    //         return item.value === 'close';
-    //     });
-    //     if (!closeItem) {
-    //         menuDef.push({
-    //             label: isMultiSelect ? 'close' : 'cancel',
-    //             value: 'close'
-    //         });
-    //     }
-    // };
 
     PopupMenu.prototype.updateUiState = function (markup, state) {
         if (state) {
@@ -140,12 +127,6 @@ define([
         this.applyState(menu, this.state);
         this.mask.show();
         this.doShowMenu(menu, x, y);
-        // menu.css({
-        //     top: y,
-        //     left: x
-        // });
-        // this.vpMenu.adjust();
-        // menu.removeClass('qk_hidden');
     };
 
     PopupMenu.prototype.hide = function () {

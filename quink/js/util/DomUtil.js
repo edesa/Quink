@@ -145,18 +145,6 @@ define([
      * On Android Chrome the window height changes when the keyboard slides in which is why the test
      * is now for iOS and not for a touch device.
      */
-    // function getMaxVisibleHeight(isNavScroll) {
-    //     var win = $(window),
-    //         height = win.height() + (!isNavScroll ? $(document).scrollTop() : 0),
-    //         result = height,
-    //         visArea;
-    //     if (Env.isIos() && !!document.activeElement && isNavScroll) {
-    //         visArea = height > win.width() ? 0.60 : 0.35;
-    //         result = height * visArea;
-    //     }
-    //     return result;
-    // }
-
     function getMaxVisibleHeight(isNavScroll) {
         var win = $(window),
             height = win.height(),
@@ -164,7 +152,6 @@ define([
         if (Env.isIos() && !!document.activeElement && isNavScroll) {
             factor = height > win.width() ? 0.60 : 0.35;
             height *= factor;
-            // result = height * visArea;
         }
         return height;
     }
@@ -199,20 +186,6 @@ define([
         };
     }
 
-    // function getVisibleBounds(editable, isNavScroll) {
-    //     var cont = $(editable),
-    //         virtContTop, virtContBottom, visContTop, visContBottom;
-    //     virtContTop = cont.offset().top - $(document).scrollTop();
-    //     virtContBottom = virtContTop + cont.innerHeight();
-    //     visContTop = Math.max(virtContTop, 0);
-    //     visContBottom = Math.min(virtContBottom, getMaxVisibleHeight(isNavScroll));
-    //     console.log('vis bounds (' + visContTop + ', ' + visContBottom + ')');
-    //     return {
-    //         top: visContTop,
-    //         bottom: visContBottom
-    //     };
-    // }
-
     return {
         popEl: popEl,
         pushEl: pushEl,
@@ -221,6 +194,5 @@ define([
         makeQuinkRelative: makeQuinkRelative,
         getVisibleBounds: getVisibleBounds,
         getVisibleClientBounds: getVisibleClientBounds
-        // getMaxVisibleHeight: getMaxVisibleHeight
     };
 });

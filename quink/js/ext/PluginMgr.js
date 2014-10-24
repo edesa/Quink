@@ -84,21 +84,6 @@ define([
         }));
     };
 
-    // PluginMgr.prototype.onPluginCloseMenuHit = function (event) {
-    //     var id = event.target.id;
-    //     event.stopPropagation();
-    //     event.preventDefault();
-    //     switch (id) {
-    //     case 'qk_plugin_save':
-    //         Context.getDefinition().callbacks.save();
-    //         break;
-    //     case 'qk_plugin_exit':
-    //         Context.getDefinition().callbacks.exit();
-    //         break;
-    //     }
-    //     $(this).addClass('qk_hidden');
-    // };
-
     /**
      * Maps possible lateral/vertical values into css classes.
      */
@@ -218,28 +203,6 @@ define([
         };
     };
 
-    // PluginMgr.prototype.createCloseBtnCallback = function (cfg) {
-    //     return function (event) {
-    //         var hit = Event.isTouch ? event.originalEvent.changedTouches[0] : event,
-    //             css = {};
-    //         if (cfg.lateral.indexOf('right') >= 0) {
-    //             css.left = 'auto';
-    //             css.right = $(window).innerWidth() - hit.pageX;
-    //         } else {
-    //             css.left = hit.pageX;
-    //             css.right = 'auto';
-    //         }
-    //         if (cfg.vertical.indexOf('top') >= 0) {
-    //             css.top = hit.pageY;
-    //             css.bottom = 'auto';
-    //         } else {
-    //             css.top = 'auto';
-    //             css.bottom = $(window).innerHeight() - hit.pageY;
-    //         }
-    //         $('.qk_plugin_menu').removeClass('qk_hidden').css(css);
-    //     };
-    // };
-
     /**
      * Removes any existing positional classes and adds ones for the passed in configuration.
      */
@@ -301,11 +264,6 @@ define([
     PluginMgr.prototype.getDefByKey = function (id) {
         return this.getDefs()[id];
     };
-
-    // PluginMgr.prototype.onDownloadMenu = function (data) {
-    //     var menu = $(data);
-    //     menu.appendTo('body').on(Event.eventName('end'), this.onPluginCloseMenuHit);
-    // };
 
     PluginMgr.prototype.onDownloadDefs = function (data) {
         this.pluginDefs = data.plugins;
