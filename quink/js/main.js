@@ -13,7 +13,9 @@ require.config({
         rangy: 'lib/rangy-core',
         textrange: 'lib/rangy-textrange',
         cssapplier: 'lib/rangy-cssclassapplier',
-        Underscore: 'lib/underscore'
+        Underscore: 'lib/underscore',
+        text: 'lib/text',
+        resources: '../resources'
     },
 
     shim: {

@@ -10,8 +10,9 @@ define([
     'command/CommandSubscriber',
     'util/PubSub',
     'util/Env',
-    'util/ViewportRelative'
-], function (_, $, CommandSubscriber, PubSub, Env, ViewportRelative) {
+    'util/ViewportRelative',
+    'text!resources/commandstatebar.html'
+], function (_, $, CommandSubscriber, PubSub, Env, ViewportRelative, commandstatebarMarkup) {
     'use strict';
 
     var CommandStateBar = function () {
@@ -67,8 +68,8 @@ define([
         func.call(this.bar, 'qk_hidden');
     };
 
-    CommandStateBar.prototype.onDownload = function (data) {
-        this.bar = $(data).appendTo('body');
+    CommandStateBar.prototype.init = function () {
+        this.bar = $(commandstatebarMarkup).appendTo('body');
         PubSub.subscribe('command.state', this.onStateChange.bind(this));
         this.vpBar = ViewportRelative.create(this.bar, {
             top: 5
@@ -78,13 +79,9 @@ define([
         }
     };
 
-    CommandStateBar.prototype.init = function () {
-        return $.get(Env.resource('commandstatebar.html')).done(this.onDownload.bind(this));
-    };
-
     function create() {
-        var stateBar = new CommandStateBar();
-        return stateBar.init();
+        var bar = new CommandStateBar();
+        bar.init();
     }
 
     return {

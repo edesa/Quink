@@ -9,12 +9,12 @@ define([
     'jquery',
     'ui/Mask',
     'util/Event',
-    'util/Env',
-    'util/ViewportRelative'
-], function (_, $, Mask, Event, Env, ViewportRelative) {
+    'util/ViewportRelative',
+    'text!resources/menu.tpl'
+], function (_, $, Mask, Event, ViewportRelative, menuTpl) {
     'use strict';
 
-    var menuTpl;
+    var menuTplFunc = _.template(menuTpl);
 
     var PopupMenu = function (menuDef, callback, stateFunc, isMultiSelect) {
         this.menuDef = menuDef;
@@ -83,7 +83,7 @@ define([
     };
 
     PopupMenu.prototype.createMenu = function (def) {
-        var markup = $(menuTpl({options: def}));
+        var markup = $(menuTplFunc({options: def}));
         markup.on(Event.eventName('start'), this.MENU_ITEM_SELECTOR, this.onSelect.bind(this));
         markup.find('.qk_popup_menu_item_state').addClass(this.HIDDEN_CSS);
         return markup;
@@ -143,14 +143,14 @@ define([
         return new PopupMenu(menuDef, callback, stateFunc, isMultiSelect);
     }
 
-    function init() {
-        return $.get(Env.resource('menu.tpl')).done(function (tpl) {
-            menuTpl = _.template(tpl);
-        });
-    }
+    // function init() {
+    //     return $.get(Env.resource('menu.tpl')).done(function (tpl) {
+    //         menuTpl = _.template(tpl);
+    //     });
+    // }
 
     return {
-        create: create,
-        init: init
+        create: create
+        // init: init
     };
 });

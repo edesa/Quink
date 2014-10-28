@@ -15,35 +15,33 @@ define([
     'service/Persist',
     'ui/Caret',
     'ui/CommandStateBar',
-    'ui/PopupMenu',
     'ui/Toolbar',
     'util/Env',
     'util/FocusTracker',
     'util/PubSub',
     'util/StylesheetMgr'
-], function ($, rangy, Command, PluginMgr, HitHandler, KeyHandlerMgr, Persist, Caret, CommandStateBar, PopupMenu, Toolbar, Env, FocusTracker, PubSub, StylesheetMgr) {
+], function ($, rangy, Command, PluginMgr, HitHandler, KeyHandlerMgr, Persist, Caret, CommandStateBar, Toolbar, Env, FocusTracker, PubSub, StylesheetMgr) {
     'use strict';
 
     function init() {
         var selector = '[contenteditable=true]',
             stylesheetMgr,
-            tbDownloads, csbDownloads, pmDownloads, khmDownloads, smDownloads, pupDownloads;
+            tbDownloads, pmDownloads, smDownloads;
         Persist.initFromAutoSave();
         rangy.init();
         Env.init();
-        khmDownloads = KeyHandlerMgr.init(selector);
+        KeyHandlerMgr.init(selector);
         FocusTracker.init(selector);
         Command.init();
-        csbDownloads = CommandStateBar.create();
+        CommandStateBar.create();
         HitHandler.init(selector);
         stylesheetMgr = StylesheetMgr.getInstance();
         smDownloads = stylesheetMgr.init();
         tbDownloads = Toolbar.init(stylesheetMgr);
         pmDownloads = PluginMgr.init();
-        pupDownloads = PopupMenu.init();
         Caret.init();
         Persist.init();
-        $.when(tbDownloads, csbDownloads, pmDownloads, khmDownloads, smDownloads, pupDownloads).done(function () {
+        $.when(tbDownloads, pmDownloads, smDownloads).done(function () {
             if (typeof QUINK.ready === 'function') {
                 QUINK.ready(PubSub);
             }

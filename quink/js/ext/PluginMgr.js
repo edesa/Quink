@@ -328,7 +328,6 @@ define([
     PluginMgr.prototype.init = function () {
         return $.when(
             $.get(Env.resource('plugins.json')).done(this.onDownloadDefs.bind(this))
-            // $.get(Env.resource('pluginmenu.html')).done(this.onDownloadMenu.bind(this))
         );
     };
 

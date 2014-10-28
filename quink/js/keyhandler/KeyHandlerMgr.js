@@ -7,12 +7,12 @@
 define([
     'Underscore',
     'jquery',
-    'util/Env',
     'util/FocusTracker',
     'util/PubSub',
     'keyhandler/InsertKeyHandler',
-    'keyhandler/CommandKeyHandler'
-], function (_, $, Env, FocusTracker, PubSub, InsertKeyHandler, CommandKeyHandler) {
+    'keyhandler/CommandKeyHandler',
+    'text!resources/keymap.json'
+], function (_, $, FocusTracker, PubSub, InsertKeyHandler, CommandKeyHandler, keymapJson) {
     'use strict';
 
     var KeyHandlerMgr = function () {
@@ -116,10 +116,6 @@ define([
         return mgr ? mgr.isCommandMode() : false;
     }
 
-    function downloadKeyMap() {
-        return $.get(Env.resource('keymap.json')).done(onDownloadKeyMap);
-    }
-
     function create(selector) {
         $(selector).each(function () {
             var mgr = new KeyHandlerMgr();
@@ -129,11 +125,9 @@ define([
     }
 
     function init(selector) {
-        var download;
         initSubscriptions();
-        download = downloadKeyMap();
         create(selector);
-        return download;
+        onDownloadKeyMap(JSON.parse(keymapJson));
     }
 
     return {
