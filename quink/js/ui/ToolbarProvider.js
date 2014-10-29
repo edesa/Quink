@@ -235,7 +235,7 @@ define([
         this.mergeGroups(workingDef.groups, editGroups);
         this.orderToolbarItems(workingDef);
         this.toolbarDef = workingDef;
-        return _.template(this.toolbarTpl, workingDef);
+        return _.template(this.toolbarTpl)(workingDef);
     };
 
     /**
