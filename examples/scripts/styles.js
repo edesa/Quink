@@ -23,7 +23,6 @@ QUINK = {
                     "id": "applyStyleFont",
                     "hidden": false,
                     "index": 8,
-                    "elId": "qk_button_applystylefont",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showStyleMenu",
                     "commandArgs": "fontStyleRuleFilter"
@@ -31,7 +30,6 @@ QUINK = {
                     "id": "applyStyleStroke",
                     "hidden": false,
                     "index": 9,
-                    "elId": "qk_button_applystylestroke",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showStyleMenu",
                     "commandArgs": "strokeStyleRuleFilter"
@@ -39,7 +37,6 @@ QUINK = {
                     "id": "applyStyleBackground",
                     "hidden": false,
                     "index": 10,
-                    "elId": "qk_button_applystylebackground",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showStyleMenu",
                     "commandArgs": "backgroundStyleRuleFilter"
@@ -47,7 +44,6 @@ QUINK = {
                     "id": "applyStyleMulti",
                     "hidden": false,
                     "index": 11,
-                    "elId": "qk_button_applystylemulti",
                     "cssClass": "qk_button_bg_applystyle",
                     "command": "showStyleMenu",
                     "commandArgs": "multiStyleRuleFilter, true"
