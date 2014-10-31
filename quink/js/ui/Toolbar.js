@@ -25,7 +25,6 @@ define([
 
     var Toolbar = function (stylesheetMgr) {
         this.stylesheetMgr = stylesheetMgr;
-        this.menus = {};
         HitHandler.register(this, true);
         PubSub.subscribe('plugin.insert.names', this.onPluginNames.bind(this));
     };
@@ -161,20 +160,17 @@ define([
      * createMenuFunc creates and returns the popup menu if necessary.
      */
     Toolbar.prototype.doShowMenu = function (event, argsStr, createMenuFunc) {
-        var id = $(event.target).closest('.qk_button').attr('id'),
+        var button = $(event.target).closest('.qk_button'),
             hit = Event.isTouch ? event.changedTouches[0] : event,
-            menu = this.menus[id],
+            menu = button.data('menu'),
             args;
-        if (!id) {
-            throw new Error('Invalid menu def (menu button json needs elId)');
-        }
         if (!menu) {
             if (argsStr) {
                 args = _.map(argsStr.split(','), function (name) {
                     return name.trim();
                 });
                 menu = createMenuFunc.apply(this, args);
-                this.menus[id] = menu;
+                button.data('menu', menu);
             } else {
                 throw new Error('Invalid menu definition');
             }
