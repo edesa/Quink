@@ -123,52 +123,44 @@
             "index": 2,
             "items": [
                 {
-                    "id": "formath1",
+                    "id": "applyStyleFont",
                     "hidden": false,
                     "index": 0,
-                    "cssClass": "qk_button_bg_formath1",
-                    "command": "execCommand",
-                    "commandArgs": "style.formatblock.h1"
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showStyleMenu",
+                    "commandArgs": "fontStyleRuleFilter, fontLabel"
                 },
                 {
-                    "id": "formath2",
+                    "id": "applyStyleSize",
                     "hidden": false,
                     "index": 1,
-                    "cssClass": "qk_button_bg_formath2",
-                    "command": "execCommand",
-                    "commandArgs": "style.formatblock.h2"
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showStyleMenu",
+                    "commandArgs": "sizeStyleRuleFilter, fontLabel"
                 },
                 {
-                    "id": "formath3",
+                    "id": "applyStyleColour",
                     "hidden": false,
                     "index": 2,
-                    "cssClass": "qk_button_bg_formath3",
-                    "command": "execCommand",
-                    "commandArgs": "style.formatblock.h3"
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showStyleMenu",
+                    "commandArgs": "colourStyleRuleFilter, fontLabel"
                 },
                 {
-                    "id": "formath4",
+                    "id": "applyStyleMixin",
                     "hidden": false,
                     "index": 3,
-                    "cssClass": "qk_button_bg_formath4",
-                    "command": "execCommand",
-                    "commandArgs": "style.formatblock.h4"
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showStyleMenu",
+                    "commandArgs": "mixinStyleRuleFilter, fontLabel, true"
                 },
                 {
-                    "id": "formath5",
+                    "id": "hmenu",
                     "hidden": false,
-                    "index": 4,
-                    "cssClass": "qk_button_bg_formath5",
-                    "command": "execCommand",
-                    "commandArgs": "style.formatblock.h5"
-                },
-                {
-                    "id": "formath6",
-                    "hidden": false,
-                    "index": 5,
-                    "cssClass": "qk_button_bg_formath6",
-                    "command": "execCommand",
-                    "commandArgs": "style.formatblock.h6"
+                    "index": 3,
+                    "cssClass": "qk_button_bg_applystyle",
+                    "command": "showMenu",
+                    "commandArgs": "createHDefs, getHState, onHSelect"
                 },
                 {
                     "id": "formatpara",

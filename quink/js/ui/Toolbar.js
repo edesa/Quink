@@ -41,6 +41,83 @@ define([
         'statusbar': '[data-tag=toggle_status_bar]',
     };
 
+    /**
+     * If there's a selection it will replace any existing H property. If there's not a selection but
+     * there's something being deselected revert back to a paragraph style.
+     */
+    Toolbar.prototype.onHSelect = function (selected, deselected) {
+        if (selected) {
+            PubSub.publish('command.exec', 'style.formatblock.' + selected);
+        } else if (deselected) {
+            PubSub.publish('command.exec', 'style.formatblock.p');
+        }
+    };
+
+    Toolbar.prototype.getHState = function () {
+        return [document.queryCommandValue('formatblock')];
+    };
+
+    Toolbar.prototype.createHDefs = function () {
+        return [{
+            label: 'H1',
+            value: 'h1',
+        }, {
+            label: 'H2',
+            value: 'h2'
+        }, {
+            label: 'H3',
+            value: 'h3'
+        }, {
+            label: 'H4',
+            value: 'h4'
+        }, {
+            label: 'H5',
+            value: 'h5'
+        }, {
+            label: 'H6',
+            value: 'h6'
+        }, {
+            label: 'cancel',
+            value: 'close'
+        }];
+    };
+
+    /**
+     * Style names will be of the form: qk_font_<foo>_and_more_stuff. It's the and_more_stuff that is wanted
+     * with any underscores changed into spaces.
+     */
+    Toolbar.prototype.fontLabel = function (style) {
+        return style.split('_').slice(3).join(' ');
+    };
+
+    /**
+     * Select all class level rules that contain 'mixon' in ther name.
+     */
+    Toolbar.prototype.mixinStyleRuleFilter = function (rule) {
+        return /^\..*(mixin)/i.test(rule.selectorText);
+    };
+
+    /**
+     * Select all rules that contain 'color' and are at class level.
+     */
+    Toolbar.prototype.colourStyleRuleFilter = function (rule) {
+        return /^\..*(color)/i.test(rule.cssText);
+    };
+
+    /**
+     * Select all rules that contain 'font-size' and are at class level.
+     */
+    Toolbar.prototype.fontStyleRuleFilter = function (rule) {
+        return /^\..*(font-family)/i.test(rule.cssText);
+    };
+
+    /**
+     * Select all rules that contain 'font-size' and are at class level.
+     */
+    Toolbar.prototype.sizeStyleRuleFilter = function (rule) {
+        return /^\..*(font-size)/i.test(rule.cssText);
+    };
+
     Toolbar.prototype.hideCurrentDialog = function () {
         var dialog;
         if (this.activeDialogEl) {
@@ -191,7 +268,7 @@ define([
                 labelFuncName = arg2;
                 isMultiSelectStr = arg3;
             }
-            return StyleMenuProvider.create(defsFuncName, labelFuncName, /^true$/i.test(isMultiSelectStr));
+            return StyleMenuProvider.create(defsFuncName, labelFuncName, /^true$/i.test(isMultiSelectStr), this);
         });
     };
 

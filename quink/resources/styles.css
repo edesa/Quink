@@ -1,1 +1,92 @@
 /* Css classes added here will be offered as options in the apply style menu. */
+
+.qk_style_size_xx_Small {
+    font-size: xx-small;
+}
+.qk_style_size_x_Small {
+    font-size: x-small;
+}
+.qk_style_size_Small {
+    font-size: small;
+}
+.qk_style_size_Medium {
+    font-size: medium;
+}
+.qk_style_size_Large {
+    font-size: large;
+}
+.qk_style_size_x_Large {
+    font-size: x-large;
+}
+.qk_style_size_xx_Large {
+    font-size: xx-large;
+}
+.qk_style_font_Bold {
+    font-weight: bold;
+}
+.qk_style_font_Italic {
+    font-style: italic;
+}
+.qk_style_font_Arial {
+    font-family: Arial, Helvetica, sans-serif;
+}
+.qk_style_font_Comic_Sans_MS {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+}
+.qk_style_name_Arial_Black {
+    font-family: "Arial Black", Gadget, sans-serif;
+}
+.qk_style_name_Impact {
+    font-family: Impact, Charcoal, sans-serif;
+}
+.qk_style_name_Copperplate {
+  font-family:  Copperplate, "Copperplate Gothic Light", fantasy;
+}
+.qk_style_name_Brush_Script {
+  font-family:  "Brush Script MT", cursive;
+}
+.qk_style_name_Courier {
+    font-family: "Courier New", Courier, monospace;
+}
+.qk_style_name_Times_New_Roman {
+    font-family: "Times New Roman", Times, serif;
+}
+.qk_style_effect_Capitalise {
+    text-transform: capitalize;
+}
+.qk_style_effect_Upper_Case {
+    text-transform: uppercase;
+}
+.qk_style_stroke_White {
+    color: white;
+}
+.qk_style_stroke_Red {
+    color: red;
+}
+.qk_style_stroke_Blue {
+    color: blue;
+}
+.qk_style_stroke_Green {
+    color: green;
+}
+.qk_style_stroke_Yellow {
+    color: yellow;
+}
+.qk_style_stroke_Purple {
+    color: purple;
+}
+.qk_style_stroke_Default {
+    color: inherit;
+}
+.qk_style_mixin_Grey_Shadow {
+    text-shadow: 4px 4px 3px rgb(150, 150, 150);
+}
+.qk_style_mixin_Transparent_Text {
+    opacity: 0.25;
+}
+.qk_style_mixin_Capitalise {
+    text-transform: capitalize;
+}
+.qk_style_mixin_Upper_Case {
+    text-transform: uppercase;
+}
