@@ -143,14 +143,7 @@ define([
         return new PopupMenu(menuDef, callback, stateFunc, isMultiSelect);
     }
 
-    // function init() {
-    //     return $.get(Env.resource('menu.tpl')).done(function (tpl) {
-    //         menuTpl = _.template(tpl);
-    //     });
-    // }
-
     return {
         create: create
-        // init: init
     };
 });
