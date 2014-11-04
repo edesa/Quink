@@ -33,7 +33,7 @@ define([
         var style = rule.selectorText.replace(/^\./, '');
         return {
             value: style,
-            label: labelFunc(style),
+            label: labelFunc(style, rule),
             cssClass: style
         };
     }
@@ -54,9 +54,14 @@ define([
         return result;
     }
 
-    function createDefs(ruleFilterName, labelFuncName, isMultiSelect) {
-        var labelFunc = Func.getBound({}, labelFuncName) || defaultLabelFunc;
-        return mapFilter(StylesheetMgr.getInstance().getStylesheet(), Func.getBound({}, ruleFilterName), labelFunc, isMultiSelect);
+    function createDefs(ruleFilterName, labelFuncName, isMultiSelect, context) {
+        var ctx = context || {},
+            labelFunc = Func.getBound(ctx, labelFuncName) || defaultLabelFunc,
+            filterFunc = Func.getBound(ctx, ruleFilterName);
+        if (!filterFunc) {
+            throw new Error('Can\'t resolve rule filter: ' + ruleFilterName);
+        }
+        return mapFilter(StylesheetMgr.getInstance().getStylesheet(), filterFunc, labelFunc, isMultiSelect);
     }
 
     function onSelect(selected, deselected) {
@@ -78,8 +83,8 @@ define([
      * Only the first argument is required. If the label function is falsey a default is used and multiselect
      * defaults to false.
      */
-    function create(defsFuncName, labelFuncName, isMultiSelect) {
-        var defs = createDefs(defsFuncName, labelFuncName, isMultiSelect);
+    function create(ruleFilterName, labelFuncName, isMultiSelect, context) {
+        var defs = createDefs(ruleFilterName, labelFuncName, isMultiSelect, context);
         return PopupMenu.create(defs, onSelect, getState, isMultiSelect);
     }
 
