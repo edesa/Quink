@@ -50,11 +50,14 @@ define([
 
     ApplyStyleHandler.prototype.applyCssClass = function (style) {
         var applier = this.getApplier(style),
-            range = rangy.getSelection().getRangeAt(0);
-        if (range.collapsed) {
-            this.handleCollapsedRange(range, applier, style);
-        } else {
-            applier.toggleSelection();
+            sel = rangy.getSelection(),
+            range = sel.rangeCount && sel.getRangeAt(0);
+        if (range) {
+            if (range.collapsed) {
+                this.handleCollapsedRange(range, applier, style);
+            } else {
+                applier.toggleSelection();
+            }
         }
     };
 
