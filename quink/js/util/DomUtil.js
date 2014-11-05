@@ -20,13 +20,14 @@ define([
     /**
      * Names of css classes used to identify internal Quink artifacts (e.g. toolbar).
      */
-        quinkCssClasses = [
-            'qk_state_bar',
-            'qk_popup',
-            'qk_toolbar_container',
-            'qk_plugin_close_button',
-            'qk_caret'
-        ];
+    quinkCssClasses = [
+        'qk_state_bar',
+        'qk_popup',
+        'qk_toolbar_container',
+        'qk_plugin_close_button',
+        'qk_caret',
+        'qk_mask'
+    ];
 
     function popEl(tag) {
         var ar = elements[tag.toLowerCase()];
