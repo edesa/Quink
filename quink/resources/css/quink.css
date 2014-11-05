@@ -266,8 +266,20 @@
 .qk_button_bg_save {
     background-image: url(../images/extra-save.png);
 }
-.qk_button_bg_applystyle {
+.qk_button_bg_style_font {
+    background-image: url(../images/future-possibilities-font.png);
+}
+.qk_button_bg_style_size {
     background-image: url(../images/future-possibilities-highlight.png);
+}
+.qk_button_bg_style_colour {
+    background-image: url(../images/future-possibilities-foreground-colour.png);
+}
+.qk_button_bg_style_effects {
+    background-image: url(../images/future-possibilities-background-colour.png);
+}
+.qk_button_bg_hn {
+    background-image: url(../images/format-h1.png);
 }
 .qk_button_active {
     background-color: #DADADA;
@@ -363,7 +375,8 @@ button {
     border-width: 1px;
     border-style: solid;
 }
-.qk_popup_menu_item {
+.qk_popup_menu_item_container {
+    height: 100%;
     padding: 10px;
 }
 .qk_popup_menu > .qk_popup_menu_item {

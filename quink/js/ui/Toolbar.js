@@ -93,7 +93,7 @@ define([
     /**
      * Select all class level rules that contain 'mixon' in ther name.
      */
-    Toolbar.prototype.mixinStyleRuleFilter = function (rule) {
+    Toolbar.prototype.effectsStyleRuleFilter = function (rule) {
         return /^\..*(mixin)/i.test(rule.selectorText);
     };
 

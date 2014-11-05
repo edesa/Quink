@@ -78,7 +78,16 @@
 .qk_style_stroke_Default {
     color: inherit;
 }
-.qk_style_mixin_Grey_Shadow {
+.qk_style_mixin_Bold {
+    font-weight: bold;
+}
+.qk_style_mixin_Italic {
+    font-style: italic;
+}
+.qk_style_mixin_In_Place_Shadow {
+    text-shadow: 0px 0px 1px rgb(0, 0, 0);
+}
+.qk_style_mixin_Soft_Shadow {
     text-shadow: 4px 4px 3px rgb(150, 150, 150);
 }
 .qk_style_mixin_Transparent_Text {

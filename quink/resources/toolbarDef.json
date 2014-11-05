@@ -126,7 +126,7 @@
                     "id": "applyStyleFont",
                     "hidden": false,
                     "index": 0,
-                    "cssClass": "qk_button_bg_applystyle",
+                    "cssClass": "qk_button_bg_style_font",
                     "command": "showStyleMenu",
                     "commandArgs": "fontStyleRuleFilter, fontLabel"
                 },
@@ -134,7 +134,7 @@
                     "id": "applyStyleSize",
                     "hidden": false,
                     "index": 1,
-                    "cssClass": "qk_button_bg_applystyle",
+                    "cssClass": "qk_button_bg_style_size",
                     "command": "showStyleMenu",
                     "commandArgs": "sizeStyleRuleFilter, fontLabel"
                 },
@@ -142,23 +142,23 @@
                     "id": "applyStyleColour",
                     "hidden": false,
                     "index": 2,
-                    "cssClass": "qk_button_bg_applystyle",
+                    "cssClass": "qk_button_bg_style_colour",
                     "command": "showStyleMenu",
                     "commandArgs": "colourStyleRuleFilter, fontLabel"
                 },
                 {
-                    "id": "applyStyleMixin",
+                    "id": "applyStyleEffects",
                     "hidden": false,
                     "index": 3,
-                    "cssClass": "qk_button_bg_applystyle",
+                    "cssClass": "qk_button_bg_style_effects",
                     "command": "showStyleMenu",
-                    "commandArgs": "mixinStyleRuleFilter, fontLabel, true"
+                    "commandArgs": "effectsStyleRuleFilter, fontLabel, true"
                 },
                 {
                     "id": "hmenu",
                     "hidden": false,
                     "index": 3,
-                    "cssClass": "qk_button_bg_applystyle",
+                    "cssClass": "qk_button_bg_hn",
                     "command": "showMenu",
                     "commandArgs": "createHDefs, getHState, onHSelect"
                 },
