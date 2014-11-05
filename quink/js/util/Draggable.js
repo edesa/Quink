@@ -25,8 +25,7 @@ define([
      * preventDefault stops the drag from extending the selection in Safari.
      */
     Draggable.prototype.onDragStart = function (event) {
-        var draggableEl = this.draggable[0],
-            pos = this.draggable.css(['left', 'top']),
+        var pos = this.draggable.css(['left', 'top']),
             locEvent = Event.getLocEvent(event);
         this.startCoords = {
             x: locEvent.clientX,
