@@ -54,7 +54,7 @@ define([
     };
 
     Toolbar.prototype.getHState = function () {
-        return [document.queryCommandValue('formatblock')];
+        return (rangy.getSelection().rangeCount && [document.queryCommandValue('formatblock')]) || [];
     };
 
     Toolbar.prototype.createHDefs = function () {
