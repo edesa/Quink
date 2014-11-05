@@ -21,6 +21,9 @@ define([
         this.draggable[0].addEventListener(Event.eventName('start'), this.onDragStart.bind(this));
     };
 
+    /**
+     * preventDefault stops the drag from extending the selection in Safari.
+     */
     Draggable.prototype.onDragStart = function (event) {
         var draggableEl = this.draggable[0],
             pos = this.draggable.css(['left', 'top']),
@@ -29,8 +32,9 @@ define([
             x: locEvent.clientX,
             y: locEvent.clientY
         };
-        this.offX = locEvent.pageX - (parseInt(pos.left, 10) || draggableEl.offsetLeft);
-        this.offY = locEvent.pageY - (parseInt(pos.top, 10) || draggableEl.offsetHeight);
+        event.preventDefault();
+        this.offX = locEvent.pageX - parseInt(pos.left, 10);
+        this.offY = locEvent.pageY - parseInt(pos.top, 10);
         this.onDragProxy = this.onDragProxy || this.onDrag.bind(this);
         this.onDragEndProxy = this.onDragEndProxy || this.onDragEnd.bind(this);
         document.addEventListener(Event.eventName('move'), this.onDragProxy, false);
