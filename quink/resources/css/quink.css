@@ -23,6 +23,8 @@
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+    font-family: 'Lucida Grande';
+    font-size: 11px;
 }
 .qk_toolbar {
     padding-top: 1px;
