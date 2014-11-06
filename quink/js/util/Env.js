@@ -5,7 +5,8 @@
  */
 
 define([
-], function () {
+    'Underscore'
+], function (_) {
     'use strict';
 
     var QUINK_ROOT = 'quink',
@@ -56,7 +57,7 @@ define([
     }
 
     function getParam(name, def) {
-        var val = urlParams[name];
+        var val = urlParams[name.toLowerCase()];
         return val === undefined ? def : val;
     }
 
