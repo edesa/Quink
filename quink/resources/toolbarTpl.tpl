@@ -3,7 +3,7 @@
         <div class="qk_toolbar_tab_container qk_clearfix">
             <% _.each(groups, function(grp) { %>
                 <% if (!grp.hidden) { %>
-                    <div class="qk_toolbar_item qk_toolbar_tab <% if (grp.hidden) { %> qk_hidden <% } %>" data-tab=<%= grp.id %>>
+                    <div class="qk_toolbar_item qk_toolbar_tab" data-tab=<%= grp.id %>>
                         <button class="qk_toolbar_tab_button" <% if (grp.command) { %> data-cmd="<%= grp.command %>" <% } %>
                                             <% if (grp.commandArgs) { %> data-cmd-args="<%= grp.commandArgs %>" <% } %>
                                             >
@@ -22,10 +22,10 @@
     <div class="qk_toolbar_group_container">
         <% _.each(groups, function(grp) { %>
             <% if (!grp.hidden) { %>
-                <div class="qk_tab qk_clearfix <% if (grp.hidden) { %> qk_hidden <% } %>" id="qk_tab_<%= grp.id %>" >
+                <div class="qk_tab qk_clearfix" id="qk_tab_<%= grp.id %>" >
                     <% _.each(grp.items, function (item) { %>
                         <% if (!item.hidden) { %>
-                            <button class="qk_button <% if (item.hidden) { %> qk_hidden <% } %>"
+                            <button class="qk_button"
                                                     <% if (item.command) { %> data-cmd="<%= item.command %>"
                                                     <% } else if (item.command) { %> data-cmd="<%= item.command %>"
                                                     <% } %>
