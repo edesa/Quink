@@ -142,13 +142,18 @@ define([
     Toolbar.prototype.getValidLinkUrl = function (userUrl) {
         var url = userUrl.trim(),
             scheme, validUrl, index;
-        if (url && url.indexOf(':') > 0) {
-            index = url.indexOf(this.LINK_URL_PREFIX);
-            if (index < 0 || url.length > this.LINK_URL_PREFIX.length) {
-                scheme = url.split(':')[0];
-                if (this.LINK_URL_SCHEME_BLACKLIST.indexOf(scheme.toLowerCase()) < 0) {
-                    validUrl = url;
+        if (url) {
+            if (url.indexOf(':') > 0) {
+                index = url.indexOf(this.LINK_URL_PREFIX);
+                if (index < 0 || url.length > this.LINK_URL_PREFIX.length) {
+                    scheme = url.split(':')[0];
+                    if (this.LINK_URL_SCHEME_BLACKLIST.indexOf(scheme.toLowerCase()) < 0) {
+                        validUrl = url;
+                    }
                 }
+            } else {
+                // No scheme, assume it's a valid relative url
+                validUrl = url;
             }
         }
         return validUrl;
