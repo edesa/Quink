@@ -96,7 +96,7 @@ define([
             },
             match;
         while ((match = regex.exec(search)) !== null) {
-            urlParams[decode(match[1])] = decode(match[2]);
+            urlParams[decode(match[1]).toLowerCase()] = decode(match[2]);
         }
     }
 
