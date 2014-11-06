@@ -2,13 +2,15 @@
     <div class="qk_toolbar_top_container qk_clearfix">
         <div class="qk_toolbar_tab_container qk_clearfix">
             <% _.each(groups, function(grp) { %>
-            <div class="qk_toolbar_item qk_toolbar_tab <% if (grp.hidden) { %> qk_hidden <% } %>" data-tab=<%= grp.id %>>
-                <button class="qk_toolbar_tab_button" <% if (grp.command) { %> data-cmd="<%= grp.command %>" <% } %>
-                                    <% if (grp.commandArgs) { %> data-cmd-args="<%= grp.commandArgs %>" <% } %>
-                                    >
-                    <span><%= grp.label %></span>
-                </button>
-            </div>
+                <% if (!grp.hidden) { %>
+                    <div class="qk_toolbar_item qk_toolbar_tab <% if (grp.hidden) { %> qk_hidden <% } %>" data-tab=<%= grp.id %>>
+                        <button class="qk_toolbar_tab_button" <% if (grp.command) { %> data-cmd="<%= grp.command %>" <% } %>
+                                            <% if (grp.commandArgs) { %> data-cmd-args="<%= grp.commandArgs %>" <% } %>
+                                            >
+                            <span><%= grp.label %></span>
+                        </button>
+                    </div>
+                <% } %>
             <% }); %>
         </div>
         <div class="qk_toolbar_item qk_toolbar_close">
@@ -19,25 +21,29 @@
     </div>
     <div class="qk_toolbar_group_container">
         <% _.each(groups, function(grp) { %>
-        <div class="qk_tab qk_clearfix <% if (grp.hidden) { %> qk_hidden <% } %>" id="qk_tab_<%= grp.id %>" >
-            <% _.each(grp.items, function (item) { %>
-            <button class="qk_button <% if (item.hidden) { %> qk_hidden <% } %>"
-                                    <% if (item.command) { %> data-cmd="<%= item.command %>"
-                                    <% } else if (item.command) { %> data-cmd="<%= item.command %>"
-                                    <% } %>
-                                    <% if (item.commandArgs) { %> data-cmd-args="<%= item.commandArgs %>" <% } %>
-                                    <% if (item.repeat) { %> data-btn-repeat="true" <% } %>
-                                    <% if (item.elId) { %> id="<%= item.elId %>" <% } %>
-                                    >
-                <% if (item.type === 'select') { %>
-                <input class="qk_input_checkbox" type="checkbox" data-tag="<%= item.dataTag %>" value="<%= item.value %>"/>
-                <label class="qk_input_label"><%= item.label %></label>
-                <% } else { %>
-                <span class="qk_button_bg <% if (item.cssClass) { %> <%= item.cssClass %> <% } %>"></span>
-                <% } %>
-            </button>
-            <% }); %>
-        </div>
+            <% if (!grp.hidden) { %>
+                <div class="qk_tab qk_clearfix <% if (grp.hidden) { %> qk_hidden <% } %>" id="qk_tab_<%= grp.id %>" >
+                    <% _.each(grp.items, function (item) { %>
+                        <% if (!item.hidden) { %>
+                            <button class="qk_button <% if (item.hidden) { %> qk_hidden <% } %>"
+                                                    <% if (item.command) { %> data-cmd="<%= item.command %>"
+                                                    <% } else if (item.command) { %> data-cmd="<%= item.command %>"
+                                                    <% } %>
+                                                    <% if (item.commandArgs) { %> data-cmd-args="<%= item.commandArgs %>" <% } %>
+                                                    <% if (item.repeat) { %> data-btn-repeat="true" <% } %>
+                                                    <% if (item.elId) { %> id="<%= item.elId %>" <% } %>
+                                                    >
+                                <% if (item.type === 'select') { %>
+                                <input class="qk_input_checkbox" type="checkbox" data-tag="<%= item.dataTag %>" value="<%= item.value %>"/>
+                                <label class="qk_input_label"><%= item.label %></label>
+                                <% } else { %>
+                                <span class="qk_button_bg <% if (item.cssClass) { %> <%= item.cssClass %> <% } %>"></span>
+                                <% } %>
+                            </button>
+                        <% } %>
+                    <% }); %>
+                </div>
+            <% } %>
         <% }); %>
     </div>
     <div class="qk_popup qk_dialog qk_hidden" id="qk_dialog_createlink">
