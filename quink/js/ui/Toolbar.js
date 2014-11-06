@@ -547,9 +547,10 @@ define([
     };
 
     Toolbar.prototype.downloadResources = function () {
-        var downloads = $.when($.get(Env.resource('toolbarDef.json')),
-            $.get(Env.resource('toolbarTpl.tpl')),
-            $.get(Env.resource('styleTpl.tpl')));
+        var toolbarDefUrl = Env.getParam('toolbardef', Env.resource('toolbarDef.json')),
+            downloads = $.when($.get(toolbarDefUrl),
+                $.get(Env.resource('toolbarTpl.tpl')),
+                $.get(Env.resource('styleTpl.tpl')));
         downloads.done(this.onDownload.bind(this));
         downloads.fail(function () {
             console.log('toolbar download failed...');
