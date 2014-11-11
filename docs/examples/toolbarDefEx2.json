@@ -1,0 +1,28 @@
+{
+    "groups": [
+        {
+            "id": "group1",
+            "label": "Group1",
+            "items": [
+                {
+                    "id": "item1",
+                    "cssClass": "red",
+                    "command": "mycommand",
+                    "commandArgs": "item 1"
+                },
+                {
+                    "id": "item2",
+                    "cssClass": "blue",
+                    "command": "mycommand",
+                    "commandArgs": "item 2"
+                },
+                {
+                    "id": "item3",
+                    "cssClass": "green",
+                    "command": "mycommand",
+                    "commandArgs": "item 3"
+                }
+            ]
+        }
+    ]
+}

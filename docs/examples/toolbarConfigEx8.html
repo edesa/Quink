@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Toolbar config doc example 8</title>
+        <style>
+            .red {
+                background-color: red;
+            }
+            .blue {
+                background-color: blue;
+            }
+        </style>
+        <script type="text/javascript">
+            QUINK = {
+                params: {
+                    toolbar: 'on',
+                    toolbardef: 'toolbarDefEx1.json'
+                },
+
+                ready: function () {
+                    QUINK.configureToolbar({
+                        groups:[{
+                            id: 'group2',
+                            label: 'New Group',
+                            active: true,
+                            items:[{
+                                id: 'g2i1',
+                                cssClass: 'red',
+                                command: 'mycommand',
+                                commandArgs: 'item 1'
+                            }, {
+                                id: 'g2i2',
+                                cssClass: 'blue',
+                                command: 'mycommand',
+                                commandArgs: 'item 2'
+                            }]
+                        }]
+                    });
+                }
+            };
+
+            function mycommand(event, arg) {
+                alert(arg);
+            };
+        </script>
+        <script type="text/javascript" src="../../quink.js"></script>
+    </head>
+    <body>
+        <div contenteditable="true">
+            Add a new toolbar group and populate it with 2 new items.
+        </div>
+    </body>
+</html>

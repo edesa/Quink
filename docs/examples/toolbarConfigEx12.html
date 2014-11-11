@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Toolbar config doc example 12</title>
+        <style>
+            .red {
+                background-color: red;
+            }
+            .blue {
+                background-color: blue;
+            }
+            .green {
+                background-color: green;
+            }
+        </style>
+        <script type="text/javascript">
+            var originalConfig, // Used to hold the original toolbar configuration.
+                id = 1;         // id of the next item to be added.
+
+            // Switch the toolbar on and set the initial toolbar configuration.
+            QUINK = {
+                params: {
+                    toolbar: 'on',
+                    toolbardef: 'toolbarDefEx2.json'
+                }
+            };
+
+            // Invoked when the toolbar buttons are hit.
+            function mycommand(event, args) {
+                alert(args);
+            }
+
+            // Save off the starting configuration.
+            QUINK.ready = function () {
+                originalConfig = QUINK.configureToolbar({});
+            };
+
+            // Stops any attempt to add more items than are available in the initial configuration.
+            function disableButtons(value) {
+                Array.prototype.forEach.call(document.querySelectorAll('.additem'), function (btn) {
+                    btn.disabled = value;
+                });
+            }
+
+            // Makes the change to the toolbar configuration.
+            function addItemToToolbar(settings) {
+                var itemId = 'item' + id++;
+                QUINK.configureToolbar({
+                    groups: [{
+                        id: 'newgroup',
+                        active: true,
+                        label: 'New Group',
+                        items: [{
+                            id: itemId
+                        }]
+                    }]
+                }, settings);
+                if (id > originalConfig.groups[0].items.length) {
+                    disableButtons(true)
+                }
+            }
+
+            // Supply a settings object that hides everything.
+            function replaceItem() {
+                addItemToToolbar({
+                    hidden: true
+                });
+            }
+
+            // No settings object so additing is incremental.
+            function addItem() {
+                addItemToToolbar();
+            }
+
+            // Reset to the initial toolbar configuration.
+            function reset() {
+                QUINK.configureToolbar(originalConfig, {
+                    hidden: true
+                });
+                id = 1;
+                disableButtons(false);
+            }
+        </script>
+        <script type="text/javascript" src="../../quink.js"></script>
+    </head>
+    <body>
+        <div contenteditable="true">
+            This shows the different ways in which itesm can be added to the toolbar. The &ldquo;Add&rdquo; button adds a new item to the existing layout whereas the &ldquo;Replace&rdquo; button replaces the current layout with a new item. Hit &ldquo;Reset&rdquo; to start again when the other buttons are disabled.
+        </div>
+        <button class="additem" onclick="addItem();">Add</button>
+        <button class="additem" onclick="replaceItem();">Replace</button>
+        <button onclick="reset();">Reset</button>
+    </body>
+</html>

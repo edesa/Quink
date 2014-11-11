@@ -1,0 +1,16 @@
+{
+    "groups": [
+        {
+            "id": "group1",
+            "label": "Group1",
+            "items": [
+                {
+                    "id": "bold",
+                    "cssClass": "qk_button_bg_bold",
+                    "command": "execCommand",
+                    "commandArgs": "font.bold"
+                }
+            ]
+        }
+    ]
+}

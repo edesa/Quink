@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Toolbar config doc example 4</title>
+        <style>
+            .ex3_item_style {
+                background-color: red;
+            }
+        </style>
+        <script type="text/javascript">
+            QUINK = {
+                params: {
+                    toolbar: 'on',
+                    toolbardef: 'toolbarDefEx1.json'
+                },
+
+                ready: function () {
+                    QUINK.configureToolbar({
+                        groups:[{
+                            id: 'group1',
+                            items: [{
+                                id: 'newitem',
+                                cssClass: 'ex3_item_style',
+                                command: 'alertMe',
+                                commandArgs: 'Hi there!'
+                            }]
+                        }]
+                    });
+                },
+
+                alertMe: function (event, greeting) {
+                    alert(greeting);
+                }
+            };
+        </script>
+        <script type="text/javascript" src="../../quink.js"></script>
+    </head>
+    <body>
+        <div contenteditable="true">
+            Hit the red button to get a greeting. This shows a toolbar item being configured with an external function.
+        </div>
+    </body>
+</html>
