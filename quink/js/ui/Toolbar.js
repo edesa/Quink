@@ -563,7 +563,7 @@ define([
         return downloads;
     };
 
-    Toolbar.prototype.configureToolbar = function (def) {
+    Toolbar.prototype.configureToolbar = function (def, settings) {
         var provider = this.toolbarProvider,
             lastDef = provider.getToolbarDefinition(),
             html;
@@ -572,7 +572,7 @@ define([
             this.toolbar = null;
         }
         this.willInitToolbar = true;
-        html = provider.createToolbar(def);
+        html = provider.createToolbar(def, settings);
         this.processToolbar(html);
         return lastDef;
     };
