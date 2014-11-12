@@ -19,6 +19,7 @@ define([
             label: isMultiSelect ? 'close' : 'cancel'
         });
     }
+
     /**
      * By default style menu item labels are the style name with any underscores replaced by spaces.
      */
@@ -27,14 +28,22 @@ define([
     }
 
     /**
+     * Rules that preserve white space will cause the menu item layout to break.
+     */
+    function isMenuBreakingRule(rule) {
+        return /\s*white-space\s*:\s*pre(-.*)?;/.test(rule.cssText);
+    }
+
+    /**
      * Creates and returns a menu item definition given a css rule.
      */
     function createStyleDef(rule, labelFunc) {
-        var style = rule.selectorText.replace(/^\./, '');
+        var style = rule.selectorText.replace(/^\./, ''),
+            isMenuBreaking = isMenuBreakingRule(rule);
         return {
             value: style,
             label: labelFunc(style, rule),
-            cssClass: style
+            cssClass: isMenuBreaking ? '' : style
         };
     }
 
