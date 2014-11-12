@@ -112,7 +112,7 @@
                     "elId": "qk_button_plugin_menu",
                     "cssClass": "qk_button_bg_insert",
                     "command": "showInsertMenu",
-                    "hidden": true
+                    "hidden": false
                 }
             ]
         },
