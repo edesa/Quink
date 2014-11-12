@@ -99,3 +99,6 @@
 .qk_style_mixin_Upper_Case {
     text-transform: uppercase;
 }
+.qk_style_mixin_Preserve_Space {
+    white-space: pre;
+}
