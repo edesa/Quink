@@ -123,30 +123,23 @@
     margin-right: -17px;
     line-height: 35px; /* must match height value - used for text button labels */
     background-size: contain;
-    background-position-x: 50%;
-    background-position-y: 50%;
-    background-repeat-x: no-repeat;
-    background-repeat-y: no-repeat;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
 }
 .qk_button_bg_bold {
     background-image: url(../images/inline-bold.png);
-/*    background-image: url(../images/inline-bold.svg);*/
 }
 .qk_button_bg_italic {
     background-image: url(../images/inline-italic.png);
-/*    background-image: url(../images/inline-italic.svg);*/
 }
 .qk_button_bg_underline {
     background-image: url(../images/inline-underline.png);
-/*    background-image: url(../images/inline-underline.svg);*/
 }
 .qk_button_bg_strikethrough {
     background-image: url(../images/inline-strike-through.png);
-/*    background-image: url(../images/inline-strike-through.svg);*/
 }
 .qk_button_bg_superscript {
     background-image: url(../images/inline-super-script.png);
-/*    background-image: url(../images/inline-super-script.svg);*/
 }
 .qk_button_bg_subscript {
     background-image: url(../images/inline-sub-script.png);
