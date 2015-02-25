@@ -58,32 +58,57 @@ module.exports = function (grunt) {
         },
 
         /**
-         * Don't include the libs in the built app. Libs are handled separately. The text plugin has to be
-         * present for the build to work which is why it's handled differently.
-         * In order to make the quink.js bootstrap file have exactly the same banner as the built app don't
-         * use the src banners. The banner will be appended in a separate step after the app is built.
+         * Run the requirejs optimiser creating a build that includes all the libraries plus the source
+         * within the one file. This saves ded and other quink users from having to manually include the
+         * quink dependencies.
          */
         requirejs: {
             all: {
                 options: {
                     baseUrl: 'quink/js',
+                    mainConfigFile: 'quink/js/main.js',
                     name: 'main',
-                    include: 'ext/PluginAdapterContext',
-                    out: 'prebuilt/quink/js/main.js',
-                    paths: {
-                        jquery: 'empty:',
-                        rangy: 'empty:',
-                        textrange: 'empty:',
-                        cssapplier: 'empty:',
-                        Underscore: 'empty:',
-                        text: 'lib/text',
-                        resources: '../resources'
-                    },
+                    include: ['lib/almond', 'ext/PluginAdapterContext'],
                     stubModules: ['text'],
-                    preserveLicenseComments: false
+                    preserveLicenseComments: false,
+                    out: 'prebuilt/quink/js/main.js',
+                    optimize: 'none'
                 }
             }
         },
+
+        /**
+         * Don't include the libs in the built app. Libs are handled separately. The text plugin has to be
+         * present for the build to work which is why it's handled differently.
+         * In order to make the quink.js bootstrap file have exactly the same banner as the built app don't
+         * use the src banners. The banner will be appended in a separate step after the app is built.
+         */
+        // requirejs: {
+        //     all: {
+        //         options: {
+        //             baseUrl: 'quink/js',
+        //             name: 'main',
+        //             include: ['ext/PluginAdapterContext', 'lib/almond'],
+        //             out: 'prebuilt/quink/js/main.js',
+        //             paths: {
+        //                 jquery: 'empty:',
+        //                 rangy: 'empty:',
+        //                 textrange: 'empty:',
+        //                 cssapplier: 'empty:',
+        //                 Underscore: 'empty:',
+        //                 text: 'lib/text',
+        //                 resources: '../resources'
+        //             },
+        //             stubModules: ['text'],
+        //             preserveLicenseComments: false,
+        //             wrap: {
+        //                 'startFile': 'build/wrapstart.frag',
+        //                 'endFile': 'build/wrapend.frag'
+        //             },
+        //             optimize: 'none'
+        //         }
+        //     }
+        // },
 
         cssmin: {
             all: {
