@@ -148,5 +148,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
 
-    grunt.registerTask('default', ['clean:all', 'copy:all', 'copy:libs', 'requirejs', 'concat', 'cssmin', 'uglify', 'clean:text']);
+    grunt.registerTask('default', ['clean:all', 'copy:all', 'requirejs', 'concat', 'cssmin', 'uglify', 'clean:text']);
+
+    // grunt.registerTask('default', ['clean:all', 'copy:all', 'copy:libs', 'requirejs', 'concat', 'cssmin', 'uglify', 'clean:text']);
 };
