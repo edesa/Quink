@@ -71,8 +71,7 @@ module.exports = function (grunt) {
                     include: ['lib/almond', 'ext/PluginAdapterContext'],
                     stubModules: ['text'],
                     preserveLicenseComments: false,
-                    out: 'prebuilt/quink/js/main.js',
-                    optimize: 'none'
+                    out: 'prebuilt/quink/js/main.js'
                 }
             }
         },
