@@ -8,6 +8,12 @@
  * To use Quink as a component:
  *      - include the prebuilt/quink directory
  *      - load this script which must be in the same directory as quink
+ *
+ * In dev where the sources are being used add the 'userequire' query param. It only has to exist and doesn't
+ * need any value.
+ * If this is an AMD load then assume that the quink sources will be loaded by the AMD app and only load the
+ * stylesheet and set up the environment. To indicate this scenario set 'data-amdload' as an attribute in the
+ * script tag.
  */
 (function (global) {
     'use strict';
