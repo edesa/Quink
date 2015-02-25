@@ -6,7 +6,7 @@
 
 define([
     'jquery',
-    'rangy',
+    'rangy-core',
     'util/PubSub',
     'util/DomUtil'
 ], function ($, rangy, PubSub, DomUtil) {

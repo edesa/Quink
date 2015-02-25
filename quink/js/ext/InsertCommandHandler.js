@@ -6,7 +6,7 @@
 
 define([
     'jquery',
-    'rangy',
+    'rangy-core',
     'ext/PluginMgr',
     'util/PubSub',
     'util/FocusTracker',

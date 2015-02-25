@@ -5,7 +5,7 @@
  */
 
 define([
-    'rangy',
+    'rangy-core',
     'locrange/LocatableRange',
     'locrange/SafeLocRange'
 ], function (rangy, LocatableRange, SafeLocRange) {

@@ -7,7 +7,7 @@
 /*global QUINK */
 define([
     'jquery',
-    'rangy',
+    'rangy-core',
     'command/Command',
     'ext/PluginMgr',
     'hithandler/HitHandler',

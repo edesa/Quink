@@ -7,7 +7,7 @@
 define([
     'Underscore',
     'jquery',
-    'rangy',
+    'rangy-core',
     'hithandler/HitHandler',
     'locrange/LocRangeUtil',
     'util/Env',

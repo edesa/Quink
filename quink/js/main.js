@@ -10,9 +10,9 @@ require.config({
 
     paths: {
         jquery: 'lib/jquery-2.1.1',
-        rangy: 'lib/rangy-core',
-        textrange: 'lib/rangy-textrange',
-        cssapplier: 'lib/rangy-cssclassapplier',
+        'rangy-core': 'lib/rangy-core',
+        'rangy-textrange': 'lib/rangy-textrange',
+        'rangy-classapplier': 'lib/rangy-classapplier',
         Underscore: 'lib/underscore',
         text: 'lib/text',
         resources: '../resources'
@@ -21,12 +21,7 @@ require.config({
     shim: {
         'Underscore': {
             exports: '_'
-        },
-        'rangy': {
-            exports: 'rangy'
-        },
-        'textrange': [ 'rangy' ],
-        'cssapplier': [ 'rangy' ]
+        }
     }
 });
 

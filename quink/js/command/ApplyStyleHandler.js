@@ -7,8 +7,8 @@
 define([
     'Underscore',
     'jquery',
-    'rangy',
-    'cssapplier',
+    'rangy-core',
+    'rangy-classapplier',
     'util/PubSub'
 ], function (_, $, rangy, cssapplier, PubSub) {
     'use strict';
@@ -20,7 +20,7 @@ define([
     ApplyStyleHandler.prototype.getApplier = function (style) {
         var applier = this.applierMap[style];
         if (!applier) {
-            applier = rangy.createCssClassApplier(style);
+            applier = rangy.createClassApplier(style);
             this.applierMap[style] = applier;
         }
         return applier;

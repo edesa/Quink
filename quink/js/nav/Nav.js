@@ -7,8 +7,8 @@
 define([
     'Underscore',
     'jquery',
-    'rangy',
-    'textrange',
+    'rangy-core',
+    'rangy-textrange',
     'locrange/LocRange',
     'util/PubSub',
     'nav/Position',

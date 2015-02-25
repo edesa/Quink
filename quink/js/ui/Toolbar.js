@@ -8,7 +8,7 @@
 define([
     'Underscore',
     'jquery',
-    'rangy',
+    'rangy-core',
     'ui/PopupMenu',
     'ui/StyleMenuProvider',
     'ui/ToolbarProvider',
