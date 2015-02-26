@@ -75,8 +75,8 @@ module.exports = function (grunt) {
                     wrap: {
                         'startFile': 'build/wrap-start.js',
                         'endFile': 'build/wrap-end.js'
-                    }
-                    // optimize: 'none'
+                    },
+                    optimize: 'none'
                 }
             }
         },
