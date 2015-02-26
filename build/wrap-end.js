@@ -1,5 +1,6 @@
 
-  // Use almond's special top level synchronous require to trigger factory
-  // functions, get the final module, and export it as the public api.
-  return require('main');
+    // Wrong - but allows dynamic loading to work (the plugins) for now otherwise plugins
+    // that call require won't load.
+    window.require = require;
+    return require('main');
 }));

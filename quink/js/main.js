@@ -25,10 +25,19 @@ require.config({
     }
 });
 
-require([
+define([
     'App'
 ], function (App) {
     'use strict';
 
     App.init();
+    return QUINK;
 });
+
+// require([
+//     'App'
+// ], function (App) {
+//     'use strict';
+//
+//     App.init();
+// });
