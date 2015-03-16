@@ -65,7 +65,7 @@ define([
             this.updateUiState(this.menu, delta.selected);
             this.updateUiState(this.menu, delta.deselected);
         }
-        this.callback(delta.selected, delta.deselected, this.state);
+        this.callback(delta.selected, delta.deselected, this.state, this.menuDef);
         if (!this.isMultiSelect || newValue === 'close') {
             this.hide();
         }
