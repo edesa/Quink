@@ -41,7 +41,11 @@ define([
             selector, stylesheet;
         if (styles.length === 0) {
             selector = selectorOrUrl || Env.getParam('styles');
-            styles = $(selector);
+            try {
+                styles = $(selector);
+            } catch (e) {
+                // happens if this is a url that contains a path separator
+            }
         }
         if (styles.length > 0) {
             stylesheet = styles[0].sheet;

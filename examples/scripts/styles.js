@@ -8,7 +8,7 @@
 QUINK = {
     params: {
         toolbar: 'on',
-        styles: 'example-styles.css'
+        styles: '../resources/example-styles.css'
     },
 
     ready: function () {
