@@ -86,11 +86,15 @@ define([
         return node && node.nodeType === 1 && (isWithinQuinkClass(node) || isQuinkLibArtifact(node));
     }
 
+    function isTransient(node) {
+        return typeof node.hasAttribute === 'function' && node.hasAttribute('data-qk-transient');
+    }
+
     /**
      * Is the node inside a part of the DOM that isn't to do with Quink's implementation?
      */
     function isWithinDocument(node) {
-        return !isQuinkArtifact(node);
+        return !isQuinkArtifact(node) && !isTransient(node);
     }
 
     /**

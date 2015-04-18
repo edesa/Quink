@@ -405,7 +405,7 @@ define([
         var hit, handled;
         if (event.hitType === 'double') {
             hit = Event.isTouch ? event.event.originalEvent.changedTouches[0] : event.event;
-            this.showToolbarAt(0, $(document).scrollTop());
+            this.showToolbar(0, $(document).scrollTop());
             this.vpToolbar.adjust();
             handled = true;
         }
@@ -486,7 +486,9 @@ define([
         func.call(submitBtn, 'qk_hidden');
     };
 
-    Toolbar.prototype.showToolbarAt = function (x, y) {
+    Toolbar.prototype.showToolbar = function (xcoord, ycoord) {
+        var x = xcoord === undefined ? 0 : xcoord,
+            y = ycoord === undefined ? 0 : ycoord;
         if (!this.vpToolbar) {
             this.vpToolbar = ViewportRelative.create(this.toolbar, {
                 top: y
@@ -505,11 +507,6 @@ define([
             'top': y
         });
         this.isVisible = true;
-    };
-
-    Toolbar.prototype.showToolbar = function () {
-        this.toolbar.removeClass('qk_hidden');
-        this.showToolbarAt(0, 0);
     };
 
     Toolbar.prototype.initSubscriptions = function () {
@@ -582,6 +579,7 @@ define([
     function init(stylesheetMgr) {
         toolbar = new Toolbar(stylesheetMgr);
         QUINK.configureToolbar = toolbar.configureToolbar.bind(toolbar);
+        QUINK.showToolbar = toolbar.showToolbar.bind(toolbar);
         return toolbar.downloadResources();
     }
 

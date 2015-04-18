@@ -86,7 +86,7 @@ define([
             };
         this.hasDocChanges = false;
         this.changeMonitor = this.changeMonitor || new ChangeMonitor(this.boundChangeMonitorCallback);
-        this.changeMonitor.observe(document.body, opts);
+        this.changeMonitor.observe(document.documentElement, opts);
     };
 
     Persist.prototype.stopChangeMonitor = function () {

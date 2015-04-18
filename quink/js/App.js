@@ -45,6 +45,7 @@ define([
             if (typeof QUINK.ready === 'function') {
                 QUINK.ready(PubSub);
             }
+            QUINK.isReady = true;
         }).fail(function () {
             console.log('downloads failed...');
         });

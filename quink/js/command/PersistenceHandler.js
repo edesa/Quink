@@ -30,24 +30,28 @@ define([
         return doc;
     };
 
-    PersistenceHandler.prototype.copyBody = function (srcDoc, destDoc) {
-        var srcBody = srcDoc.body,
-            destBody = destDoc.body,
-            srcNodes, i, length, node, iNode;
-        if (srcBody.hasChildNodes()) {
-            srcNodes = srcBody.childNodes;
+    /**
+     * Copies the contents of srcNode into destNode. Assumes that the two nodes are in different documents.
+     * The copy will be done for all nodes where acceptFunc returns true (or for all nodes if there is no
+     * acceptFunc). If procFunc is provided it will be called after the copy has been done. This can be
+     * used to modify the copied node.
+     */
+    PersistenceHandler.prototype.copyContents = function (srcNode, destNode, acceptFunc, procFunc) {
+        var srcNodes, i, length, node, iNode;
+        if (srcNode.hasChildNodes()) {
+            srcNodes = srcNode.childNodes;
             for (i = 0, length = srcNodes.length; i < length; i++) {
                 node = srcNodes[i];
-                if (DomUtil.isWithinDocument(node)) {
-                    iNode = destDoc.importNode(node, true);
-                    if (iNode.nodeType === 1) {
-                        iNode.classList.remove('qk_command_mode');
+                if (typeof acceptFunc !== 'function' || acceptFunc(node)) {
+                    iNode = destNode.ownerDocument.importNode(node, true);
+                    if (typeof procFunc === 'function') {
+                        procFunc(iNode);
                     }
-                    destBody.appendChild(iNode);
+                    destNode.appendChild(iNode);
                 }
             }
         }
-        return destDoc;
+        return destNode.ownerDocument;
     };
 
     /**
@@ -55,7 +59,32 @@ define([
      */
     PersistenceHandler.prototype.updateBody = function (srcDoc, destDoc) {
         this.emptyNode(destDoc.body);
-        return this.copyBody(srcDoc, destDoc);
+        return this.copyContents(srcDoc.body, destDoc.body, DomUtil.isWithinDocument, function (node) {
+            if (node.nodeType === 1 && node.classList.contains('qk_command_mode')) {
+                node.classList.remove('qk_command_mode');
+            }
+        });
+    };
+
+    /**
+     * Creates a copy of the src header as the header for the destination document. Nodes marked as
+     * persistent in the source document are not copied to avoid creating multiple copies when the
+     * newly created header is updated from the documnt being edited.
+     */
+    PersistenceHandler.prototype.copyHeader = function (srcDoc, destDoc) {
+        this.emptyNode(destDoc.head);
+        return this.copyContents(srcDoc.head, destDoc.head, function (node) {
+            return typeof node.hasAttribute !== 'function' || !node.hasAttribute('data-qk-persistent');
+        });
+    };
+
+    /**
+     * Updates destDoc.head with nodes marked as persistent in srcDoc.head.
+     */
+    PersistenceHandler.prototype.updateHeader = function (srcDoc, destDoc) {
+        return this.copyContents(srcDoc.head, destDoc.head, function (node) {
+            return typeof node.hasAttribute === 'function' && node.hasAttribute('data-qk-persistent');
+        });
     };
 
     /**
@@ -137,8 +166,11 @@ define([
      * done and fail are the usual options but there are others.
      */
     PersistenceHandler.prototype.persistPage = function (persistFunc, theDoc, url, transformFunc) {
-        var doc = this.updateBody(document, theDoc),
-            docType = this.getDocTypeString(doc);
+        var doc = document.implementation.createHTMLDocument(),
+            docType = this.getDocTypeString(theDoc);
+        this.updateBody(document, doc);
+        this.copyHeader(theDoc, doc);
+        this.updateHeader(document, doc);
         if (typeof transformFunc === 'function') {
             doc = transformFunc.call(this, doc);
         }
